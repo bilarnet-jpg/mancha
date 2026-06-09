@@ -16,6 +16,8 @@ import StoreScreen from '../screens/store/StoreScreen';
 import ProductDetailScreen from '../screens/store/product/ProductDetailScreen';
 import CartScreen from '../screens/store/cart/CartScreen';
 import { StorePixPaymentScreen, OrderSuccessScreen, MyOrdersScreen } from '../screens/store/orders/StoreOrderScreens';
+import CommunityScreen from '../screens/community/CommunityScreen';
+import { PostDetailScreen, SubmitPostScreen, RankingScreen } from '../screens/community/PostScreens';
 import { Colors, Radius } from '../theme';
 
 const Placeholder = ({ name }: { name: string }) => (
@@ -30,6 +32,7 @@ const AuthStack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
 const AgendaStack = createNativeStackNavigator();
 const StoreStack = createNativeStackNavigator();
+const CommunityStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const RootStack = createNativeStackNavigator();
 
@@ -78,14 +81,25 @@ function StoreNavigator() {
   );
 }
 
+function CommunityNavigator() {
+  return (
+    <CommunityStack.Navigator screenOptions={{ headerShown: false }}>
+      <CommunityStack.Screen name="CommunityMain" component={CommunityScreen} />
+      <CommunityStack.Screen name="PostDetail" component={PostDetailScreen} />
+      <CommunityStack.Screen name="SubmitPost" component={SubmitPostScreen} />
+      <CommunityStack.Screen name="Ranking" component={RankingScreen} />
+    </CommunityStack.Navigator>
+  );
+}
+
 function CustomTabBar({ state, navigation }: any) {
   const insets = useSafeAreaInsets();
   const LABELS: Record<string, string> = {
-    HomeTab: 'Início', SambasTab: 'Sambas',
-    ManchaTab: 'Mancha', AgendaTab: 'Agenda', LojaTab: 'Loja',
+    HomeTab: 'Início', AgendaTab: 'Agenda',
+    ManchaTab: 'Mancha', LojaTab: 'Loja', ComunidadeTab: 'Galeria',
   };
   const EMOJIS: Record<string, string> = {
-    HomeTab: '🏠', SambasTab: '🎵', AgendaTab: '📅', LojaTab: '🛍️',
+    HomeTab: '🏠', AgendaTab: '📅', LojaTab: '🛍️', ComunidadeTab: '📸',
   };
 
   return (
@@ -124,10 +138,10 @@ function MainNavigator() {
   return (
     <Tab.Navigator tabBar={(props) => <CustomTabBar {...props} />} screenOptions={{ headerShown: false }}>
       <Tab.Screen name="HomeTab" component={HomeNavigator} />
-      <Tab.Screen name="SambasTab" component={() => <Placeholder name="Sambas-Enredo" />} />
-      <Tab.Screen name="ManchaTab" component={() => <Placeholder name="Comunidade" />} />
       <Tab.Screen name="AgendaTab" component={AgendaNavigator} />
+      <Tab.Screen name="ManchaTab" component={() => <Placeholder name="Sambas-Enredo" />} />
       <Tab.Screen name="LojaTab" component={StoreNavigator} />
+      <Tab.Screen name="ComunidadeTab" component={CommunityNavigator} />
     </Tab.Navigator>
   );
 }
