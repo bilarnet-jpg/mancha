@@ -21,6 +21,9 @@ import { PostDetailScreen, SubmitPostScreen, RankingScreen } from '../screens/co
 import MinhaHistoriaScreen from '../screens/historia/MinhaHistoriaScreen';
 import { TimelineScreen, ParadesScreen, AchievementsScreen } from '../screens/historia/TimelineAndParadesScreens';
 import { WrappedScreen, FutureLetterScreen } from '../screens/historia/WrappedAndLetterScreens';
+import CardsScreen from '../screens/cards/CardsScreen';
+import CreateCardScreen from '../screens/cards/CreateCardScreen';
+import { CertificatesScreen, TributesScreen, MyCardsScreen } from '../screens/cards/CertificatesAndTributesScreens';
 import { Colors, Radius } from '../theme';
 
 const Placeholder = ({ name }: { name: string }) => (
@@ -36,7 +39,7 @@ const HomeStack = createNativeStackNavigator();
 const AgendaStack = createNativeStackNavigator();
 const StoreStack = createNativeStackNavigator();
 const CommunityStack = createNativeStackNavigator();
-const PerfilStack = createNativeStackNavigator();
+const CardsStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const RootStack = createNativeStackNavigator();
 
@@ -62,6 +65,11 @@ function HomeNavigator() {
       <HomeStack.Screen name="Achievements" component={AchievementsScreen} />
       <HomeStack.Screen name="Wrapped" component={WrappedScreen} />
       <HomeStack.Screen name="FutureLetter" component={FutureLetterScreen} />
+      <HomeStack.Screen name="CardsMain" component={CardsScreen} />
+      <HomeStack.Screen name="CreateCard" component={CreateCardScreen} />
+      <HomeStack.Screen name="MyCards" component={MyCardsScreen} />
+      <HomeStack.Screen name="Certificates" component={CertificatesScreen} />
+      <HomeStack.Screen name="Tributes" component={TributesScreen} />
     </HomeStack.Navigator>
   );
 }
@@ -102,17 +110,15 @@ function CommunityNavigator() {
   );
 }
 
-function PerfilNavigator() {
+function CardsNavigator() {
   return (
-    <PerfilStack.Navigator screenOptions={{ headerShown: false }}>
-      <PerfilStack.Screen name="PerfilMain" component={() => <Placeholder name="Perfil" />} />
-      <PerfilStack.Screen name="MinhaHistoria" component={MinhaHistoriaScreen} />
-      <PerfilStack.Screen name="Timeline" component={TimelineScreen} />
-      <PerfilStack.Screen name="Parades" component={ParadesScreen} />
-      <PerfilStack.Screen name="Achievements" component={AchievementsScreen} />
-      <PerfilStack.Screen name="Wrapped" component={WrappedScreen} />
-      <PerfilStack.Screen name="FutureLetter" component={FutureLetterScreen} />
-    </PerfilStack.Navigator>
+    <CardsStack.Navigator screenOptions={{ headerShown: false }}>
+      <CardsStack.Screen name="CardsMain" component={CardsScreen} />
+      <CardsStack.Screen name="CreateCard" component={CreateCardScreen} />
+      <CardsStack.Screen name="MyCards" component={MyCardsScreen} />
+      <CardsStack.Screen name="Certificates" component={CertificatesScreen} />
+      <CardsStack.Screen name="Tributes" component={TributesScreen} />
+    </CardsStack.Navigator>
   );
 }
 
@@ -120,10 +126,10 @@ function CustomTabBar({ state, navigation }: any) {
   const insets = useSafeAreaInsets();
   const LABELS: Record<string, string> = {
     HomeTab: 'Início', AgendaTab: 'Agenda',
-    ManchaTab: 'Mancha', LojaTab: 'Loja', ComunidadeTab: 'Galeria',
+    ManchaTab: 'Mancha', LojaTab: 'Loja', CardsTab: 'Cartões',
   };
   const EMOJIS: Record<string, string> = {
-    HomeTab: '🏠', AgendaTab: '📅', LojaTab: '🛍️', ComunidadeTab: '📸',
+    HomeTab: '🏠', AgendaTab: '📅', LojaTab: '🛍️', CardsTab: '💌',
   };
 
   return (
@@ -163,9 +169,9 @@ function MainNavigator() {
     <Tab.Navigator tabBar={(props) => <CustomTabBar {...props} />} screenOptions={{ headerShown: false }}>
       <Tab.Screen name="HomeTab" component={HomeNavigator} />
       <Tab.Screen name="AgendaTab" component={AgendaNavigator} />
-      <Tab.Screen name="ManchaTab" component={() => <Placeholder name="Sambas-Enredo" />} />
+      <Tab.Screen name="ManchaTab" component={CommunityNavigator} />
       <Tab.Screen name="LojaTab" component={StoreNavigator} />
-      <Tab.Screen name="ComunidadeTab" component={CommunityNavigator} />
+      <Tab.Screen name="CardsTab" component={CardsNavigator} />
     </Tab.Navigator>
   );
 }
