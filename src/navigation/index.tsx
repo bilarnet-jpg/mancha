@@ -18,6 +18,9 @@ import CartScreen from '../screens/store/cart/CartScreen';
 import { StorePixPaymentScreen, OrderSuccessScreen, MyOrdersScreen } from '../screens/store/orders/StoreOrderScreens';
 import CommunityScreen from '../screens/community/CommunityScreen';
 import { PostDetailScreen, SubmitPostScreen, RankingScreen } from '../screens/community/PostScreens';
+import MinhaHistoriaScreen from '../screens/historia/MinhaHistoriaScreen';
+import { TimelineScreen, ParadesScreen, AchievementsScreen } from '../screens/historia/TimelineAndParadesScreens';
+import { WrappedScreen, FutureLetterScreen } from '../screens/historia/WrappedAndLetterScreens';
 import { Colors, Radius } from '../theme';
 
 const Placeholder = ({ name }: { name: string }) => (
@@ -33,6 +36,7 @@ const HomeStack = createNativeStackNavigator();
 const AgendaStack = createNativeStackNavigator();
 const StoreStack = createNativeStackNavigator();
 const CommunityStack = createNativeStackNavigator();
+const PerfilStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const RootStack = createNativeStackNavigator();
 
@@ -52,6 +56,12 @@ function HomeNavigator() {
       <HomeStack.Screen name="HomeMain" component={HomeScreen} />
       <HomeStack.Screen name="MyTickets" component={MyTicketsScreen} />
       <HomeStack.Screen name="MyOrders" component={MyOrdersScreen} />
+      <HomeStack.Screen name="MinhaHistoria" component={MinhaHistoriaScreen} />
+      <HomeStack.Screen name="Timeline" component={TimelineScreen} />
+      <HomeStack.Screen name="Parades" component={ParadesScreen} />
+      <HomeStack.Screen name="Achievements" component={AchievementsScreen} />
+      <HomeStack.Screen name="Wrapped" component={WrappedScreen} />
+      <HomeStack.Screen name="FutureLetter" component={FutureLetterScreen} />
     </HomeStack.Navigator>
   );
 }
@@ -89,6 +99,20 @@ function CommunityNavigator() {
       <CommunityStack.Screen name="SubmitPost" component={SubmitPostScreen} />
       <CommunityStack.Screen name="Ranking" component={RankingScreen} />
     </CommunityStack.Navigator>
+  );
+}
+
+function PerfilNavigator() {
+  return (
+    <PerfilStack.Navigator screenOptions={{ headerShown: false }}>
+      <PerfilStack.Screen name="PerfilMain" component={() => <Placeholder name="Perfil" />} />
+      <PerfilStack.Screen name="MinhaHistoria" component={MinhaHistoriaScreen} />
+      <PerfilStack.Screen name="Timeline" component={TimelineScreen} />
+      <PerfilStack.Screen name="Parades" component={ParadesScreen} />
+      <PerfilStack.Screen name="Achievements" component={AchievementsScreen} />
+      <PerfilStack.Screen name="Wrapped" component={WrappedScreen} />
+      <PerfilStack.Screen name="FutureLetter" component={FutureLetterScreen} />
+    </PerfilStack.Navigator>
   );
 }
 

@@ -15,7 +15,7 @@ const QUICK = [
   { id: '2', label: 'Agenda', color: '#4FC3F7', bg: 'rgba(79,195,247,0.12)', emoji: '📅' },
   { id: '3', label: 'Loja', color: Colors.gold, bg: Colors.goldMuted, emoji: '🛍️' },
   { id: '4', label: 'Ingressos', color: Colors.red, bg: Colors.redMuted, emoji: '🎫' },
-  { id: '5', label: 'Ao Vivo', color: '#FF4081', bg: 'rgba(255,64,129,0.12)', emoji: '📺' },
+  { id: '5', label: 'Galeria', color: '#FF4081', bg: 'rgba(255,64,129,0.12)', emoji: '📸' },
   { id: '6', label: 'Premium', color: Colors.gold, bg: Colors.goldMuted, emoji: '👑' },
 ];
 
@@ -36,7 +36,7 @@ const getGreeting = () => {
   return 'Boa noite';
 };
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
   const { user, logout } = useAuthStore();
 
@@ -73,6 +73,31 @@ export default function HomeScreen() {
           </View>
         </LinearGradient>
 
+        {/* MINHA HISTÓRIA */}
+        <View style={styles.section}>
+          <TouchableOpacity onPress={() => navigation.navigate('MinhaHistoria')} activeOpacity={0.9}>
+            <LinearGradient colors={['#0d3d1a', '#1a5c2a', '#051a0a']} style={styles.historiaCard}>
+              <View style={styles.historiaAccent} />
+              <View style={styles.historiaGlow} />
+              <View style={{ flex: 1 }}>
+                <View style={styles.historiaBadge}>
+                  <Text style={styles.historiaBadgeText}>⭐ NOVO</Text>
+                </View>
+                <Text style={styles.historiaTitle}>Minha História{'\n'}na Mancha</Text>
+                <Text style={styles.historiaSub}>"Sua trajetória faz parte{'\n'}da nossa história."</Text>
+                <View style={styles.historiaBtn}>
+                  <Text style={styles.historiaBtnText}>Construir Minha História →</Text>
+                </View>
+              </View>
+              <View style={styles.historiaEmojis}>
+                <Text style={{ fontSize: 32 }}>🎭</Text>
+                <Text style={{ fontSize: 24 }}>🏅</Text>
+                <Text style={{ fontSize: 28 }}>📅</Text>
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+
         {/* SAMBA DO ANO */}
         <View style={styles.section}>
           <LinearGradient colors={['#0d3d1a', '#051a0a']} style={styles.sambaCard}>
@@ -95,8 +120,17 @@ export default function HomeScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Acesso Rápido</Text>
           <View style={styles.quickGrid}>
-            {QUICK.map(item => (
-              <TouchableOpacity key={item.id} activeOpacity={0.7} style={styles.quickCard}>
+            {QUICK.map((item, i) => (
+              <TouchableOpacity
+                key={item.id}
+                activeOpacity={0.7}
+                style={styles.quickCard}
+                onPress={() => {
+                  if (i === 1) navigation.navigate('AgendaTab');
+                  else if (i === 2) navigation.navigate('LojaTab');
+                  else if (i === 4) navigation.navigate('ComunidadeTab');
+                }}
+              >
                 <View style={[styles.quickIcon, { backgroundColor: item.bg }]}>
                   <Text style={{ fontSize: 22 }}>{item.emoji}</Text>
                 </View>
@@ -108,7 +142,12 @@ export default function HomeScreen() {
 
         {/* PRÓXIMOS EVENTOS */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Próximos Eventos</Text>
+          <View style={styles.sectionRow}>
+            <Text style={styles.sectionTitle}>Próximos Eventos</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('AgendaTab')}>
+              <Text style={styles.seeAll}>Ver agenda →</Text>
+            </TouchableOpacity>
+          </View>
           {EVENTS.map(event => (
             <View key={event.id} style={styles.eventItem}>
               <View style={styles.eventDate}>
@@ -175,7 +214,19 @@ const styles = StyleSheet.create({
   statVal: { fontSize: 16, color: Colors.primary, fontWeight: '700' },
   statLabel: { fontSize: 10, color: Colors.textMuted },
   section: { paddingHorizontal: Spacing.xl, marginTop: Spacing.xxl },
+  sectionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.base },
   sectionTitle: { fontSize: 16, color: Colors.textPrimary, fontWeight: '600', marginBottom: Spacing.base },
+  seeAll: { fontSize: 13, color: Colors.primary },
+  historiaCard: { borderRadius: Radius.xl, padding: Spacing.xl, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: `${Colors.primary}33`, position: 'relative', overflow: 'hidden', minHeight: 160 },
+  historiaAccent: { position: 'absolute', top: 0, left: 0, right: 0, height: 2, backgroundColor: Colors.primary },
+  historiaGlow: { position: 'absolute', top: -40, right: -40, width: 120, height: 120, borderRadius: 60, backgroundColor: 'rgba(0,255,133,0.08)' },
+  historiaBadge: { backgroundColor: Colors.primaryMuted, borderWidth: 1, borderColor: `${Colors.primary}44`, borderRadius: Radius.sm, paddingHorizontal: 8, paddingVertical: 3, alignSelf: 'flex-start', marginBottom: 10 },
+  historiaBadgeText: { fontSize: 9, color: Colors.primary, fontWeight: '700', letterSpacing: 1.5 },
+  historiaTitle: { fontSize: 22, color: Colors.textPrimary, fontWeight: '700', lineHeight: 26, marginBottom: 6 },
+  historiaSub: { fontSize: 12, color: Colors.textSecondary, lineHeight: 18, marginBottom: 16, fontStyle: 'italic' },
+  historiaBtn: { backgroundColor: Colors.primaryMuted, borderWidth: 1, borderColor: `${Colors.primary}44`, borderRadius: Radius.md, paddingHorizontal: 12, paddingVertical: 7, alignSelf: 'flex-start' },
+  historiaBtnText: { fontSize: 12, color: Colors.primary, fontWeight: '600' },
+  historiaEmojis: { gap: 8, alignItems: 'center' },
   sambaCard: { borderRadius: Radius.xl, borderWidth: 1, borderColor: 'rgba(255,215,0,0.2)', padding: Spacing.xl, overflow: 'hidden', position: 'relative' },
   sambaAccent: { position: 'absolute', top: 0, left: 0, right: 0, height: 2, backgroundColor: Colors.gold },
   sambaBadge: { backgroundColor: Colors.goldMuted, borderWidth: 1, borderColor: Colors.goldBorder, borderRadius: Radius.sm, paddingHorizontal: 10, paddingVertical: 4, alignSelf: 'flex-start', marginBottom: 12 },
