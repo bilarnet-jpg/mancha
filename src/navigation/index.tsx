@@ -12,6 +12,10 @@ import EventDetailScreen from '../screens/events/EventDetailScreen';
 import PixPaymentScreen from '../screens/tickets/PixPaymentScreen';
 import TicketSuccessScreen from '../screens/tickets/TicketSuccessScreen';
 import MyTicketsScreen from '../screens/tickets/MyTicketsScreen';
+import StoreScreen from '../screens/store/StoreScreen';
+import ProductDetailScreen from '../screens/store/product/ProductDetailScreen';
+import CartScreen from '../screens/store/cart/CartScreen';
+import { StorePixPaymentScreen, OrderSuccessScreen, MyOrdersScreen } from '../screens/store/orders/StoreOrderScreens';
 import { Colors, Radius } from '../theme';
 
 const Placeholder = ({ name }: { name: string }) => (
@@ -25,6 +29,7 @@ const Placeholder = ({ name }: { name: string }) => (
 const AuthStack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
 const AgendaStack = createNativeStackNavigator();
+const StoreStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const RootStack = createNativeStackNavigator();
 
@@ -43,6 +48,7 @@ function HomeNavigator() {
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <HomeStack.Screen name="HomeMain" component={HomeScreen} />
       <HomeStack.Screen name="MyTickets" component={MyTicketsScreen} />
+      <HomeStack.Screen name="MyOrders" component={MyOrdersScreen} />
     </HomeStack.Navigator>
   );
 }
@@ -59,14 +65,27 @@ function AgendaNavigator() {
   );
 }
 
+function StoreNavigator() {
+  return (
+    <StoreStack.Navigator screenOptions={{ headerShown: false }}>
+      <StoreStack.Screen name="StoreMain" component={StoreScreen} />
+      <StoreStack.Screen name="ProductDetail" component={ProductDetailScreen} />
+      <StoreStack.Screen name="Cart" component={CartScreen} />
+      <StoreStack.Screen name="StorePixPayment" component={StorePixPaymentScreen} />
+      <StoreStack.Screen name="OrderSuccess" component={OrderSuccessScreen} />
+      <StoreStack.Screen name="MyOrders" component={MyOrdersScreen} />
+    </StoreStack.Navigator>
+  );
+}
+
 function CustomTabBar({ state, navigation }: any) {
   const insets = useSafeAreaInsets();
   const LABELS: Record<string, string> = {
     HomeTab: 'Início', SambasTab: 'Sambas',
-    ManchaTab: 'Mancha', AgendaTab: 'Agenda', PerfilTab: 'Perfil',
+    ManchaTab: 'Mancha', AgendaTab: 'Agenda', LojaTab: 'Loja',
   };
   const EMOJIS: Record<string, string> = {
-    HomeTab: '🏠', SambasTab: '🎵', AgendaTab: '📅', PerfilTab: '👤',
+    HomeTab: '🏠', SambasTab: '🎵', AgendaTab: '📅', LojaTab: '🛍️',
   };
 
   return (
@@ -108,7 +127,7 @@ function MainNavigator() {
       <Tab.Screen name="SambasTab" component={() => <Placeholder name="Sambas-Enredo" />} />
       <Tab.Screen name="ManchaTab" component={() => <Placeholder name="Comunidade" />} />
       <Tab.Screen name="AgendaTab" component={AgendaNavigator} />
-      <Tab.Screen name="PerfilTab" component={() => <Placeholder name="Perfil" />} />
+      <Tab.Screen name="LojaTab" component={StoreNavigator} />
     </Tab.Navigator>
   );
 }
