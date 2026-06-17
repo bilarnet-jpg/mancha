@@ -43,7 +43,6 @@ const HomeStack = createNativeStackNavigator();
 const AgendaStack = createNativeStackNavigator();
 const StoreStack = createNativeStackNavigator();
 const CommunityStack = createNativeStackNavigator();
-const CardsStack = createNativeStackNavigator();
 const SocioStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const RootStack = createNativeStackNavigator();
@@ -58,6 +57,9 @@ function AuthNavigator() {
   );
 }
 
+// Cartões e Minha História só existem aqui dentro do HomeStack —
+// não devem ser duplicados em nenhum outro stack/tab para evitar
+// ambiguidade de navegação ao usar a tab bar.
 function HomeNavigator() {
   return (
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
@@ -75,11 +77,6 @@ function HomeNavigator() {
       <HomeStack.Screen name="MyCards" component={MyCardsScreen} />
       <HomeStack.Screen name="Certificates" component={CertificatesScreen} />
       <HomeStack.Screen name="Tributes" component={TributesScreen} />
-      <HomeStack.Screen name="SocioMain" component={SocioScreen} />
-      <HomeStack.Screen name="MemberCard" component={MemberCardScreen} />
-      <HomeStack.Screen name="Plans" component={PlansScreen} />
-      <HomeStack.Screen name="PremiumContent" component={PremiumContentScreen} />
-      <HomeStack.Screen name="MemberHistory" component={MemberHistoryScreen} />
     </HomeStack.Navigator>
   );
 }
@@ -125,18 +122,6 @@ function CommunityNavigator() {
   );
 }
 
-function CardsNavigator() {
-  return (
-    <CardsStack.Navigator screenOptions={{ headerShown: false }}>
-      <CardsStack.Screen name="CardsMain" component={CardsScreen} />
-      <CardsStack.Screen name="CreateCard" component={CreateCardScreen} />
-      <CardsStack.Screen name="MyCards" component={MyCardsScreen} />
-      <CardsStack.Screen name="Certificates" component={CertificatesScreen} />
-      <CardsStack.Screen name="Tributes" component={TributesScreen} />
-    </CardsStack.Navigator>
-  );
-}
-
 function SocioNavigator() {
   return (
     <SocioStack.Navigator screenOptions={{ headerShown: false }}>
@@ -167,7 +152,20 @@ function CustomTabBar({ state, navigation }: any) {
         {state.routes.map((route: any, index: number) => {
           const isFocused = state.index === index;
           const isCentral = route.name === 'ManchaTab';
-          const onPress = () => navigation.navigate(route.name);
+
+          const onPress = () => {
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            });
+            if (!isFocused && !event.defaultPrevented) {
+              navigation.navigate(route.name);
+            } else if (isFocused) {
+              // já está nesta tab — força voltar ao topo do stack dela
+              navigation.navigate(route.name, { screen: undefined });
+            }
+          };
 
           if (isCentral) {
             return (
@@ -194,7 +192,16 @@ function CustomTabBar({ state, navigation }: any) {
 function MainNavigator() {
   return (
     <Tab.Navigator tabBar={(props) => <CustomTabBar {...props} />} screenOptions={{ headerShown: false }}>
-      <Tab.Screen name="HomeTab" component={HomeNavigator} />
+      <Tab.Screen
+        name="HomeTab"
+        component={HomeNavigator}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            // Sempre que tocar na tab Início, reseta o stack para a tela HomeMain
+            navigation.navigate('HomeTab', { screen: 'HomeMain' });
+          },
+        })}
+      />
       <Tab.Screen name="AgendaTab" component={AgendaNavigator} />
       <Tab.Screen name="ManchaTab" component={CommunityNavigator} />
       <Tab.Screen name="LojaTab" component={StoreNavigator} />

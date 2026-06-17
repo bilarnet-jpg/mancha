@@ -80,7 +80,7 @@ export default function HomeScreen({ navigation }: any) {
 
         {/* MINHA HISTÓRIA */}
         <TouchableOpacity onPress={() => navigation.navigate('MinhaHistoria')} activeOpacity={0.9}>
-          <GlassCard style={{ marginBottom: 18, position: 'relative' }}>
+          <GlassCard style={{ marginBottom: 14, position: 'relative' }}>
             <Text style={styles.historiaFloatEmoji}>🎭</Text>
             <View style={styles.badge}>
               <Text style={styles.badgeText}>⭐ NOVO</Text>
@@ -88,6 +88,21 @@ export default function HomeScreen({ navigation }: any) {
             <Text style={styles.historiaTitle}>Minha História{'\n'}na Mancha</Text>
             <Text style={styles.historiaSub}>"Sua trajetória faz parte{'\n'}da nossa história."</Text>
             <PillButton label="Construir Minha História →" variant="primary" />
+          </GlassCard>
+        </TouchableOpacity>
+
+        {/* CARTÕES DA MANCHA */}
+        <TouchableOpacity onPress={() => navigation.navigate('CardsMain')} activeOpacity={0.9}>
+          <GlassCard style={{ marginBottom: 18, flexDirection: 'row', alignItems: 'center', position: 'relative' }}>
+            <View style={styles.cartoesAccent} />
+            <View style={{ flex: 1 }}>
+              <View style={styles.cartoesBadge}>
+                <Text style={styles.cartoesBadgeText}>💌 NOVO</Text>
+              </View>
+              <Text style={styles.cartoesTitle}>Cartões da{'\n'}Mancha</Text>
+              <Text style={styles.cartoesSub}>Compartilhe emoção, alegria e axé</Text>
+            </View>
+            <Text style={{ fontSize: 44 }}>💌</Text>
           </GlassCard>
         </TouchableOpacity>
 
@@ -215,6 +230,11 @@ const styles = StyleSheet.create({
   badgeText: { fontSize: 10, fontWeight: '700', letterSpacing: 1, color: Colors.primaryBright },
   historiaTitle: { fontSize: 22, fontWeight: '800', color: Colors.textPrimary, lineHeight: 26, marginBottom: 8, letterSpacing: -0.3 },
   historiaSub: { fontSize: 13, color: Colors.textSecondary, lineHeight: 19, marginBottom: 20, fontStyle: 'italic' },
+  cartoesAccent: { position: 'absolute', top: 0, left: 0, right: 0, height: 2, backgroundColor: '#C77DD8', borderTopLeftRadius: 28, borderTopRightRadius: 28 },
+  cartoesBadge: { backgroundColor: 'rgba(156,39,176,0.2)', borderWidth: 1, borderColor: 'rgba(156,39,176,0.4)', borderRadius: 4, paddingHorizontal: 8, paddingVertical: 3, alignSelf: 'flex-start', marginBottom: 8 },
+  cartoesBadgeText: { fontSize: 10, color: '#C77DD8', fontWeight: '700', letterSpacing: 1.5 },
+  cartoesTitle: { fontSize: 19, color: Colors.textPrimary, fontWeight: '700', lineHeight: 24, marginBottom: 4 },
+  cartoesSub: { fontSize: 12, color: Colors.textSecondary },
   sectionTitle: { fontSize: 17, fontWeight: '700', color: Colors.textPrimary, marginBottom: 14, letterSpacing: -0.2 },
   quickGrid: { flexDirection: 'row', gap: 10, marginBottom: 28 },
   quickWrap: { flex: 1 },
