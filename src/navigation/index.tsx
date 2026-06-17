@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -18,12 +19,15 @@ import CartScreen from '../screens/store/cart/CartScreen';
 import { StorePixPaymentScreen, OrderSuccessScreen, MyOrdersScreen } from '../screens/store/orders/StoreOrderScreens';
 import CommunityScreen from '../screens/community/CommunityScreen';
 import { PostDetailScreen, SubmitPostScreen, RankingScreen } from '../screens/community/PostScreens';
+import ReelsViewerScreen from '../screens/community/ReelsViewerScreen';
 import MinhaHistoriaScreen from '../screens/historia/MinhaHistoriaScreen';
 import { TimelineScreen, ParadesScreen, AchievementsScreen } from '../screens/historia/TimelineAndParadesScreens';
 import { WrappedScreen, FutureLetterScreen } from '../screens/historia/WrappedAndLetterScreens';
 import CardsScreen from '../screens/cards/CardsScreen';
 import CreateCardScreen from '../screens/cards/CreateCardScreen';
 import { CertificatesScreen, TributesScreen, MyCardsScreen } from '../screens/cards/CertificatesAndTributesScreens';
+import SocioScreen from '../screens/socio/SocioScreen';
+import { MemberCardScreen, PlansScreen, PremiumContentScreen, MemberHistoryScreen } from '../screens/socio/MemberCardAndPlansScreens';
 import { Colors, Radius } from '../theme';
 
 const Placeholder = ({ name }: { name: string }) => (
@@ -40,6 +44,7 @@ const AgendaStack = createNativeStackNavigator();
 const StoreStack = createNativeStackNavigator();
 const CommunityStack = createNativeStackNavigator();
 const CardsStack = createNativeStackNavigator();
+const SocioStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const RootStack = createNativeStackNavigator();
 
@@ -70,6 +75,11 @@ function HomeNavigator() {
       <HomeStack.Screen name="MyCards" component={MyCardsScreen} />
       <HomeStack.Screen name="Certificates" component={CertificatesScreen} />
       <HomeStack.Screen name="Tributes" component={TributesScreen} />
+      <HomeStack.Screen name="SocioMain" component={SocioScreen} />
+      <HomeStack.Screen name="MemberCard" component={MemberCardScreen} />
+      <HomeStack.Screen name="Plans" component={PlansScreen} />
+      <HomeStack.Screen name="PremiumContent" component={PremiumContentScreen} />
+      <HomeStack.Screen name="MemberHistory" component={MemberHistoryScreen} />
     </HomeStack.Navigator>
   );
 }
@@ -106,6 +116,11 @@ function CommunityNavigator() {
       <CommunityStack.Screen name="PostDetail" component={PostDetailScreen} />
       <CommunityStack.Screen name="SubmitPost" component={SubmitPostScreen} />
       <CommunityStack.Screen name="Ranking" component={RankingScreen} />
+      <CommunityStack.Screen
+        name="ReelsViewer"
+        component={ReelsViewerScreen}
+        options={{ presentation: 'fullScreenModal', animation: 'fade' }}
+      />
     </CommunityStack.Navigator>
   );
 }
@@ -122,44 +137,56 @@ function CardsNavigator() {
   );
 }
 
+function SocioNavigator() {
+  return (
+    <SocioStack.Navigator screenOptions={{ headerShown: false }}>
+      <SocioStack.Screen name="SocioMain" component={SocioScreen} />
+      <SocioStack.Screen name="MemberCard" component={MemberCardScreen} />
+      <SocioStack.Screen name="Plans" component={PlansScreen} />
+      <SocioStack.Screen name="PremiumContent" component={PremiumContentScreen} />
+      <SocioStack.Screen name="MemberHistory" component={MemberHistoryScreen} />
+    </SocioStack.Navigator>
+  );
+}
+
 function CustomTabBar({ state, navigation }: any) {
   const insets = useSafeAreaInsets();
   const LABELS: Record<string, string> = {
     HomeTab: 'Início', AgendaTab: 'Agenda',
-    ManchaTab: 'Mancha', LojaTab: 'Loja', CardsTab: 'Cartões',
+    ManchaTab: 'Mancha', LojaTab: 'Loja', SocioTab: 'Sócio',
   };
   const EMOJIS: Record<string, string> = {
-    HomeTab: '🏠', AgendaTab: '📅', LojaTab: '🛍️', CardsTab: '💌',
+    HomeTab: '🏠', AgendaTab: '📅', LojaTab: '🛍️', SocioTab: '👑',
   };
 
   return (
-    <View style={[styles.bar, { paddingBottom: insets.bottom + 4 }]}>
-      {state.routes.map((route: any, index: number) => {
-        const isFocused = state.index === index;
-        const isCentral = route.name === 'ManchaTab';
-        const onPress = () => navigation.navigate(route.name);
+    <View style={[styles.navWrap, { paddingBottom: insets.bottom > 0 ? insets.bottom : 12 }]}>
+      <BlurView intensity={45} tint="dark" style={[StyleSheet.absoluteFillObject, { borderRadius: Radius.full }]} />
+      <View style={styles.navTint} />
+      <View style={styles.bar}>
+        {state.routes.map((route: any, index: number) => {
+          const isFocused = state.index === index;
+          const isCentral = route.name === 'ManchaTab';
+          const onPress = () => navigation.navigate(route.name);
 
-        if (isCentral) {
+          if (isCentral) {
+            return (
+              <TouchableOpacity key={route.key} onPress={onPress} style={styles.centerWrap}>
+                <View style={styles.centerBtn}>
+                  <Image source={require('../../assets/images/logo.png')} style={styles.centerLogo} resizeMode="contain" />
+                </View>
+              </TouchableOpacity>
+            );
+          }
+
           return (
-            <TouchableOpacity key={route.key} onPress={onPress} style={styles.centerWrap}>
-              <View style={[styles.centerBtn, { borderColor: isFocused ? Colors.primary : Colors.border }]}>
-                <Image source={require('../../assets/images/logo.png')} style={styles.centerLogo} resizeMode="contain" />
-              </View>
-              <Text style={[styles.label, isFocused && styles.labelActive]}>Mancha</Text>
+            <TouchableOpacity key={route.key} onPress={onPress} style={styles.tabItem}>
+              <Text style={[styles.iconEmoji, { opacity: isFocused ? 1 : 0.4 }]}>{EMOJIS[route.name] ?? '🏠'}</Text>
+              <Text style={[styles.label, isFocused && styles.labelActive]}>{LABELS[route.name]}</Text>
             </TouchableOpacity>
           );
-        }
-
-        return (
-          <TouchableOpacity key={route.key} onPress={onPress} style={styles.tabItem}>
-            <View style={[styles.iconWrap, isFocused && styles.iconWrapActive]}>
-              <Text style={{ fontSize: 20 }}>{EMOJIS[route.name] ?? '🏠'}</Text>
-            </View>
-            <Text style={[styles.label, isFocused && styles.labelActive]}>{LABELS[route.name]}</Text>
-            {isFocused && <View style={styles.dot} />}
-          </TouchableOpacity>
-        );
-      })}
+        })}
+      </View>
     </View>
   );
 }
@@ -171,7 +198,7 @@ function MainNavigator() {
       <Tab.Screen name="AgendaTab" component={AgendaNavigator} />
       <Tab.Screen name="ManchaTab" component={CommunityNavigator} />
       <Tab.Screen name="LojaTab" component={StoreNavigator} />
-      <Tab.Screen name="CardsTab" component={CardsNavigator} />
+      <Tab.Screen name="SocioTab" component={SocioNavigator} />
     </Tab.Navigator>
   );
 }
@@ -191,14 +218,37 @@ export default function RootNavigator() {
 }
 
 const styles = StyleSheet.create({
-  bar: { flexDirection: 'row', backgroundColor: '#0E0E0E', borderTopWidth: 1, borderTopColor: '#1A1A1A', paddingTop: 10, paddingHorizontal: 4, alignItems: 'flex-start' },
-  tabItem: { flex: 1, alignItems: 'center', gap: 3 },
-  iconWrap: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  iconWrapActive: { backgroundColor: 'rgba(0,255,133,0.12)' },
-  label: { fontSize: 10, color: '#505050' },
-  labelActive: { color: Colors.primary, fontWeight: '600' },
-  dot: { width: 4, height: 4, borderRadius: 2, backgroundColor: Colors.primary },
-  centerWrap: { flex: 1, alignItems: 'center', gap: 3, marginTop: -16 },
-  centerBtn: { width: 52, height: 52, borderRadius: 26, backgroundColor: '#0d3d1a', borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  centerLogo: { width: 34, height: 34 },
+  navWrap: {
+    position: 'absolute',
+    left: 20,
+    right: 20,
+    bottom: 0,
+    borderRadius: Radius.full,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: Colors.glassBorder,
+  },
+  navTint: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(13, 40, 24, 0.4)',
+  },
+  bar: { flexDirection: 'row', alignItems: 'center', paddingTop: 12, paddingHorizontal: 8 },
+  tabItem: { flex: 1, alignItems: 'center', gap: 4 },
+  iconEmoji: { fontSize: 19 },
+  label: { fontSize: 10, color: 'rgba(255,255,255,0.45)' },
+  labelActive: { color: Colors.primaryBright, fontWeight: '700' },
+  centerWrap: { flex: 1, alignItems: 'center' },
+  centerBtn: {
+    width: 50, height: 50, borderRadius: 25,
+    backgroundColor: Colors.primaryBright,
+    alignItems: 'center', justifyContent: 'center',
+    marginTop: -22,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.5,
+    shadowRadius: 14,
+    elevation: 8,
+  },
+  centerLogo: { width: 30, height: 30 },
 });

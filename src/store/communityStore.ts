@@ -1,9 +1,11 @@
 import { create } from 'zustand';
-import { CommunityPost, MOCK_POSTS, MOCK_RANKING, CommunityProfile } from '../types/community';
+import { CommunityPost, Reel, Comment, MOCK_POSTS, MOCK_REELS, MOCK_COMMENTS, MOCK_RANKING, CommunityProfile } from '../types/community';
 
 interface CommunityStore {
   posts: CommunityPost[];
   featuredPosts: CommunityPost[];
+  reels: Reel[];
+  comments: Comment[];
   ranking: CommunityProfile[];
   activeCategory: string;
   activeFilter: string;
@@ -16,14 +18,22 @@ interface CommunityStore {
   setFilter: (filter: string) => void;
   setSearch: (q: string) => void;
   toggleLike: (postId: string, userId: string) => void;
+  toggleReelLike: (reelId: string, userId: string) => void;
   submitPost: (post: Omit<CommunityPost, 'id' | 'likes' | 'views' | 'commentsCount' | 'status' | 'createdAt' | 'isFeatured' | 'isOfficial'>) => void;
   getFiltered: () => CommunityPost[];
   getByCategory: (cat: string) => CommunityPost[];
+
+  // Comentários
+  getCommentsFor: (postId: string) => Comment[];
+  addComment: (postId: string, userId: string, userName: string, text: string) => void;
+  toggleCommentLike: (commentId: string, userId: string) => void;
 }
 
 export const useCommunityStore = create<CommunityStore>((set, get) => ({
   posts: [],
   featuredPosts: [],
+  reels: [],
+  comments: [],
   ranking: [],
   activeCategory: 'all',
   activeFilter: 'recent',
@@ -36,6 +46,8 @@ export const useCommunityStore = create<CommunityStore>((set, get) => ({
     set({
       posts: approved,
       featuredPosts: approved.filter(p => p.isFeatured),
+      reels: MOCK_REELS,
+      comments: MOCK_COMMENTS,
       ranking: MOCK_RANKING,
     });
   },
@@ -50,6 +62,16 @@ export const useCommunityStore = create<CommunityStore>((set, get) => ({
         if (p.id !== postId) return p;
         const liked = p.likes.includes(userId);
         return { ...p, likes: liked ? p.likes.filter(u => u !== userId) : [...p.likes, userId] };
+      }),
+    }));
+  },
+
+  toggleReelLike: (reelId, userId) => {
+    set(state => ({
+      reels: state.reels.map(r => {
+        if (r.id !== reelId) return r;
+        const liked = r.likes.includes(userId);
+        return { ...r, likes: liked ? r.likes.filter(u => u !== userId) : [...r.likes, userId] };
       }),
     }));
   },
@@ -84,4 +106,37 @@ export const useCommunityStore = create<CommunityStore>((set, get) => ({
   },
 
   getByCategory: (cat) => get().posts.filter(p => p.category === cat),
+
+  getCommentsFor: (postId) => {
+    return get().comments
+      .filter(c => c.postId === postId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  },
+
+  addComment: (postId, userId, userName, text) => {
+    const newComment: Comment = {
+      id: `comment-${Date.now()}`,
+      postId,
+      userId,
+      userName,
+      text,
+      createdAt: new Date().toISOString(),
+      likes: [],
+    };
+    set(state => ({
+      comments: [newComment, ...state.comments],
+      posts: state.posts.map(p => p.id === postId ? { ...p, commentsCount: p.commentsCount + 1 } : p),
+      reels: state.reels.map(r => r.id === postId ? { ...r, commentsCount: r.commentsCount + 1 } : r),
+    }));
+  },
+
+  toggleCommentLike: (commentId, userId) => {
+    set(state => ({
+      comments: state.comments.map(c => {
+        if (c.id !== commentId) return c;
+        const liked = c.likes.includes(userId);
+        return { ...c, likes: liked ? c.likes.filter(u => u !== userId) : [...c.likes, userId] };
+      }),
+    }));
+  },
 }));
