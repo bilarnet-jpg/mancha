@@ -133,23 +133,30 @@ export default function HomeScreen({ navigation }: any) {
         </View>
 
         {/* SAMBA DO ANO */}
-        <Text style={styles.sectionTitle}>Samba do ano</Text>
-        <GlassCard style={{ marginBottom: 4, position: 'relative' }}>
-          <View style={styles.vinyl} />
-          <Text style={styles.sambaTag}>SAMBA 2026</Text>
-          <Text style={styles.sambaTitle}>"Do Verde que Sangra,{'\n'}Nasce a Chama"</Text>
-          <Text style={styles.sambaSub}>Grupo Mancha Verde · 2025</Text>
-          <View style={styles.playRow}>
-            <View style={styles.playBtn}>
-              <Text style={{ fontSize: 16, color: Colors.textInverse }}>▶</Text>
+        <View style={styles.labelRow}>
+          <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>Mancha na Avenida</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Avenida')}>
+            <Text style={styles.seeAll}>Ver tudo →</Text>
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity onPress={() => navigation.navigate('Avenida')} activeOpacity={0.9}>
+          <GlassCard style={{ marginBottom: 4, position: 'relative' }}>
+            <View style={styles.vinyl} />
+            <Text style={styles.sambaTag}>SAMBA 2026</Text>
+            <Text style={styles.sambaTitle}>"Do Verde que Sangra,{'\n'}Nasce a Chama"</Text>
+            <Text style={styles.sambaSub}>Grupo Mancha Verde · 2025</Text>
+            <View style={styles.playRow}>
+              <View style={styles.playBtn}>
+                <Text style={{ fontSize: 16, color: Colors.textInverse }}>▶</Text>
+              </View>
+              <View style={styles.waveform}>
+                {[8, 16, 10, 20, 14, 18, 8, 12].map((h, i) => (
+                  <View key={i} style={[styles.waveBar, { height: h }]} />
+                ))}
+              </View>
             </View>
-            <View style={styles.waveform}>
-              {[8, 16, 10, 20, 14, 18, 8, 12].map((h, i) => (
-                <View key={i} style={[styles.waveBar, { height: h }]} />
-              ))}
-            </View>
-          </View>
-        </GlassCard>
+          </GlassCard>
+        </TouchableOpacity>
 
         {/* PRÓXIMOS EVENTOS */}
         <View style={styles.labelRow}>

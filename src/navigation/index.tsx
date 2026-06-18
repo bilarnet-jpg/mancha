@@ -28,6 +28,8 @@ import CreateCardScreen from '../screens/cards/CreateCardScreen';
 import { CertificatesScreen, TributesScreen, MyCardsScreen } from '../screens/cards/CertificatesAndTributesScreens';
 import SocioScreen from '../screens/socio/SocioScreen';
 import { MemberCardScreen, PlansScreen, PremiumContentScreen, MemberHistoryScreen } from '../screens/socio/MemberCardAndPlansScreens';
+import AvenidaScreen from '../screens/avenida/AvenidaScreen';
+import SambaVideoScreen from '../screens/avenida/SambaVideoScreen';
 import { Colors, Radius } from '../theme';
 
 const Placeholder = ({ name }: { name: string }) => (
@@ -57,7 +59,7 @@ function AuthNavigator() {
   );
 }
 
-// Cartões e Minha História só existem aqui dentro do HomeStack —
+// Cartões, Minha História e Avenida só existem aqui dentro do HomeStack —
 // não devem ser duplicados em nenhum outro stack/tab para evitar
 // ambiguidade de navegação ao usar a tab bar.
 function HomeNavigator() {
@@ -77,6 +79,8 @@ function HomeNavigator() {
       <HomeStack.Screen name="MyCards" component={MyCardsScreen} />
       <HomeStack.Screen name="Certificates" component={CertificatesScreen} />
       <HomeStack.Screen name="Tributes" component={TributesScreen} />
+      <HomeStack.Screen name="Avenida" component={AvenidaScreen} />
+      <HomeStack.Screen name="SambaVideo" component={SambaVideoScreen} />
     </HomeStack.Navigator>
   );
 }
@@ -161,9 +165,6 @@ function CustomTabBar({ state, navigation }: any) {
             });
             if (!isFocused && !event.defaultPrevented) {
               navigation.navigate(route.name);
-            } else if (isFocused) {
-              // já está nesta tab — força voltar ao topo do stack dela
-              navigation.navigate(route.name, { screen: undefined });
             }
           };
 
@@ -197,7 +198,6 @@ function MainNavigator() {
         component={HomeNavigator}
         listeners={({ navigation }) => ({
           tabPress: (e) => {
-            // Sempre que tocar na tab Início, reseta o stack para a tela HomeMain
             navigation.navigate('HomeTab', { screen: 'HomeMain' });
           },
         })}
