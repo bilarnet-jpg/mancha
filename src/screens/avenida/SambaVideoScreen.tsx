@@ -49,25 +49,12 @@ export default function SambaVideoScreen({ route, navigation }: any) {
             <View style={styles.yearBadge}>
               <Text style={styles.yearBadgeText}>CARNAVAL {samba.year}</Text>
             </View>
-            {samba.isChampion && (
-              <View style={styles.championBadge}>
-                <Text style={styles.championBadgeText}>🏆 CAMPEÃO</Text>
-              </View>
-            )}
           </View>
 
           <Text style={styles.title}>{samba.title}</Text>
           <Text style={styles.composers}>{samba.composers}</Text>
 
-          {samba.placement && (
-            <GlassCard intensity={20} style={{ marginTop: 16, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-              <Text style={{ fontSize: 28 }}>{samba.isChampion ? '🏆' : '🎭'}</Text>
-              <View>
-                <Text style={styles.placementLabel}>Resultado</Text>
-                <Text style={styles.placementValue}>{samba.placement}</Text>
-              </View>
-            </GlassCard>
-          )}
+
         </View>
       </ScrollView>
     </View>
@@ -82,10 +69,6 @@ const styles = StyleSheet.create({
   yearRow: { flexDirection: 'row', gap: 8, marginBottom: 14 },
   yearBadge: { backgroundColor: Colors.primaryMuted, borderWidth: 1, borderColor: 'rgba(0,255,133,0.3)', borderRadius: Radius.full, paddingHorizontal: 12, paddingVertical: 5 },
   yearBadgeText: { fontSize: 11, color: Colors.primaryBright, fontWeight: '700', letterSpacing: 1 },
-  championBadge: { backgroundColor: Colors.goldMuted, borderWidth: 1, borderColor: Colors.goldBorder, borderRadius: Radius.full, paddingHorizontal: 12, paddingVertical: 5 },
-  championBadgeText: { fontSize: 11, color: Colors.gold, fontWeight: '700', letterSpacing: 1 },
   title: { fontSize: 22, color: Colors.textPrimary, fontWeight: '800', lineHeight: 28, marginBottom: 6 },
   composers: { fontSize: 14, color: Colors.textSecondary },
-  placementLabel: { fontSize: 11, color: Colors.textTertiary, marginBottom: 2 },
-  placementValue: { fontSize: 15, color: Colors.textPrimary, fontWeight: '700' },
 });

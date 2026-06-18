@@ -221,6 +221,7 @@ const styles = StyleSheet.create({
   greetingName: { color: Colors.primaryBright, fontWeight: '600' },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 28 },
   titleLogo: { width: 44, height: 44 },
+  bannerImage: { width: '100%', height: 90, marginBottom: 28 },
   bigTitle: { fontSize: 30, color: Colors.textPrimary, fontWeight: '800', lineHeight: 34, letterSpacing: -0.5 },
   bigTitleAccent: { color: Colors.primaryBright },
   heroTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 22 },

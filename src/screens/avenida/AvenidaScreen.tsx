@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAvenidaStore } from '../../store/avenidaStore';
 import { useAuthStore } from '../../store/authStore';
+import YoutubePlayer from 'react-native-youtube-iframe';
 import { Colors, Spacing, Radius } from '../../theme';
 import GlowBackground from '../../components/GlowBackground';
 import GlassCard from '../../components/GlassCard';
@@ -137,12 +138,16 @@ export default function AvenidaScreen({ navigation }: any) {
                 <Text style={styles.lyricsText}>{sambaAtual.lyrics}</Text>
               </View>
 
-              <TouchableOpacity style={styles.playFullBtn} activeOpacity={0.85}>
-                <View style={styles.playIconCircle}>
-                  <Text style={{ fontSize: 18, color: Colors.textInverse }}>▶</Text>
+              {sambaAtual.youtubeId && (
+                <View style={styles.currentPlayerWrap}>
+                  <YoutubePlayer
+                    height={(W - Spacing.xl * 2 - 48) * 0.5625}
+                    width={W - Spacing.xl * 2 - 48}
+                    videoId={sambaAtual.youtubeId}
+                    play={false}
+                  />
                 </View>
-                <Text style={styles.playFullText}>Ouvir Samba Completo</Text>
-              </TouchableOpacity>
+              )}
             </LinearGradient>
           </View>
         </View>
@@ -173,20 +178,10 @@ export default function AvenidaScreen({ navigation }: any) {
                     <View style={styles.historicoYearBadge}>
                       <Text style={styles.historicoYearText}>{samba.year}</Text>
                     </View>
-                    {samba.isChampion && (
-                      <View style={styles.championBadge}>
-                        <Text style={styles.championBadgeText}>🏆</Text>
-                      </View>
-                    )}
                   </View>
                   <View style={styles.historicoInfo}>
                     <Text style={styles.historicoTitle} numberOfLines={2}>{samba.title}</Text>
                     <Text style={styles.historicoComposers}>{samba.composers}</Text>
-                    {samba.placement && (
-                      <View style={[styles.placementBadge, samba.isChampion && styles.placementBadgeChampion]}>
-                        <Text style={[styles.placementText, samba.isChampion && styles.placementTextChampion]}>{samba.placement}</Text>
-                      </View>
-                    )}
                   </View>
                 </GlassCard>
               </TouchableOpacity>
@@ -235,6 +230,7 @@ const styles = StyleSheet.create({
   currentSambaYearText: { fontSize: 11, color: Colors.primaryBright, fontWeight: '700', letterSpacing: 1.5 },
   currentSambaTitle: { fontSize: 24, color: Colors.textPrimary, fontWeight: '800', lineHeight: 30, marginBottom: 8 },
   currentSambaComposers: { fontSize: 13, color: Colors.textSecondary, marginBottom: 20 },
+  currentPlayerWrap: { borderRadius: Radius.lg, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(0,255,133,0.2)' },
   lyricsBox: { backgroundColor: 'rgba(0,0,0,0.25)', borderRadius: Radius.lg, padding: 16, marginBottom: 20, borderLeftWidth: 3, borderLeftColor: Colors.primaryBright },
   lyricsText: { fontSize: 14, color: Colors.textSecondary, lineHeight: 24, fontStyle: 'italic' },
   playFullBtn: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: 'rgba(0,255,133,0.12)', borderWidth: 1, borderColor: 'rgba(0,255,133,0.3)', borderRadius: Radius.full, paddingVertical: 12, paddingHorizontal: 18, alignSelf: 'flex-start' },
@@ -248,13 +244,7 @@ const styles = StyleSheet.create({
   playOverlayCircle: { width: 52, height: 52, borderRadius: 26, backgroundColor: 'rgba(0,0,0,0.45)', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.4)', alignItems: 'center', justifyContent: 'center' },
   historicoYearBadge: { position: 'absolute', top: 12, left: 12, backgroundColor: 'rgba(10,31,20,0.85)', borderRadius: Radius.md, paddingHorizontal: 10, paddingVertical: 5 },
   historicoYearText: { fontSize: 13, color: Colors.primaryBright, fontWeight: '800' },
-  championBadge: { position: 'absolute', top: 12, right: 12, width: 32, height: 32, borderRadius: 16, backgroundColor: Colors.goldMuted, borderWidth: 1, borderColor: Colors.goldBorder, alignItems: 'center', justifyContent: 'center' },
-  championBadgeText: { fontSize: 15 },
   historicoInfo: { padding: 16 },
   historicoTitle: { fontSize: 15, color: Colors.textPrimary, fontWeight: '700', lineHeight: 20, marginBottom: 4 },
   historicoComposers: { fontSize: 12, color: Colors.textTertiary, marginBottom: 8 },
-  placementBadge: { backgroundColor: Colors.glassLight, borderWidth: 1, borderColor: Colors.glassBorder, borderRadius: Radius.md, paddingHorizontal: 10, paddingVertical: 4, alignSelf: 'flex-start' },
-  placementBadgeChampion: { backgroundColor: Colors.goldMuted, borderColor: Colors.goldBorder },
-  placementText: { fontSize: 11, color: Colors.textSecondary, fontWeight: '600' },
-  placementTextChampion: { color: Colors.gold },
 });

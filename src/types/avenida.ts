@@ -4,6 +4,7 @@ export interface SambaAtual {
   composers: string;
   lyrics: string;
   audioUrl?: string;
+  youtubeId?: string;
   releaseDate: string;
 }
 
@@ -12,9 +13,7 @@ export interface SambaHistorico {
   year: number;
   title: string;
   composers: string;
-  placement?: string; // ex: "Campeão", "2º lugar"
-  youtubeId: string; // ID do vídeo do YouTube — TROCAR pelos links reais
-  isChampion: boolean;
+  youtubeId: string;
 }
 
 export interface PollOption {
@@ -42,48 +41,97 @@ export const SAMBA_ATUAL: SambaAtual = {
   title: 'Do Verde que Sangra, Nasce a Chama',
   composers: 'Grupo Mancha Verde',
   lyrics: 'Vem, vem sentir a emoção\nQue trago no coração\nMancha Verde, minha nação...',
+  youtubeId: 'uObSmyGrzBM', // Samba 2026 — vídeo real confirmado
   releaseDate: '2025-11-20T00:00:00Z',
 };
 
-// HISTÓRICO — TROCAR youtubeId pelos links reais que você tem.
-// Os 2 primeiros usam vídeos de exemplo reais do YouTube sobre samba-enredo
-// só para a miniatura carregar de verdade durante o desenvolvimento.
+// HISTÓRICO — vídeos reais confirmados do canal oficial Mancha Carnaval.
+// Títulos, compositores e colocação (placement) são provisórios — Franco pode
+// detalhar/corrigir cada ano depois.
 export const SAMBAS_HISTORICOS: SambaHistorico[] = [
   {
     id: 'samba-2025',
     year: 2025,
-    title: 'Verde Eterno: O Samba Que o Coração Guarda',
+    title: 'Samba-Enredo 2025',
     composers: 'Grupo Mancha Verde',
-    placement: '2º lugar',
-    youtubeId: 'dQw4w9WgXcQ', // EXEMPLO — trocar pelo vídeo real de 2025
-    isChampion: false,
+    youtubeId: 'JrzgHn-Ec3c',
+  },
+  {
+    id: 'samba-2024',
+    year: 2024,
+    title: 'Samba-Enredo 2024',
+    composers: 'Grupo Mancha Verde',
+    youtubeId: '0C54s3rkDgQ',
   },
   {
     id: 'samba-2023',
     year: 2023,
     title: 'Verde Eterno: O Samba Que o Coração Guarda',
     composers: 'Grupo Mancha Verde',
-    placement: 'Campeão — Tricampeonato',
-    youtubeId: 'fJ9rUzIMcZQ', // EXEMPLO — trocar pelo vídeo real de 2023
-    isChampion: true,
+    youtubeId: 'jZzshxC2Nzs',
   },
   {
     id: 'samba-2022',
     year: 2022,
-    title: 'Asas da Liberdade',
+    title: 'Samba-Enredo 2022',
     composers: 'Grupo Mancha Verde',
-    placement: '3º lugar',
-    youtubeId: 'dQw4w9WgXcQ', // EXEMPLO — trocar pelo vídeo real de 2022
-    isChampion: false,
+    youtubeId: '0_1G7OPsPVs',
   },
   {
     id: 'samba-2021',
     year: 2021,
-    title: 'Raízes da Nossa História',
+    title: 'Samba-Enredo 2021',
     composers: 'Grupo Mancha Verde',
-    placement: 'Campeão',
-    youtubeId: 'fJ9rUzIMcZQ', // EXEMPLO — trocar pelo vídeo real de 2021
-    isChampion: true,
+    youtubeId: 'Tzpis1YSDBw',
+  },
+  {
+    id: 'samba-2020',
+    year: 2020,
+    title: 'Samba-Enredo 2020',
+    composers: 'Grupo Mancha Verde',
+    youtubeId: 'qQHuA03r68c',
+  },
+  {
+    id: 'samba-2019',
+    year: 2019,
+    title: 'Samba-Enredo 2019',
+    composers: 'Grupo Mancha Verde',
+    youtubeId: 'gr7HEL8afZI',
+  },
+  {
+    id: 'samba-2018',
+    year: 2018,
+    title: 'Samba-Enredo 2018',
+    composers: 'Grupo Mancha Verde',
+    youtubeId: '5uEzCkOQNKE',
+  },
+  {
+    id: 'samba-2017',
+    year: 2017,
+    title: 'Samba-Enredo 2017',
+    composers: 'Grupo Mancha Verde',
+    youtubeId: 'XTL_SOKQAi8',
+  },
+  {
+    id: 'samba-2016',
+    year: 2016,
+    title: 'Samba-Enredo 2016',
+    composers: 'Grupo Mancha Verde',
+    youtubeId: 'ADFU6u2Ml14',
+  },
+  {
+    id: 'samba-2015',
+    year: 2015,
+    title: 'Samba-Enredo 2015',
+    composers: 'Grupo Mancha Verde',
+    youtubeId: 'ldD25GvCkxI',
+  },
+  {
+    id: 'samba-2014',
+    year: 2014,
+    title: 'Samba-Enredo 2014',
+    composers: 'Grupo Mancha Verde',
+    youtubeId: 'gzVeJgJsLHk',
   },
 ];
 
