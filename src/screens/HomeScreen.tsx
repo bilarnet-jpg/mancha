@@ -1,4 +1,5 @@
 import React from 'react';
+import { useFonts, DancingScript_700Bold } from '@expo-google-fonts/dancing-script';
 import {
   View, Text, StyleSheet, ScrollView,
   TouchableOpacity, Dimensions, Image,
@@ -40,6 +41,7 @@ const getGreeting = () => {
 export default function HomeScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
   const { user, logout } = useAuthStore();
+  const [fontsLoaded] = useFonts({ DancingScript_700Bold });
 
   return (
     <View style={styles.container}>
@@ -50,7 +52,9 @@ export default function HomeScreen({ navigation }: any) {
         <Text style={styles.greeting}>{getGreeting()}, <Text style={styles.greetingName}>{user?.displayName?.split(' ')[0] ?? 'Torcedor'}</Text></Text>
         <View style={styles.titleRow}>
           <Image source={require('../../assets/images/novo-logo.png')} style={styles.titleLogo} resizeMode="contain" />
-          <Text style={styles.bigTitle}>Mancha Verde{'\n'}<Text style={styles.bigTitleAccent}>Carnaval</Text></Text>
+          <Text style={[styles.bigTitle, fontsLoaded && { fontFamily: 'DancingScript_700Bold' }]}>
+            {'Verdadeiro orgulho\nde um povo'}
+          </Text>
         </View>
 
         {/* HERO STATS */}
@@ -79,46 +83,55 @@ export default function HomeScreen({ navigation }: any) {
         </GlassCard>
 
         {/* MINHA HISTÓRIA */}
-        <TouchableOpacity onPress={() => navigation.navigate('MinhaHistoria')} activeOpacity={0.9}>
-          <GlassCard style={{ marginBottom: 14, position: 'relative' }}>
-            <Text style={styles.historiaFloatEmoji}>🎭</Text>
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>⭐ NOVO</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('MinhaHistoria')} activeOpacity={0.9} style={{ marginBottom: 14 }}>
+          <View style={styles.imgCard}>
+            <Image source={require('../../assets/images/card-historia.jpg')} style={styles.imgCardBg} resizeMode="cover" />
+            <View style={styles.imgCardOverlay} />
+            <View style={styles.imgCardContent}>
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>⭐ NOVO</Text>
+              </View>
+              <Text style={styles.historiaTitle}>Minha História{'\n'}na Mancha</Text>
+              <Text style={styles.historiaSub}>"Sua trajetória faz parte{'\n'}da nossa história."</Text>
+              <PillButton label="Construir Minha História →" variant="primary" />
             </View>
-            <Text style={styles.historiaTitle}>Minha História{'\n'}na Mancha</Text>
-            <Text style={styles.historiaSub}>"Sua trajetória faz parte{'\n'}da nossa história."</Text>
-            <PillButton label="Construir Minha História →" variant="primary" />
-          </GlassCard>
+          </View>
         </TouchableOpacity>
 
         {/* CARTÕES DA MANCHA */}
-        <TouchableOpacity onPress={() => navigation.navigate('CardsMain')} activeOpacity={0.9}>
-          <GlassCard style={{ marginBottom: 18, flexDirection: 'row', alignItems: 'center', position: 'relative' }}>
-            <View style={styles.cartoesAccent} />
-            <View style={{ flex: 1 }}>
-              <View style={styles.cartoesBadge}>
-                <Text style={styles.cartoesBadgeText}>💌 NOVO</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('CardsMain')} activeOpacity={0.9} style={{ marginBottom: 18 }}>
+          <View style={styles.imgCard}>
+            <Image source={require('../../assets/images/card-cartoes.webp')} style={styles.imgCardBg} resizeMode="cover" />
+            <View style={styles.imgCardOverlay} />
+            <View style={[styles.imgCardContent, { flexDirection: 'row', alignItems: 'center' }]}>
+              <View style={{ flex: 1 }}>
+                <View style={styles.cartoesBadge}>
+                  <Text style={styles.cartoesBadgeText}>💌 NOVO</Text>
+                </View>
+                <Text style={styles.cartoesTitle}>Cartões da{'\n'}Mancha</Text>
+                <Text style={styles.cartoesSub}>Compartilhe emoção, alegria e axé</Text>
               </View>
-              <Text style={styles.cartoesTitle}>Cartões da{'\n'}Mancha</Text>
-              <Text style={styles.cartoesSub}>Compartilhe emoção, alegria e axé</Text>
+              <Text style={{ fontSize: 44 }}>💌</Text>
             </View>
-            <Text style={{ fontSize: 44 }}>💌</Text>
-          </GlassCard>
+          </View>
         </TouchableOpacity>
 
         {/* ALA SHOW */}
-        <TouchableOpacity onPress={() => navigation.navigate('AlaShow')} activeOpacity={0.9}>
-          <GlassCard style={{ marginBottom: 18, flexDirection: 'row', alignItems: 'center', position: 'relative' }}>
-            <View style={styles.alaShowAccent} />
-            <View style={{ flex: 1 }}>
-              <View style={styles.alaShowBadge}>
-                <Text style={styles.alaShowBadgeText}>💃 CONTRATE</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('AlaShow')} activeOpacity={0.9} style={{ marginBottom: 18 }}>
+          <View style={styles.imgCard}>
+            <Image source={require('../../assets/images/card-alashow.png')} style={styles.imgCardBg} resizeMode="cover" />
+            <View style={styles.imgCardOverlay} />
+            <View style={[styles.imgCardContent, { flexDirection: 'row', alignItems: 'center' }]}>
+              <View style={{ flex: 1 }}>
+                <View style={styles.alaShowBadge}>
+                  <Text style={styles.alaShowBadgeText}>💃 CONTRATE</Text>
+                </View>
+                <Text style={styles.alaShowTitle}>{'Ala Show na\nsua Festa'}</Text>
+                <Text style={styles.alaShowSub}>Leve o carnaval para o seu evento</Text>
               </View>
-              <Text style={styles.alaShowTitle}>{'Ala Show na\nsua Festa'}</Text>
-              <Text style={styles.alaShowSub}>Leve o carnaval para o seu evento</Text>
+              <Text style={{ fontSize: 44 }}>🎭</Text>
             </View>
-            <Text style={{ fontSize: 44 }}>🎭</Text>
-          </GlassCard>
+          </View>
         </TouchableOpacity>
 
         {/* ACESSO RÁPIDO */}
@@ -154,23 +167,26 @@ export default function HomeScreen({ navigation }: any) {
             <Text style={styles.seeAll}>Ver tudo →</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate('Avenida')} activeOpacity={0.9}>
-          <GlassCard style={{ marginBottom: 4, position: 'relative' }}>
-            <View style={styles.vinyl} />
-            <Text style={styles.sambaTag}>SAMBA 2026</Text>
-            <Text style={styles.sambaTitle}>"Do Verde que Sangra,{'\n'}Nasce a Chama"</Text>
-            <Text style={styles.sambaSub}>Grupo Mancha Verde · 2025</Text>
-            <View style={styles.playRow}>
-              <View style={styles.playBtn}>
-                <Text style={{ fontSize: 16, color: Colors.textInverse }}>▶</Text>
-              </View>
-              <View style={styles.waveform}>
-                {[8, 16, 10, 20, 14, 18, 8, 12].map((h, i) => (
-                  <View key={i} style={[styles.waveBar, { height: h }]} />
-                ))}
+        <TouchableOpacity onPress={() => navigation.navigate('Avenida')} activeOpacity={0.9} style={{ marginBottom: 4 }}>
+          <View style={styles.imgCard}>
+            <Image source={require('../../assets/images/card-avenida.jpg')} style={styles.imgCardBg} resizeMode="cover" />
+            <View style={styles.imgCardOverlay} />
+            <View style={styles.imgCardContent}>
+              <Text style={styles.sambaTag}>SAMBA 2026</Text>
+              <Text style={styles.sambaTitle}>"Do Verde que Sangra,{'\n'}Nasce a Chama"</Text>
+              <Text style={styles.sambaSub}>Grupo Mancha Verde · 2025</Text>
+              <View style={styles.playRow}>
+                <View style={styles.playBtn}>
+                  <Text style={{ fontSize: 16, color: Colors.textInverse }}>▶</Text>
+                </View>
+                <View style={styles.waveform}>
+                  {[8, 16, 10, 20, 14, 18, 8, 12].map((h, i) => (
+                    <View key={i} style={[styles.waveBar, { height: h }]} />
+                  ))}
+                </View>
               </View>
             </View>
-          </GlassCard>
+          </View>
         </TouchableOpacity>
 
         {/* PRÓXIMOS EVENTOS */}
@@ -237,7 +253,7 @@ const styles = StyleSheet.create({
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 28 },
   titleLogo: { width: 132, height: 132 },
   bannerImage: { width: '100%', height: 90, marginBottom: 28 },
-  bigTitle: { fontSize: 30, color: Colors.textPrimary, fontWeight: '800', lineHeight: 34, letterSpacing: -0.5 },
+  bigTitle: { fontSize: 26, color: Colors.textPrimary, fontWeight: '800', lineHeight: 32, letterSpacing: 0 },
   bigTitleAccent: { color: Colors.primaryBright },
   heroTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 22 },
   heroLabel: { fontSize: 11, fontWeight: '700', letterSpacing: 1.5, color: Colors.primaryBright, textTransform: 'uppercase' },
@@ -249,6 +265,10 @@ const styles = StyleSheet.create({
   statNum: { fontSize: 20, fontWeight: '800', color: Colors.textPrimary, letterSpacing: -0.3 },
   statLabel: { fontSize: 10, color: Colors.textTertiary, marginTop: 3, fontWeight: '500' },
   historiaFloatEmoji: { position: 'absolute', right: 20, top: 20, fontSize: 28, opacity: 0.5 },
+  imgCard: { borderRadius: Radius.xl, overflow: 'hidden', borderWidth: 1, borderColor: Colors.glassBorder },
+  imgCardBg: { position: 'absolute', width: '100%', height: '100%' },
+  imgCardOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(5,18,9,0.72)' },
+  imgCardContent: { padding: 20 },
   badge: { flexDirection: 'row', backgroundColor: Colors.primaryMuted, borderWidth: 1, borderColor: 'rgba(0,255,133,0.3)', borderRadius: Radius.full, paddingHorizontal: 12, paddingVertical: 5, alignSelf: 'flex-start', marginBottom: 14 },
   badgeText: { fontSize: 10, fontWeight: '700', letterSpacing: 1, color: Colors.primaryBright },
   historiaTitle: { fontSize: 22, fontWeight: '800', color: Colors.textPrimary, lineHeight: 26, marginBottom: 8, letterSpacing: -0.3 },
