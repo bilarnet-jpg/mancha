@@ -49,7 +49,7 @@ export default function HomeScreen({ navigation }: any) {
         {/* HEADER */}
         <Text style={styles.greeting}>{getGreeting()}, <Text style={styles.greetingName}>{user?.displayName?.split(' ')[0] ?? 'Torcedor'}</Text></Text>
         <View style={styles.titleRow}>
-          <Image source={require('../../assets/images/logo.png')} style={styles.titleLogo} resizeMode="contain" />
+          <Image source={require('../../assets/images/novo-logo.png')} style={styles.titleLogo} resizeMode="contain" />
           <Text style={styles.bigTitle}>Mancha Verde{'\n'}<Text style={styles.bigTitleAccent}>Carnaval</Text></Text>
         </View>
 
@@ -103,6 +103,21 @@ export default function HomeScreen({ navigation }: any) {
               <Text style={styles.cartoesSub}>Compartilhe emoção, alegria e axé</Text>
             </View>
             <Text style={{ fontSize: 44 }}>💌</Text>
+          </GlassCard>
+        </TouchableOpacity>
+
+        {/* ALA SHOW */}
+        <TouchableOpacity onPress={() => navigation.navigate('AlaShow')} activeOpacity={0.9}>
+          <GlassCard style={{ marginBottom: 18, flexDirection: 'row', alignItems: 'center', position: 'relative' }}>
+            <View style={styles.alaShowAccent} />
+            <View style={{ flex: 1 }}>
+              <View style={styles.alaShowBadge}>
+                <Text style={styles.alaShowBadgeText}>💃 CONTRATE</Text>
+              </View>
+              <Text style={styles.alaShowTitle}>{'Ala Show na\nsua Festa'}</Text>
+              <Text style={styles.alaShowSub}>Leve o carnaval para o seu evento</Text>
+            </View>
+            <Text style={{ fontSize: 44 }}>🎭</Text>
           </GlassCard>
         </TouchableOpacity>
 
@@ -220,7 +235,7 @@ const styles = StyleSheet.create({
   greeting: { fontSize: 13, color: Colors.textTertiary, marginBottom: 6 },
   greetingName: { color: Colors.primaryBright, fontWeight: '600' },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 28 },
-  titleLogo: { width: 44, height: 44 },
+  titleLogo: { width: 132, height: 132 },
   bannerImage: { width: '100%', height: 90, marginBottom: 28 },
   bigTitle: { fontSize: 30, color: Colors.textPrimary, fontWeight: '800', lineHeight: 34, letterSpacing: -0.5 },
   bigTitleAccent: { color: Colors.primaryBright },
@@ -239,6 +254,11 @@ const styles = StyleSheet.create({
   historiaTitle: { fontSize: 22, fontWeight: '800', color: Colors.textPrimary, lineHeight: 26, marginBottom: 8, letterSpacing: -0.3 },
   historiaSub: { fontSize: 13, color: Colors.textSecondary, lineHeight: 19, marginBottom: 20, fontStyle: 'italic' },
   cartoesAccent: { position: 'absolute', top: 0, left: 0, right: 0, height: 2, backgroundColor: '#C77DD8', borderTopLeftRadius: 28, borderTopRightRadius: 28 },
+  alaShowAccent: { position: 'absolute', top: 0, left: 0, right: 0, height: 2, backgroundColor: '#FF4081', borderTopLeftRadius: 28, borderTopRightRadius: 28 },
+  alaShowBadge: { backgroundColor: 'rgba(255,64,129,0.15)', borderWidth: 1, borderColor: 'rgba(255,64,129,0.4)', borderRadius: 4, paddingHorizontal: 8, paddingVertical: 3, alignSelf: 'flex-start', marginBottom: 8 },
+  alaShowBadgeText: { fontSize: 10, color: '#FF4081', fontWeight: '700', letterSpacing: 1.5 },
+  alaShowTitle: { fontSize: 19, color: Colors.textPrimary, fontWeight: '700', lineHeight: 24, marginBottom: 4 },
+  alaShowSub: { fontSize: 12, color: Colors.textSecondary },
   cartoesBadge: { backgroundColor: 'rgba(156,39,176,0.2)', borderWidth: 1, borderColor: 'rgba(156,39,176,0.4)', borderRadius: 4, paddingHorizontal: 8, paddingVertical: 3, alignSelf: 'flex-start', marginBottom: 8 },
   cartoesBadgeText: { fontSize: 10, color: '#C77DD8', fontWeight: '700', letterSpacing: 1.5 },
   cartoesTitle: { fontSize: 19, color: Colors.textPrimary, fontWeight: '700', lineHeight: 24, marginBottom: 4 },

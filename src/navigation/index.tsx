@@ -30,6 +30,7 @@ import SocioScreen from '../screens/socio/SocioScreen';
 import { MemberCardScreen, PlansScreen, PremiumContentScreen, MemberHistoryScreen } from '../screens/socio/MemberCardAndPlansScreens';
 import AvenidaScreen from '../screens/avenida/AvenidaScreen';
 import SambaVideoScreen from '../screens/avenida/SambaVideoScreen';
+import AlaShowScreen from '../screens/alashow/AlaShowScreen';
 import { Colors, Radius } from '../theme';
 
 const Placeholder = ({ name }: { name: string }) => (
@@ -81,6 +82,7 @@ function HomeNavigator() {
       <HomeStack.Screen name="Tributes" component={TributesScreen} />
       <HomeStack.Screen name="Avenida" component={AvenidaScreen} />
       <HomeStack.Screen name="SambaVideo" component={SambaVideoScreen} />
+      <HomeStack.Screen name="AlaShow" component={AlaShowScreen} />
     </HomeStack.Navigator>
   );
 }
@@ -172,7 +174,7 @@ function CustomTabBar({ state, navigation }: any) {
             return (
               <TouchableOpacity key={route.key} onPress={onPress} style={styles.centerWrap}>
                 <View style={styles.centerBtn}>
-                  <Image source={require('../../assets/images/logo.png')} style={styles.centerLogo} resizeMode="contain" />
+                  <Image source={require('../../assets/images/novo-logo.png')} style={styles.centerLogo} resizeMode="contain" />
                 </View>
               </TouchableOpacity>
             );
@@ -257,5 +259,5 @@ const styles = StyleSheet.create({
     shadowRadius: 14,
     elevation: 8,
   },
-  centerLogo: { width: 30, height: 30 },
+  centerLogo: { width: 50, height: 50 },
 });
