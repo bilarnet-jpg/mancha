@@ -58,24 +58,35 @@ export default function HomeScreen({ navigation }: any) {
         </View>
 
         {/* HERO STATS */}
-        <GlassCard style={{ marginBottom: 18 }}>
+        <GlassCard style={{ marginBottom: 18, overflow: 'hidden' }}>
+          <View style={styles.heroAccentBar} />
           <View style={styles.heroTop}>
-            <View>
-              <Text style={styles.heroLabel}>SÓCIO MANCHA</Text>
-              <Text style={styles.heroSub}>Plano {user?.isPremium ? 'Ouro 🥇' : 'Free 🌱'}</Text>
+            <View style={styles.heroAvatarWrap}>
+              <LinearGradient colors={user?.isPremium ? Colors.gradientGold as any : Colors.gradientPrimary as any} style={styles.heroAvatar}>
+                <Text style={styles.heroAvatarText}>{user?.displayName?.charAt(0)?.toUpperCase() ?? 'M'}</Text>
+              </LinearGradient>
+              {user?.isPremium && <View style={styles.premiumCrown}><Text style={{ fontSize: 10 }}>👑</Text></View>}
             </View>
-            <TouchableOpacity onPress={logout} style={styles.avatarRing}>
-              <Text style={styles.avatarText}>{user?.displayName?.charAt(0)?.toUpperCase() ?? 'M'}</Text>
+            <View style={{ flex: 1, marginLeft: 14 }}>
+              <Text style={styles.heroName}>{user?.displayName ?? 'Torcedor'}</Text>
+              <View style={styles.planoBadge}>
+                <Text style={[styles.planoBadgeText, { color: user?.isPremium ? Colors.gold : Colors.primaryBright }]}>
+                  {user?.isPremium ? '🥇 Plano Ouro' : '🎟️ Plano Free'}
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity onPress={logout} style={styles.logoutBtn}>
+              <Text style={{ fontSize: 13, color: Colors.textTertiary }}>Sair</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.statsRow}>
             {[
-              { val: user?.xp ?? 0, label: 'XP' },
-              { val: user?.coins ?? 50, label: 'Moedas' },
-              { val: 0, label: 'Conquistas' },
+              { val: user?.xp ?? 0, label: 'XP', color: Colors.primaryBright },
+              { val: user?.coins ?? 50, label: 'Moedas', color: Colors.gold },
+              { val: 0, label: 'Conquistas', color: '#818CF8' },
             ].map((s, i) => (
               <View key={i} style={styles.statPill}>
-                <Text style={styles.statNum}>{s.val}</Text>
+                <Text style={[styles.statNum, { color: s.color }]}>{s.val}</Text>
                 <Text style={styles.statLabel}>{s.label}</Text>
               </View>
             ))}
@@ -255,11 +266,17 @@ const styles = StyleSheet.create({
   bannerImage: { width: '100%', height: 90, marginBottom: 28 },
   bigTitle: { fontSize: 26, color: Colors.textPrimary, fontWeight: '800', lineHeight: 32, letterSpacing: 0 },
   bigTitleAccent: { color: Colors.primaryBright },
-  heroTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 22 },
-  heroLabel: { fontSize: 11, fontWeight: '700', letterSpacing: 1.5, color: Colors.primaryBright, textTransform: 'uppercase' },
-  heroSub: { fontSize: 12, color: Colors.textTertiary, marginTop: 2 },
-  avatarRing: { width: 46, height: 46, borderRadius: 23, backgroundColor: Colors.primaryBright, alignItems: 'center', justifyContent: 'center' },
-  avatarText: { fontSize: 17, fontWeight: '700', color: Colors.textInverse },
+  heroTop: { flexDirection: 'row', alignItems: 'center', marginBottom: 22 },
+  heroAccentBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 2, backgroundColor: Colors.primaryBright },
+  heroAvatarWrap: { position: 'relative' },
+  heroAvatar: { width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center' },
+  heroAvatarText: { fontSize: 22, fontWeight: '800', color: Colors.textInverse },
+  premiumCrown: { position: 'absolute', bottom: -4, right: -4, width: 20, height: 20, borderRadius: 10, backgroundColor: Colors.bg, alignItems: 'center', justifyContent: 'center' },
+  heroName: { fontSize: 16, color: Colors.textPrimary, fontWeight: '700', marginBottom: 4 },
+  planoBadge: { backgroundColor: Colors.glassLight, borderWidth: 1, borderColor: Colors.glassBorder, borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 3, alignSelf: 'flex-start' },
+  planoBadgeText: { fontSize: 11, fontWeight: '600' },
+  logoutBtn: { padding: 8 },
+
   statsRow: { flexDirection: 'row', gap: 10 },
   statPill: { flex: 1, backgroundColor: Colors.glassLight, borderWidth: 1, borderColor: Colors.glassBorder, borderRadius: Radius.lg, paddingVertical: 14, alignItems: 'center' },
   statNum: { fontSize: 20, fontWeight: '800', color: Colors.textPrimary, letterSpacing: -0.3 },

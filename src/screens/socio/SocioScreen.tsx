@@ -77,7 +77,7 @@ export default function SocioScreen({ navigation }: any) {
               <View style={[styles.cardPreviewAccent, { backgroundColor: planConfig.color }]} />
               <View style={styles.cardPreviewShine} />
               <View style={styles.cardPreviewTop}>
-                <Text style={styles.cardPreviewLogo}>🐍</Text>
+                <Text style={styles.cardPreviewLogo}>💚</Text>
                 <Text style={styles.cardPreviewOrg}>MANCHA VERDE PAULISTANA</Text>
                 <Text style={[styles.cardPreviewPlan, { color: planConfig.color }]}>{planConfig.emoji} {planConfig.name.toUpperCase()}</Text>
               </View>

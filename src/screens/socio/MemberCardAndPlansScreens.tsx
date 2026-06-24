@@ -24,7 +24,7 @@ export function MemberCardScreen({ navigation }: any) {
   const handleShare = async () => {
     await Share.share({
       title: 'Minha Carteirinha Sócio Mancha',
-      message: `🐍 Sócio Mancha Verde Paulistana\n\n👑 Plano: ${planConfig.name}\n🪪 Nº: ${membership.memberNumber}\n👤 ${user?.displayName}\n\nOrgulho de ser Mancha! 💚`,
+      message: `💚 Sócio Mancha Verde Carnaval\n\n👑 Plano: ${planConfig.name}\n🪪 Nº: ${membership.memberNumber}\n👤 ${user?.displayName}\n\nOrgulho de ser Mancha! 💚`,
     });
   };
 
@@ -63,7 +63,7 @@ export function MemberCardScreen({ navigation }: any) {
                   <Text style={cardStyles.cardOrg}>MANCHA VERDE PAULISTANA</Text>
                   <Text style={cardStyles.cardSub}>Programa Sócio Mancha</Text>
                 </View>
-                <Text style={{ fontSize: 28 }}>🐍</Text>
+                <Text style={{ fontSize: 28 }}>💚</Text>
               </View>
               {/* Plan badge */}
               <View style={[cardStyles.planBadge, { backgroundColor: `${planConfig.color}22`, borderColor: `${planConfig.color}66` }]}>
@@ -118,7 +118,7 @@ export function MemberCardScreen({ navigation }: any) {
               </View>
               {/* Footer */}
               <View style={cardStyles.cardFooter}>
-                <Text style={cardStyles.footerText}>Mancha Verde Paulistana · manchacarnaval.app</Text>
+                <Text style={cardStyles.footerText}>Mancha Verde Carnaval · manchacarnaval.app</Text>
                 <Text style={[cardStyles.footerValid, { color: planConfig.color }]}>Status: ATIVO · {daysLeft}d restantes</Text>
               </View>
             </LinearGradient>

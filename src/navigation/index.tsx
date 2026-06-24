@@ -152,7 +152,7 @@ function CustomTabBar({ state, navigation }: any) {
 
   return (
     <View style={[styles.navWrap, { paddingBottom: insets.bottom > 0 ? insets.bottom : 12 }]}>
-      <BlurView intensity={45} tint="dark" style={[StyleSheet.absoluteFillObject, { borderRadius: Radius.full }]} />
+      <BlurView intensity={45} tint="dark" style={[StyleSheet.absoluteFillObject, { borderRadius: Radius.full, overflow: 'hidden' }]} />
       <View style={styles.navTint} />
       <View style={styles.bar}>
         {state.routes.map((route: any, index: number) => {
@@ -173,9 +173,7 @@ function CustomTabBar({ state, navigation }: any) {
           if (isCentral) {
             return (
               <TouchableOpacity key={route.key} onPress={onPress} style={styles.centerWrap}>
-                <View style={styles.centerBtn}>
-                  <Image source={require('../../assets/images/novo-logo.png')} style={styles.centerLogo} resizeMode="contain" />
-                </View>
+                <Image source={require('../../assets/images/novo-logo.png')} style={styles.centerLogo} resizeMode="contain" />
               </TouchableOpacity>
             );
           }
@@ -233,7 +231,6 @@ const styles = StyleSheet.create({
     right: 20,
     bottom: 0,
     borderRadius: Radius.full,
-    overflow: 'hidden',
     borderWidth: 1,
     borderColor: Colors.glassBorder,
   },
@@ -247,17 +244,9 @@ const styles = StyleSheet.create({
   iconEmoji: { fontSize: 19 },
   label: { fontSize: 10, color: 'rgba(255,255,255,0.45)' },
   labelActive: { color: Colors.primaryBright, fontWeight: '700' },
-  centerWrap: { flex: 1, alignItems: 'center' },
-  centerBtn: {
-    width: 50, height: 50, borderRadius: 25,
-    backgroundColor: Colors.primaryBright,
-    alignItems: 'center', justifyContent: 'center',
-    marginTop: -22,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.5,
-    shadowRadius: 14,
-    elevation: 8,
+  centerWrap: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  centerLogo: {
+    width: 72, height: 72,
+    marginTop: -28,
   },
-  centerLogo: { width: 50, height: 50 },
 });
