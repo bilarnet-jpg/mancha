@@ -31,6 +31,12 @@ import { MemberCardScreen, PlansScreen, PremiumContentScreen, MemberHistoryScree
 import AvenidaScreen from '../screens/avenida/AvenidaScreen';
 import SambaVideoScreen from '../screens/avenida/SambaVideoScreen';
 import AlaShowScreen from '../screens/alashow/AlaShowScreen';
+import AdminDashboard from '../screens/admin/AdminDashboard';
+import AdminFinanceiro from '../screens/admin/AdminFinanceiro';
+import AdminModeracao from '../screens/admin/AdminModeracao';
+import AdminUsuarios from '../screens/admin/AdminUsuarios';
+import AdminAlaShow from '../screens/admin/AdminAlaShow';
+import AdminComunicados from '../screens/admin/AdminComunicados';
 import { Colors, Radius } from '../theme';
 
 const Placeholder = ({ name }: { name: string }) => (
@@ -83,6 +89,12 @@ function HomeNavigator() {
       <HomeStack.Screen name="Avenida" component={AvenidaScreen} />
       <HomeStack.Screen name="SambaVideo" component={SambaVideoScreen} />
       <HomeStack.Screen name="AlaShow" component={AlaShowScreen} />
+      <HomeStack.Screen name="AdminDashboard" component={AdminDashboard} />
+      <HomeStack.Screen name="AdminFinanceiro" component={AdminFinanceiro} />
+      <HomeStack.Screen name="AdminModeracao" component={AdminModeracao} />
+      <HomeStack.Screen name="AdminUsuarios" component={AdminUsuarios} />
+      <HomeStack.Screen name="AdminAlaShow" component={AdminAlaShow} />
+      <HomeStack.Screen name="AdminComunicados" component={AdminComunicados} />
     </HomeStack.Navigator>
   );
 }

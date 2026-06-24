@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import HamburgerMenu from '../components/HamburgerMenu';
 import { useFonts, DancingScript_700Bold } from '@expo-google-fonts/dancing-script';
 import {
   View, Text, StyleSheet, ScrollView,
@@ -41,6 +42,7 @@ const getGreeting = () => {
 export default function HomeScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
   const { user, logout } = useAuthStore();
+  const [menuOpen, setMenuOpen] = useState(false);
   const [fontsLoaded] = useFonts({ DancingScript_700Bold });
 
   return (
@@ -49,7 +51,12 @@ export default function HomeScreen({ navigation }: any) {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + 16, paddingBottom: 100, paddingHorizontal: Spacing.xl }}>
 
         {/* HEADER */}
-        <Text style={styles.greeting}>{getGreeting()}, <Text style={styles.greetingName}>{user?.displayName?.split(' ')[0] ?? 'Torcedor'}</Text></Text>
+        <View style={styles.greetingRow}>
+          <Text style={styles.greeting}>{getGreeting()}, <Text style={styles.greetingName}>{user?.displayName?.split(' ')[0] ?? 'Torcedor'}</Text></Text>
+          <TouchableOpacity onPress={() => setMenuOpen(true)} style={styles.hamburgerBtn}>
+            <Text style={styles.hamburgerIcon}>☰</Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.titleRow}>
           <Image source={require('../../assets/images/novo-logo.png')} style={styles.titleLogo} resizeMode="contain" />
           <Text style={[styles.bigTitle, fontsLoaded && { fontFamily: 'DancingScript_700Bold' }]}>
@@ -253,13 +260,17 @@ export default function HomeScreen({ navigation }: any) {
         )}
 
       </ScrollView>
+        <HamburgerMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} navigation={navigation} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
-  greeting: { fontSize: 13, color: Colors.textTertiary, marginBottom: 6 },
+  greetingRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
+  greeting: { fontSize: 13, color: Colors.textTertiary },
+  hamburgerBtn: { width: 38, height: 38, borderRadius: 12, backgroundColor: Colors.glassLight, borderWidth: 1, borderColor: Colors.glassBorder, alignItems: 'center', justifyContent: 'center' },
+  hamburgerIcon: { fontSize: 18, color: Colors.textPrimary },
   greetingName: { color: Colors.primaryBright, fontWeight: '600' },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 28 },
   titleLogo: { width: 132, height: 132 },
@@ -290,6 +301,8 @@ const styles = StyleSheet.create({
   badgeText: { fontSize: 10, fontWeight: '700', letterSpacing: 1, color: Colors.primaryBright },
   historiaTitle: { fontSize: 22, fontWeight: '800', color: Colors.textPrimary, lineHeight: 26, marginBottom: 8, letterSpacing: -0.3 },
   historiaSub: { fontSize: 13, color: Colors.textSecondary, lineHeight: 19, marginBottom: 20, fontStyle: 'italic' },
+  adminBtn: { backgroundColor: 'rgba(255,216,116,0.1)', borderWidth: 1, borderColor: 'rgba(255,216,116,0.3)', borderRadius: Radius.md, paddingVertical: 10, paddingHorizontal: 16, alignSelf: 'flex-start', marginBottom: 16 },
+  adminBtnText: { fontSize: 13, color: Colors.gold, fontWeight: '700' },
   cartoesAccent: { position: 'absolute', top: 0, left: 0, right: 0, height: 2, backgroundColor: '#C77DD8', borderTopLeftRadius: 28, borderTopRightRadius: 28 },
   alaShowAccent: { position: 'absolute', top: 0, left: 0, right: 0, height: 2, backgroundColor: '#FF4081', borderTopLeftRadius: 28, borderTopRightRadius: 28 },
   alaShowBadge: { backgroundColor: 'rgba(255,64,129,0.15)', borderWidth: 1, borderColor: 'rgba(255,64,129,0.4)', borderRadius: 4, paddingHorizontal: 8, paddingVertical: 3, alignSelf: 'flex-start', marginBottom: 8 },
