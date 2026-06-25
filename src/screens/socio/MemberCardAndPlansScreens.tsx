@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import QRCode from 'react-native-qrcode-svg';
 import { useSocioStore } from '../../store/socioStore';
 import { useAuthStore } from '../../store/authStore';
 import { PLANS, MembershipPlan } from '../../types/socio';
@@ -101,7 +102,12 @@ export function MemberCardScreen({ navigation }: any) {
               {/* QR Code */}
               <View style={cardStyles.qrSection}>
                 <View style={cardStyles.qrBox}>
-                  <Text style={{ fontSize: 80 }}>📲</Text>
+                  <QRCode
+                    value={`MANCHA:${membership.qrCode}:${user?.id ?? 'guest'}`}
+                    size={88}
+                    color="#FFFFFF"
+                    backgroundColor="transparent"
+                  />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={cardStyles.qrTitle}>QR Code de Identificação</Text>

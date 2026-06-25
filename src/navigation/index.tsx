@@ -37,6 +37,7 @@ import AdminModeracao from '../screens/admin/AdminModeracao';
 import AdminUsuarios from '../screens/admin/AdminUsuarios';
 import AdminAlaShow from '../screens/admin/AdminAlaShow';
 import AdminComunicados from '../screens/admin/AdminComunicados';
+import AdminScanner from '../screens/admin/AdminScanner';
 import { Colors, Radius } from '../theme';
 
 const Placeholder = ({ name }: { name: string }) => (
@@ -95,6 +96,7 @@ function HomeNavigator() {
       <HomeStack.Screen name="AdminUsuarios" component={AdminUsuarios} />
       <HomeStack.Screen name="AdminAlaShow" component={AdminAlaShow} />
       <HomeStack.Screen name="AdminComunicados" component={AdminComunicados} />
+      <HomeStack.Screen name="AdminScanner" component={AdminScanner} />
     </HomeStack.Navigator>
   );
 }
