@@ -89,7 +89,7 @@ export default function HomeScreen({ navigation }: any) {
           <View style={styles.statsRow}>
             {[
               { val: user?.xp ?? 0, label: 'XP', color: Colors.primaryBright },
-              { val: user?.coins ?? 50, label: 'Moedas', color: Colors.gold },
+              { val: 0, label: 'Desfiles', color: '#FF4081' },
               { val: 0, label: 'Conquistas', color: '#818CF8' },
             ].map((s, i) => (
               <View key={i} style={styles.statPill}>
