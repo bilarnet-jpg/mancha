@@ -123,8 +123,9 @@ export default function HamburgerMenu({ isOpen, onClose, navigation }: Hamburger
 
           <View style={styles.divider} />
 
-          {/* PAINEL ADMIN */}
-          <Text style={styles.menuSectionLabel}>ADMINISTRAÇÃO</Text>
+          {/* PAINEL ADMIN — só para admins */}
+          {(user as any)?.isAdmin && (
+          <><Text style={styles.menuSectionLabel}>ADMINISTRAÇÃO</Text>
           <TouchableOpacity
             onPress={() => handleNavigate('AdminDashboard')}
             style={styles.adminMenuItem}
@@ -136,6 +137,8 @@ export default function HamburgerMenu({ isOpen, onClose, navigation }: Hamburger
               <Text style={{ fontSize: 14, color: Colors.textInverse }}>→</Text>
             </LinearGradient>
           </TouchableOpacity>
+          <View style={styles.divider} />
+          </>)}
 
           <View style={styles.divider} />
 

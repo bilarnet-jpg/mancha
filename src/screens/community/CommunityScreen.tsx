@@ -9,6 +9,7 @@ import { useCommunityStore } from '../../store/communityStore';
 import { useAuthStore } from '../../store/authStore';
 import { CATEGORY_CONFIG, CommunityPost } from '../../types/community';
 import { Colors, Spacing, Radius } from '../../theme';
+import PremiumGate from '../../components/PremiumGate';
 import GlowBackground from '../../components/GlowBackground';
 import GlassCard from '../../components/GlassCard';
 
@@ -41,6 +42,7 @@ export default function CommunityScreen({ navigation }: any) {
   const { posts, reels, activeFilter, searchQuery, loadPosts, setFilter, setSearch, toggleLike, getFiltered } = useCommunityStore();
   const { user } = useAuthStore();
   const [showSearch, setShowSearch] = useState(false);
+  const [showPremiumGate, setShowPremiumGate] = useState(false);
 
   useEffect(() => { loadPosts(); }, []);
 
@@ -175,7 +177,10 @@ export default function CommunityScreen({ navigation }: any) {
                 {/* Ações */}
                 <View style={styles.postActions}>
                   <View style={styles.postActionsLeft}>
-                    <TouchableOpacity onPress={() => user && toggleLike(post.id, user.id)} style={styles.actionBtn}>
+                    <TouchableOpacity onPress={() => {
+                      if (!user?.isPremium) { setShowPremiumGate(true); return; }
+                      user && toggleLike(post.id, user.id);
+                    }} style={styles.actionBtn}>
                       <Text style={{ fontSize: 22 }}>{isLiked ? '❤️' : '🤍'}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate('PostDetail', { postId: post.id })} style={styles.actionBtn}>
@@ -213,6 +218,13 @@ export default function CommunityScreen({ navigation }: any) {
           </View>
         )}
       </ScrollView>
+      <PremiumGate
+        visible={showPremiumGate}
+        onClose={() => setShowPremiumGate(false)}
+        onSubscribe={() => { setShowPremiumGate(false); navigation.navigate('SocioTab'); }}
+        feature="Curtir posts da Comunidade"
+        emoji="❤️"
+      />
     </View>
   );
 }

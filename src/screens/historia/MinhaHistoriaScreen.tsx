@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions,
 } from 'react-native';
@@ -8,6 +8,7 @@ import { useHistoriaStore } from '../../store/historiaStore';
 import { useAuthStore } from '../../store/authStore';
 import { getLevelInfo, RARITY_COLORS, ALL_ACHIEVEMENTS } from '../../types/historia';
 import { Colors, Spacing, Radius } from '../../theme';
+import PremiumGate from '../../components/PremiumGate';
 
 const { width: W } = Dimensions.get('window');
 
@@ -16,6 +17,7 @@ export default function MinhaHistoriaScreen({ navigation }: any) {
   const { user } = useAuthStore();
   const { passport, parades, achievements, timeline, loadData, getProgressToNextLevel, getLockedAchievements } = useHistoriaStore();
 
+  const [showPremiumGate, setShowPremiumGate] = useState(false);
   useEffect(() => { if (user) loadData(user.id); }, [user]);
 
   const levelInfo = getLevelInfo(passport.xp);
@@ -94,7 +96,10 @@ export default function MinhaHistoriaScreen({ navigation }: any) {
           </TouchableOpacity>
 
           {/* Meus Desfiles */}
-          <TouchableOpacity onPress={() => navigation.navigate('Parades')} style={styles.moduleCard} activeOpacity={0.85}>
+          <TouchableOpacity onPress={() => {
+          if (!user?.isPremium) { setShowPremiumGate(true); return; }
+          navigation.navigate('Parades');
+        }} style={styles.moduleCard} activeOpacity={0.85}>
             <LinearGradient colors={['#1a0533', '#0d021a']} style={styles.moduleGrad}>
               <View style={[styles.moduleAccent, { backgroundColor: '#FF4081' }]} />
               <Text style={styles.moduleEmoji}>🎭</Text>
@@ -120,7 +125,10 @@ export default function MinhaHistoriaScreen({ navigation }: any) {
           </TouchableOpacity>
 
           {/* Retrospectiva */}
-          <TouchableOpacity onPress={() => navigation.navigate('Wrapped')} style={styles.moduleCard} activeOpacity={0.85}>
+          <TouchableOpacity onPress={() => {
+          if (!user?.isPremium) { setShowPremiumGate(true); return; }
+          navigation.navigate('Wrapped');
+        }} style={styles.moduleCard} activeOpacity={0.85}>
             <LinearGradient colors={['#0d0d2a', '#05050a']} style={styles.moduleGrad}>
               <View style={[styles.moduleAccent, { backgroundColor: '#818CF8' }]} />
               <Text style={styles.moduleEmoji}>✨</Text>
@@ -133,7 +141,10 @@ export default function MinhaHistoriaScreen({ navigation }: any) {
           </TouchableOpacity>
 
           {/* Carta para o Futuro */}
-          <TouchableOpacity onPress={() => navigation.navigate('FutureLetter')} style={styles.moduleCard} activeOpacity={0.85}>
+          <TouchableOpacity onPress={() => {
+          if (!user?.isPremium) { setShowPremiumGate(true); return; }
+          navigation.navigate('FutureLetter');
+        }} style={styles.moduleCard} activeOpacity={0.85}>
             <LinearGradient colors={['#1a0d00', '#0a0700']} style={styles.moduleGrad}>
               <View style={[styles.moduleAccent, { backgroundColor: Colors.gold }]} />
               <Text style={styles.moduleEmoji}>💌</Text>
@@ -185,7 +196,10 @@ export default function MinhaHistoriaScreen({ navigation }: any) {
         {parades.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>🎭 Último Desfile</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Parades')} style={styles.lastParadeCard} activeOpacity={0.85}>
+            <TouchableOpacity onPress={() => {
+          if (!user?.isPremium) { setShowPremiumGate(true); return; }
+          navigation.navigate('Parades');
+        }} style={styles.lastParadeCard} activeOpacity={0.85}>
               <LinearGradient colors={['#1a0533', '#0d021a']} style={styles.lastParadeGrad}>
                 <View style={styles.lastParadeAccent} />
                 <View style={styles.lastParadeYear}>
@@ -214,6 +228,13 @@ export default function MinhaHistoriaScreen({ navigation }: any) {
         </View>
 
       </ScrollView>
+      <PremiumGate
+        visible={showPremiumGate}
+        onClose={() => setShowPremiumGate(false)}
+        onSubscribe={() => { setShowPremiumGate(false); navigation.navigate('SocioMain'); }}
+        feature="Minha História na Mancha"
+        emoji="🎭"
+      />
     </View>
   );
 }

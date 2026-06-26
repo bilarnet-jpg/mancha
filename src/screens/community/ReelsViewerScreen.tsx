@@ -10,6 +10,7 @@ import { useCommunityStore } from '../../store/communityStore';
 import { useAuthStore } from '../../store/authStore';
 import { Reel } from '../../types/community';
 import { Colors, Spacing, Radius } from '../../theme';
+import PremiumGate from '../../components/PremiumGate';
 
 const { width: W, height: H } = Dimensions.get('window');
 
@@ -25,6 +26,8 @@ export default function ReelsViewerScreen({ route, navigation }: any) {
   const { user } = useAuthStore();
   const [activeIndex, setActiveIndex] = useState(startIndex);
   const [commentsOpenFor, setCommentsOpenFor] = useState<string | null>(null);
+  const [showPremiumGate, setShowPremiumGate] = useState(false);
+  const [premiumFeature, setPremiumFeature] = useState('');
   const [commentText, setCommentText] = useState('');
 
   const handleShare = async (reel: Reel) => {
@@ -80,11 +83,17 @@ export default function ReelsViewerScreen({ route, navigation }: any) {
 
         {/* Ações direita */}
         <View style={[styles.rightActions, { bottom: insets.bottom + 100 }]}>
-          <TouchableOpacity onPress={() => user && toggleReelLike(item.id, user.id)} style={styles.rightActionItem}>
+          <TouchableOpacity onPress={() => {
+                      if (!user?.isPremium) { setPremiumFeature('Curtir Reels'); setShowPremiumGate(true); return; }
+                      user && toggleReelLike(item.id, user.id);
+                    }} style={styles.rightActionItem}>
             <Text style={{ fontSize: 30 }}>{isLiked ? '❤️' : '🤍'}</Text>
             <Text style={styles.rightActionLabel}>{formatCount(item.likes.length)}</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setCommentsOpenFor(item.id)} style={styles.rightActionItem}>
+          <TouchableOpacity onPress={() => {
+                      if (!user?.isPremium) { setPremiumFeature('Comentar nos Reels'); setShowPremiumGate(true); return; }
+                      setCommentsOpenFor(item.id);
+                    }} style={styles.rightActionItem}>
             <Text style={{ fontSize: 28 }}>💬</Text>
             <Text style={styles.rightActionLabel}>{formatCount(item.commentsCount)}</Text>
           </TouchableOpacity>
@@ -161,6 +170,20 @@ export default function ReelsViewerScreen({ route, navigation }: any) {
           setActiveIndex(index);
           setCommentsOpenFor(null);
         }}
+      />
+      <PremiumGate
+        visible={showPremiumGate}
+        onClose={() => setShowPremiumGate(false)}
+        onSubscribe={() => { setShowPremiumGate(false); navigation.navigate('SocioMain'); }}
+        feature={premiumFeature}
+        emoji="🎬"
+      />
+      <PremiumGate
+        visible={showPremiumGate}
+        onClose={() => setShowPremiumGate(false)}
+        onSubscribe={() => { setShowPremiumGate(false); navigation.navigate('SocioTab'); }}
+        feature={premiumFeature}
+        emoji="🎬"
       />
     </View>
   );

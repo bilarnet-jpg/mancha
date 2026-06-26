@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  Dimensions, Share, Alert,
+  Dimensions, Share, Alert, Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,6 +10,8 @@ import { useSocioStore } from '../../store/socioStore';
 import { useAuthStore } from '../../store/authStore';
 import { PLANS, MembershipPlan } from '../../types/socio';
 import { Colors, Spacing, Radius } from '../../theme';
+import GlowBackground from '../../components/GlowBackground';
+import GlassCard from '../../components/GlassCard';
 
 const { width: W } = Dimensions.get('window');
 
@@ -61,7 +63,7 @@ export function MemberCardScreen({ navigation }: any) {
               {/* Header */}
               <View style={cardStyles.cardHeader}>
                 <View>
-                  <Text style={cardStyles.cardOrg}>MANCHA VERDE PAULISTANA</Text>
+                  <Text style={cardStyles.cardOrg}>MANCHA VERDE CARNAVAL</Text>
                   <Text style={cardStyles.cardSub}>Programa Sócio Mancha</Text>
                 </View>
                 <Text style={{ fontSize: 28 }}>💚</Text>
@@ -72,8 +74,26 @@ export function MemberCardScreen({ navigation }: any) {
                   {planConfig.emoji} {planConfig.name.toUpperCase()}
                 </Text>
               </View>
-              {/* Nome */}
-              <Text style={cardStyles.cardName}>{user?.displayName?.toUpperCase() ?? 'TORCEDOR'}</Text>
+              {/* Foto + Nome */}
+              <View style={cardStyles.memberRow}>
+                <LinearGradient
+                  colors={planConfig.gradient as any}
+                  style={cardStyles.memberAvatar}
+                >
+                  <View style={cardStyles.memberAvatarInner}>
+                    <Text style={cardStyles.memberAvatarText}>
+                      {user?.displayName?.charAt(0)?.toUpperCase() ?? 'M'}
+                    </Text>
+                  </View>
+                </LinearGradient>
+                <View style={{ flex: 1 }}>
+                  <Text style={cardStyles.cardNameLabel}>NOME DO ASSOCIADO</Text>
+                  <Text style={cardStyles.cardName}>{user?.displayName?.toUpperCase() ?? 'TORCEDOR'}</Text>
+                  {user?.email && (
+                    <Text style={cardStyles.cardEmail} numberOfLines={1}>{user.email}</Text>
+                  )}
+                </View>
+              </View>
               {/* Info */}
               <View style={cardStyles.cardInfo}>
                 <View>
@@ -96,6 +116,7 @@ export function MemberCardScreen({ navigation }: any) {
           ) : (
             // VERSO
             <LinearGradient colors={planConfig.gradient as any} style={cardStyles.card}>
+              {/* Watermark logo de fundo */}
               <View style={[cardStyles.cardAccent, { backgroundColor: planConfig.color }]} />
               {/* Tarja magnética */}
               <View style={cardStyles.magneticStripe} />
@@ -103,7 +124,7 @@ export function MemberCardScreen({ navigation }: any) {
               <View style={cardStyles.qrSection}>
                 <View style={cardStyles.qrBox}>
                   <QRCode
-                    value={`MANCHA:${membership.qrCode}:${user?.id ?? 'guest'}`}
+                    value={`MANCHA:${membership.qrCode}:${user?.id ?? 'guest'}:${encodeURIComponent(user?.displayName ?? 'Socio')}`}
                     size={88}
                     color="#FFFFFF"
                     backgroundColor="transparent"
@@ -169,126 +190,150 @@ export function MemberCardScreen({ navigation }: any) {
 // ── PLANS ─────────────────────────────────────────────────────
 export function PlansScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
-  const { membership, upgradePlan } = useSocioStore();
-  const [selectedPlan, setSelectedPlan] = useState<MembershipPlan>(membership.plan);
+  const { user } = useAuthStore();
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const isPremium = user?.isPremium ?? false;
 
-  const handleUpgrade = () => {
-    if (selectedPlan === membership.plan) {
-      Alert.alert('Plano atual', 'Você já está neste plano!');
-      return;
-    }
-    const plan = PLANS.find(p => p.id === selectedPlan);
-    if (!plan) return;
-    Alert.alert(
-      `Assinar ${plan.name}`,
-      `R$ ${plan.price.toFixed(2)}/mês\n\nO pagamento será processado via PIX ou cartão de crédito.`,
-      [
-        { text: 'Cancelar' },
-        {
-          text: 'Assinar Agora',
-          onPress: () => {
-            upgradePlan(selectedPlan);
-            Alert.alert('🎉 Parabéns!', `Você agora é ${plan.name}! Aproveite todos os benefícios!`);
-            navigation.goBack();
-          },
-        },
-      ]
-    );
-  };
+  const monthlyPrice = 10;
+  const yearlyPrice = 100;
+  const yearlyMonthly = (yearlyPrice / 12).toFixed(2);
+  const savings = ((monthlyPrice * 12) - yearlyPrice);
+
+  const FEATURES = [
+    { emoji: '🎬', label: 'Curtir e comentar nos Reels' },
+    { emoji: '💌', label: 'Enviar Cartões da Mancha' },
+    { emoji: '🎭', label: 'Minha História completa' },
+    { emoji: '🛍️', label: '15% de desconto na Loja' },
+    { emoji: '🎟️', label: 'Pré-venda de ingressos' },
+    { emoji: '🎭', label: 'Pré-venda de fantasias' },
+    { emoji: '🎬', label: 'Bastidores exclusivos' },
+    { emoji: '🪪', label: 'Carteirinha digital oficial' },
+    { emoji: '📷', label: 'QR Code de identificação' },
+    { emoji: '🏅', label: 'Badge exclusivo no perfil' },
+  ];
+
+  const FREE_RESTRICTIONS = [
+    { emoji: '🔒', label: 'Não pode curtir/comentar Reels' },
+    { emoji: '🔒', label: 'Não pode enviar Cartões da Mancha' },
+    { emoji: '🔒', label: 'Minha História limitada' },
+    { emoji: '🔒', label: 'Sem descontos na Loja' },
+  ];
 
   return (
     <View style={{ flex: 1, backgroundColor: Colors.bg }}>
-      <ScrollView contentContainerStyle={[planStyles.scroll, { paddingTop: insets.top + 16 }]} showsVerticalScrollIndicator={false}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginBottom: Spacing.xl }}>
-          <Text style={{ color: Colors.primary, fontSize: 15 }}>← Voltar</Text>
-        </TouchableOpacity>
+      <GlowBackground />
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + 12, paddingBottom: 110 }}>
 
-        <Text style={planStyles.pageTitle}>👑 Planos Sócio Mancha</Text>
-        <Text style={planStyles.pageSub}>Escolha o plano ideal para sua experiência na Mancha Verde</Text>
+        {/* HEADER */}
+        <View style={planStyles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={planStyles.backBtn}>
+            <Text style={{ fontSize: 16, color: Colors.primaryBright }}>←</Text>
+          </TouchableOpacity>
+          <View style={{ flex: 1 }}>
+            <Text style={planStyles.headerTitle}>Planos</Text>
+            <Text style={planStyles.headerSub}>Mancha Verde Carnaval</Text>
+          </View>
+        </View>
 
-        {PLANS.map(plan => {
-          const isCurrentPlan = membership.plan === plan.id;
-          const isSelected = selectedPlan === plan.id;
-          return (
+        <View style={{ paddingHorizontal: Spacing.xl }}>
+
+          {/* HERO */}
+          <View style={planStyles.hero}>
+            <Text style={{ fontSize: 52, marginBottom: 12 }}>💚</Text>
+            <Text style={planStyles.heroTitle}>{'Mancha Verde\neu sou'}</Text>
+            <Text style={planStyles.heroSub}>Acesso total ao app + todos os benefícios exclusivos do verdadeiro torcedor da Mancha Verde!</Text>
+          </View>
+
+          {/* TOGGLE MENSAL/ANUAL */}
+          <View style={planStyles.cycleToggle}>
             <TouchableOpacity
-              key={plan.id}
-              onPress={() => setSelectedPlan(plan.id)}
-              style={[planStyles.planCard, isSelected && { borderColor: plan.color }, isCurrentPlan && planStyles.currentPlanCard]}
-              activeOpacity={0.85}
+              onPress={() => setBillingCycle('monthly')}
+              style={[planStyles.cycleBtn, billingCycle === 'monthly' && planStyles.cycleBtnActive]}
             >
-              <LinearGradient colors={plan.gradient as any} style={planStyles.planGrad}>
-                <View style={[planStyles.planAccent, { backgroundColor: plan.color }]} />
-                {plan.isPopular && (
-                  <View style={[planStyles.popularBadge, { backgroundColor: `${plan.color}22`, borderColor: `${plan.color}44` }]}>
-                    <Text style={[planStyles.popularBadgeText, { color: plan.color }]}>⭐ MAIS POPULAR</Text>
-                  </View>
-                )}
-                {isCurrentPlan && (
-                  <View style={[planStyles.currentBadge, { backgroundColor: Colors.primaryMuted, borderColor: `${Colors.primary}44` }]}>
-                    <Text style={[planStyles.currentBadgeText, { color: Colors.primary }]}>✓ SEU PLANO ATUAL</Text>
-                  </View>
-                )}
-                {/* Header */}
-                <View style={planStyles.planHeader}>
-                  <Text style={{ fontSize: 36 }}>{plan.emoji}</Text>
-                  <View style={{ flex: 1 }}>
-                    <Text style={[planStyles.planName, { color: plan.color }]}>{plan.name}</Text>
-                    {plan.price === 0 ? (
-                      <Text style={planStyles.planPrice}>Gratuito</Text>
-                    ) : (
-                      <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 2 }}>
-                        <Text style={planStyles.planCurrency}>R$</Text>
-                        <Text style={[planStyles.planPriceNum, { color: plan.color }]}>{plan.price.toFixed(2)}</Text>
-                        <Text style={planStyles.planPeriod}>/mês</Text>
-                      </View>
-                    )}
-                  </View>
-                  {isSelected && (
-                    <View style={[planStyles.selectedDot, { backgroundColor: plan.color }]}>
-                      <Text style={{ fontSize: 12, color: Colors.textInverse }}>✓</Text>
-                    </View>
-                  )}
-                </View>
-                {/* Benefícios */}
-                <View style={planStyles.benefitsList}>
-                  {plan.benefits.map((benefit, i) => (
-                    <View key={i} style={planStyles.benefitRow}>
-                      <View style={[planStyles.benefitCheck, { backgroundColor: `${plan.color}22` }]}>
-                        <Text style={[planStyles.benefitCheckText, { color: plan.color }]}>✓</Text>
-                      </View>
-                      <Text style={planStyles.benefitText}>{benefit}</Text>
-                    </View>
-                  ))}
-                </View>
+              <Text style={[planStyles.cycleBtnText, billingCycle === 'monthly' && planStyles.cycleBtnTextActive]}>Mensal</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setBillingCycle('yearly')}
+              style={[planStyles.cycleBtn, billingCycle === 'yearly' && planStyles.cycleBtnActive]}
+            >
+              <Text style={[planStyles.cycleBtnText, billingCycle === 'yearly' && planStyles.cycleBtnTextActive]}>Anual</Text>
+              <View style={planStyles.savingsBadge}>
+                <Text style={planStyles.savingsBadgeText}>-{Math.round((savings / (monthlyPrice * 12)) * 100)}%</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          {/* CARD DO PLANO */}
+          <View style={planStyles.planCard}>
+            <LinearGradient colors={['#134227', '#0A1F14']} style={StyleSheet.absoluteFillObject} />
+            <View style={planStyles.planCardAccent} />
+            <View style={planStyles.planCardGlow} />
+
+            <View style={planStyles.priceRow}>
+              <Text style={planStyles.currency}>R$</Text>
+              <Text style={planStyles.price}>
+                {billingCycle === 'monthly' ? monthlyPrice : yearlyMonthly}
+              </Text>
+              <Text style={planStyles.pricePeriod}>/mês</Text>
+            </View>
+
+            {billingCycle === 'yearly' && (
+              <View style={planStyles.yearlyInfo}>
+                <Text style={planStyles.yearlyInfoText}>
+                  Cobrado R${yearlyPrice}/ano · Economia de R${savings}!
+                </Text>
+              </View>
+            )}
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate('SocioMain')}
+              style={{ borderRadius: Radius.lg, overflow: 'hidden', marginTop: 20 }}
+            >
+              <LinearGradient colors={Colors.gradientPrimary as any} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={planStyles.subscribeBtn}>
+                <Text style={planStyles.subscribeBtnText}>
+                  {isPremium ? '✓ Plano Ativo' : `Assinar por R$${billingCycle === 'monthly' ? monthlyPrice + '/mês' : yearlyPrice + '/ano'}`}
+                </Text>
               </LinearGradient>
             </TouchableOpacity>
-          );
-        })}
 
-        {/* Botão assinar */}
-        {selectedPlan !== membership.plan && (
-          <TouchableOpacity onPress={handleUpgrade} style={{ borderRadius: Radius.lg, overflow: 'hidden', marginTop: Spacing.base }}>
-            <LinearGradient
-              colors={PLANS.find(p => p.id === selectedPlan)?.gradient as any ?? Colors.gradientPrimary}
-              start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-              style={planStyles.subscribeBtn}
-            >
-              <Text style={planStyles.subscribeBtnText}>
-                Assinar {PLANS.find(p => p.id === selectedPlan)?.name} →
-              </Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        )}
+            <Text style={planStyles.cancelText}>Cancele quando quiser · Sem taxa</Text>
+          </View>
 
-        <Text style={planStyles.disclaimer}>
-          💡 Os pagamentos são processados de forma segura. Cancele a qualquer momento sem multa.
-        </Text>
+          {/* BENEFÍCIOS */}
+          <Text style={planStyles.sectionTitle}>✅ O que você ganha</Text>
+          <GlassCard style={{ marginBottom: 24, gap: 12 }}>
+            {FEATURES.map((f, i) => (
+              <View key={i} style={planStyles.featureRow}>
+                <View style={planStyles.featureIcon}>
+                  <Text style={{ fontSize: 16 }}>{f.emoji}</Text>
+                </View>
+                <Text style={planStyles.featureLabel}>{f.label}</Text>
+                <Text style={{ color: Colors.primaryBright, fontSize: 16 }}>✓</Text>
+              </View>
+            ))}
+          </GlassCard>
+
+          {/* RESTRIÇÕES FREE */}
+          <Text style={planStyles.sectionTitle}>🔒 Plano Free (limitado)</Text>
+          <GlassCard style={{ marginBottom: 24, gap: 12, borderColor: 'rgba(255,90,90,0.2)' }}>
+            {FREE_RESTRICTIONS.map((f, i) => (
+              <View key={i} style={planStyles.featureRow}>
+                <View style={[planStyles.featureIcon, { backgroundColor: 'rgba(255,90,90,0.1)' }]}>
+                  <Text style={{ fontSize: 16 }}>{f.emoji}</Text>
+                </View>
+                <Text style={[planStyles.featureLabel, { color: Colors.textMuted }]}>{f.label}</Text>
+                <Text style={{ color: '#FF5A5A', fontSize: 14 }}>✕</Text>
+              </View>
+            ))}
+          </GlassCard>
+
+        </View>
       </ScrollView>
     </View>
   );
 }
 
-// ── PREMIUM CONTENT ───────────────────────────────────────────
+
 export function PremiumContentScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
   const { getAvailableContent, canAccessContent } = useSocioStore();
@@ -406,8 +451,14 @@ const cardStyles = StyleSheet.create({
   cardSub: { fontSize: 9, color: Colors.textMuted, marginTop: 2 },
   planBadge: { borderWidth: 1, borderRadius: Radius.md, paddingHorizontal: 10, paddingVertical: 4, alignSelf: 'flex-start', marginBottom: Spacing.base },
   planBadgeText: { fontSize: 11, fontWeight: '700', letterSpacing: 1.5 },
+  memberRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
+  memberAvatar: { width: 56, height: 56, borderRadius: 28, padding: 2 },
+  memberAvatarInner: { flex: 1, borderRadius: 26, backgroundColor: 'rgba(0,0,0,0.35)', alignItems: 'center', justifyContent: 'center' },
+  memberAvatarText: { fontSize: 24, fontWeight: '800', color: '#fff' },
+  cardNameLabel: { fontSize: 8, color: 'rgba(255,255,255,0.5)', letterSpacing: 1.5, fontWeight: '600', marginBottom: 3 },
   cardName: { fontSize: 24, color: Colors.textPrimary, fontWeight: '700', letterSpacing: 2, marginBottom: Spacing.xl },
   cardInfo: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 12 },
+  cardEmail: { fontSize: 9, color: 'rgba(255,255,255,0.45)', marginTop: 2 },
   cardInfoLabel: { fontSize: 9, color: Colors.textMuted, letterSpacing: 2, marginBottom: 4 },
   cardInfoValue: { fontSize: 14, color: Colors.textPrimary, fontWeight: '700', letterSpacing: 1 },
   chip: { width: 44, height: 32, borderRadius: 6, borderWidth: 1, backgroundColor: 'rgba(255,255,255,0.08)', justifyContent: 'center', paddingHorizontal: 6, marginBottom: 6 },
@@ -440,33 +491,38 @@ const cardStyles = StyleSheet.create({
 });
 
 const planStyles = StyleSheet.create({
-  scroll: { paddingHorizontal: Spacing.xl, paddingBottom: 60 },
-  pageTitle: { fontSize: 26, color: Colors.textPrimary, fontWeight: '700', marginBottom: 6 },
-  pageSub: { fontSize: 13, color: Colors.textSecondary, lineHeight: 20, marginBottom: Spacing.xl },
-  planCard: { borderRadius: Radius.xl, overflow: 'hidden', borderWidth: 1.5, borderColor: Colors.border, marginBottom: Spacing.base },
-  currentPlanCard: { borderColor: Colors.primary },
-  planGrad: { padding: Spacing.xl, position: 'relative' },
-  planAccent: { position: 'absolute', top: 0, left: 0, right: 0, height: 2 },
-  popularBadge: { borderWidth: 1, borderRadius: 4, paddingHorizontal: 8, paddingVertical: 3, alignSelf: 'flex-start', marginBottom: Spacing.base },
-  popularBadgeText: { fontSize: 10, fontWeight: '700', letterSpacing: 1 },
-  currentBadge: { borderWidth: 1, borderRadius: 4, paddingHorizontal: 8, paddingVertical: 3, alignSelf: 'flex-start', marginBottom: Spacing.base },
-  currentBadgeText: { fontSize: 10, fontWeight: '700', letterSpacing: 1 },
-  planHeader: { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: Spacing.xl },
-  planName: { fontSize: 18, fontWeight: '700', marginBottom: 4 },
-  planPrice: { fontSize: 16, color: Colors.textMuted },
-  planCurrency: { fontSize: 16, color: Colors.textSecondary },
-  planPriceNum: { fontSize: 32, fontWeight: '700' },
-  planPeriod: { fontSize: 14, color: Colors.textMuted },
-  selectedDot: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  benefitsList: { gap: 8 },
-  benefitRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
-  benefitCheck: { width: 20, height: 20, borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 },
-  benefitCheckText: { fontSize: 10, fontWeight: '700' },
-  benefitText: { fontSize: 13, color: Colors.textSecondary, lineHeight: 20, flex: 1 },
-  subscribeBtn: { height: 56, alignItems: 'center', justifyContent: 'center' },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: Spacing.xl, marginBottom: 20 },
+  backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: Colors.glassLight, borderWidth: 1, borderColor: Colors.glassBorder, alignItems: 'center', justifyContent: 'center' },
+  headerTitle: { fontSize: 22, color: Colors.textPrimary, fontWeight: '800' },
+  headerSub: { fontSize: 12, color: Colors.textMuted, marginTop: 2 },
+  hero: { alignItems: 'center', paddingVertical: 24, marginBottom: 8 },
+  heroTitle: { fontSize: 32, color: Colors.textPrimary, fontWeight: '900', textAlign: 'center', lineHeight: 36, marginBottom: 12, letterSpacing: -0.5 },
+  heroSub: { fontSize: 14, color: Colors.textSecondary, textAlign: 'center', lineHeight: 22, paddingHorizontal: 20 },
+  cycleToggle: { flexDirection: 'row', backgroundColor: Colors.glassLight, borderWidth: 1, borderColor: Colors.glassBorder, borderRadius: Radius.full, padding: 4, marginBottom: 20 },
+  cycleBtn: { flex: 1, paddingVertical: 10, borderRadius: Radius.full, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6 },
+  cycleBtnActive: { backgroundColor: Colors.primaryBright },
+  cycleBtnText: { fontSize: 14, color: Colors.textMuted, fontWeight: '600' },
+  cycleBtnTextActive: { color: Colors.textInverse },
+  savingsBadge: { backgroundColor: '#FF4081', borderRadius: Radius.full, paddingHorizontal: 6, paddingVertical: 2 },
+  savingsBadgeText: { fontSize: 10, color: '#fff', fontWeight: '700' },
+  planCard: { borderRadius: Radius.xl, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(0,255,133,0.3)', padding: 28, alignItems: 'center', marginBottom: 28, position: 'relative' },
+  planCardAccent: { position: 'absolute', top: 0, left: 0, right: 0, height: 2, backgroundColor: Colors.primaryBright },
+  planCardGlow: { position: 'absolute', top: -60, right: -60, width: 180, height: 180, borderRadius: 90, backgroundColor: 'rgba(0,255,133,0.08)' },
+  priceRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 4, marginBottom: 8 },
+  currency: { fontSize: 22, color: Colors.textSecondary, fontWeight: '600', marginBottom: 8 },
+  price: { fontSize: 64, color: Colors.primaryBright, fontWeight: '900', lineHeight: 68, letterSpacing: -2 },
+  pricePeriod: { fontSize: 16, color: Colors.textMuted, marginBottom: 12 },
+  yearlyInfo: { backgroundColor: 'rgba(0,255,133,0.1)', borderWidth: 1, borderColor: 'rgba(0,255,133,0.2)', borderRadius: Radius.full, paddingHorizontal: 14, paddingVertical: 6 },
+  yearlyInfoText: { fontSize: 12, color: Colors.primaryBright, fontWeight: '600' },
+  subscribeBtn: { height: 54, paddingHorizontal: 32, alignItems: 'center', justifyContent: 'center' },
   subscribeBtnText: { fontSize: 16, color: Colors.textInverse, fontWeight: '700' },
-  disclaimer: { fontSize: 12, color: Colors.textMuted, textAlign: 'center', lineHeight: 18, marginTop: Spacing.base },
+  cancelText: { fontSize: 11, color: Colors.textMuted, marginTop: 12 },
+  sectionTitle: { fontSize: 16, color: Colors.textPrimary, fontWeight: '700', marginBottom: 12 },
+  featureRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  featureIcon: { width: 34, height: 34, borderRadius: 10, backgroundColor: Colors.primaryMuted, alignItems: 'center', justifyContent: 'center' },
+  featureLabel: { flex: 1, fontSize: 14, color: Colors.textPrimary },
 });
+
 
 const pcStyles = StyleSheet.create({
   card: { backgroundColor: Colors.bgCard, borderWidth: 1, borderColor: Colors.border, borderRadius: Radius.xl, overflow: 'hidden', marginBottom: Spacing.base },

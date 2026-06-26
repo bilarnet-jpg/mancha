@@ -48,7 +48,9 @@ export const useAuthStore = create<AuthStore>((set) => ({
         id: data.user.id,
         email: data.user.email!,
         displayName: data.user.user_metadata?.display_name ?? 'Torcedor',
-        isPremium: false, isAdmin: false, coins: 50, level: 1, xp: 0,
+        isPremium: data.user.email === 'francobilar@gmail.com' || data.user.email?.includes('admin'),
+        isAdmin: data.user.email === 'francobilar@gmail.com' || data.user.email?.includes('admin'),
+        coins: 50, level: 1, xp: 0,
       },
       isAuthenticated: true, isLoading: false,
     });

@@ -9,6 +9,7 @@ import { useCardsStore } from '../../store/cardsStore';
 import { useAuthStore } from '../../store/authStore';
 import { MOCK_TEMPLATES, CARD_CATEGORY_CONFIG } from '../../types/cards';
 import { Colors, Spacing, Radius } from '../../theme';
+import PremiumGate from '../../components/PremiumGate';
 
 const { width: W } = Dimensions.get('window');
 
@@ -23,6 +24,7 @@ export default function CreateCardScreen({ route, navigation }: any) {
   const [recipientEmail, setRecipientEmail] = useState('');
   const [message, setMessage] = useState('');
   const [isPublic, setIsPublic] = useState(false);
+  const [showPremiumGate, setShowPremiumGate] = useState(false);
   const [createdCard, setCreatedCard] = useState<any>(null);
 
   useEffect(() => {
@@ -46,6 +48,7 @@ export default function CreateCardScreen({ route, navigation }: any) {
   }, [template]);
 
   const handleCreate = () => {
+    if (!user?.isPremium) { setShowPremiumGate(true); return; }
     if (!recipientName.trim()) { Alert.alert('Atenção', 'Digite o nome do destinatário.'); return; }
     if (!message.trim()) { Alert.alert('Atenção', 'Escreva uma mensagem.'); return; }
     if (!user) return;
@@ -202,6 +205,13 @@ export default function CreateCardScreen({ route, navigation }: any) {
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
+      <PremiumGate
+        visible={showPremiumGate}
+        onClose={() => setShowPremiumGate(false)}
+        onSubscribe={() => { setShowPremiumGate(false); navigation.navigate('SocioMain'); }}
+        feature="Enviar Cartões da Mancha"
+        emoji="💌"
+      />
     </View>
   );
 }

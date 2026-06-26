@@ -19,14 +19,14 @@ interface ScanResult {
   checkinTime: string;
 }
 
-// Mock de validação — quando integrar com Supabase real, buscar na tabela users
-const validateQRCode = (data: string, currentUser: any): ScanResult | null => {
+// Validação do QR Code — extrai dados do próprio QR Code
+const validateQRCode = (data: string): ScanResult | null => {
   const parts = data.split(':');
   if (parts[0] !== 'MANCHA' || parts.length < 3) return null;
   const qrCode = parts[1];
   const userId = parts[2];
-  // Usa dados do usuário logado para mostrar nome e inicial reais
-  const name = currentUser?.displayName ?? 'Sócio Mancha Verde';
+  // Nome vem do QR Code (parte 4), não do usuário logado
+  const name = parts[3] ? decodeURIComponent(parts[3]) : 'Sócio Mancha Verde';
   const initial = name.charAt(0).toUpperCase();
   return {
     userId,
@@ -46,14 +46,13 @@ export default function AdminScanner({ navigation }: any) {
   const [result, setResult] = useState<ScanResult | null>(null);
   const [scanCount, setScanCount] = useState(0);
   const [eventName, setEventName] = useState('Ensaio Técnico — Jun 2026');
-  const { user } = useAuthStore();
 
   const handleBarCodeScanned = ({ data }: { data: string }) => {
     if (scanned) return;
     setScanned(true);
     Vibration.vibrate(100);
 
-    const scanResult = validateQRCode(data, user);
+    const scanResult = validateQRCode(data);
     if (scanResult) {
       setResult(scanResult);
       setScanCount(prev => prev + 1);
