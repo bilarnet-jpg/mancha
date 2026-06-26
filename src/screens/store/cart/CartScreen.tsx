@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   summaryTotalLabel: { fontSize: 16, color: Colors.textPrimary, fontWeight: '700' },
   summaryTotalValue: { fontSize: 22, color: Colors.primary, fontWeight: '700' },
   pixInfo: { fontSize: 12, color: Colors.textMuted, marginTop: Spacing.sm, textAlign: 'center' },
-  checkoutBar: { position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: Colors.bgCard, borderTopWidth: 1, borderTopColor: Colors.border, paddingTop: Spacing.base, paddingHorizontal: Spacing.xl },
+  checkoutBar: { position: 'absolute', bottom: 80, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: Colors.bgCard, borderTopWidth: 1, borderTopColor: Colors.border, paddingTop: Spacing.base, paddingHorizontal: Spacing.xl },
   checkoutInfo: { alignItems: 'center' },
   checkoutTotal: { fontSize: 18, color: Colors.primary, fontWeight: '700' },
   checkoutItems: { fontSize: 10, color: Colors.textMuted },

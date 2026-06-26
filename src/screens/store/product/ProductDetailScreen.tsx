@@ -48,7 +48,7 @@ export default function ProductDetailScreen({ route, navigation }: any) {
 
   return (
     <View style={{ flex: 1, backgroundColor: Colors.bg }}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 180 }}>
 
         {/* Imagem hero */}
         <View style={styles.hero}>
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
   relatedImg: { height: 100, borderRadius: Radius.lg, alignItems: 'center', justifyContent: 'center', marginBottom: 6, borderWidth: 1, borderColor: Colors.border },
   relatedName: { fontSize: 11, color: Colors.textPrimary, fontWeight: '500', lineHeight: 15, marginBottom: 4 },
   relatedPrice: { fontSize: 13, color: Colors.primary, fontWeight: '700' },
-  buyBar: { position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: Colors.bgCard, borderTopWidth: 1, borderTopColor: Colors.border, paddingTop: Spacing.base, paddingHorizontal: Spacing.xl },
+  buyBar: { position: 'absolute', bottom: 80, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: Colors.bgCard, borderTopWidth: 1, borderTopColor: Colors.border, paddingTop: Spacing.base, paddingHorizontal: Spacing.xl },
   buyInfo: { alignItems: 'center' },
   buyInfoPrice: { fontSize: 18, color: Colors.primary, fontWeight: '700' },
   buyInfoPix: { fontSize: 10, color: Colors.textMuted },
