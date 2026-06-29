@@ -39,6 +39,8 @@ import AdminUsuarios from '../screens/admin/AdminUsuarios';
 import AdminAlaShow from '../screens/admin/AdminAlaShow';
 import AdminComunicados from '../screens/admin/AdminComunicados';
 import AdminMemberships from '../screens/admin/AdminMemberships';
+import ProfileScreen from '../screens/social/ProfileScreen';
+import EditProfileScreen from '../screens/social/EditProfileScreen';
 import AdminScanner from '../screens/admin/AdminScanner';
 import { Colors, Radius } from '../theme';
 
@@ -100,6 +102,8 @@ function HomeNavigator() {
       <HomeStack.Screen name="AdminComunicados" component={AdminComunicados} />
       <HomeStack.Screen name="AdminScanner" component={AdminScanner} />
       <HomeStack.Screen name="AdminMemberships" component={AdminMemberships} />
+      <HomeStack.Screen name="Profile" component={ProfileScreen} />
+      <HomeStack.Screen name="EditProfile" component={EditProfileScreen} />
     </HomeStack.Navigator>
   );
 }
@@ -136,6 +140,8 @@ function CommunityNavigator() {
       <CommunityStack.Screen name="PostDetail" component={PostDetailScreen} />
       <CommunityStack.Screen name="SubmitPost" component={SubmitPostScreen} />
       <CommunityStack.Screen name="Ranking" component={RankingScreen} />
+      <CommunityStack.Screen name="Profile" component={ProfileScreen} />
+      <CommunityStack.Screen name="EditProfile" component={EditProfileScreen} />
       <CommunityStack.Screen
         name="ReelsViewer"
         component={ReelsViewerScreen}

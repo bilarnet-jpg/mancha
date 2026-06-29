@@ -155,9 +155,11 @@ export default function CommunityScreen({ navigation }: any) {
               <GlassCard key={post.id} noPadding intensity={25} style={{ overflow: 'hidden' }}>
                 {/* Header do post */}
                 <View style={styles.postHeader}>
+                  <TouchableOpacity onPress={() => navigation.navigate('Profile', { userId: post.userId, displayName: post.userName })}>
                   <View style={styles.postAvatar}>
                     <Text style={styles.postAvatarText}>{post.userName.charAt(0)}</Text>
                   </View>
+                </TouchableOpacity>
                   <View style={{ flex: 1 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
                       <Text style={styles.postAuthor}>{post.userName}</Text>

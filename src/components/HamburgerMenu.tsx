@@ -19,6 +19,7 @@ interface HamburgerMenuProps {
 }
 
 const MENU_ITEMS = [
+  { emoji: '👤', label: 'Meu Perfil', screen: 'Profile' },
   { emoji: '🏠', label: 'Início', screen: null },
   { emoji: '🎭', label: 'Minha História', screen: 'MinhaHistoria' },
   { emoji: '🎵', label: 'Mancha na Avenida', screen: 'Avenida' },
