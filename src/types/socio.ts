@@ -72,7 +72,7 @@ export const PLANS: MembershipPlanConfig[] = [
   {
     id: 'free',
     name: 'Mancha Free',
-    emoji: '🌱',
+    emoji: '🎟️',
     price: 0,
     period: 'mensal',
     color: '#A0A0A0',
@@ -87,6 +87,28 @@ export const PLANS: MembershipPlanConfig[] = [
     discountEvents: 0,
     isPremium: false,
   },
+  {
+    id: 'mancha-verde-eu-sou',
+    name: 'Mancha Verde eu sou',
+    emoji: '💚',
+    price: 10,
+    period: 'mensal',
+    color: '#00FF85',
+    gradient: ['#0A2E14', '#134227', '#1a5c2a'],
+    benefits: [
+      'Acesso total ao app',
+      'Curtir e comentar nos Reels',
+      'Enviar Cartões da Mancha',
+      'Minha História completa',
+      '15% de desconto na Loja',
+      'Pré-venda de ingressos e fantasias',
+      'Bastidores exclusivos',
+      'Carteirinha digital oficial',
+    ],
+    discountStore: 15,
+    discountEvents: 10,
+    isPremium: true,
+  },
 ];
 
 export const MEMBERSHIP_PLANS: MembershipPlan[] = [
@@ -95,7 +117,7 @@ export const MEMBERSHIP_PLANS: MembershipPlan[] = [
     name: 'Mancha Verde eu sou',
     emoji: '💚',
     color: '#00FF85',
-    gradient: ['#00C46A', '#00FF85', '#3DFFA0'],
+    gradient: ['#0A2E14', '#134227', '#1a5c2a'],
     monthlyPrice: 10,
     yearlyPrice: 100,
     features: [

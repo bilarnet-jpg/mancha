@@ -24,6 +24,7 @@ const ROLE_CONFIG: Record<AdminRole, { label: string; color: string; emoji: stri
 };
 
 const MODULES = [
+  { key: 'memberships', emoji: '💚', title: 'Assinaturas', sub: 'Ativar planos e gerenciar pagamentos', screen: 'AdminMemberships', roles: ['super_admin', 'financeiro'] },
   { key: 'scanner', emoji: '📷', title: 'Scanner QR Code', sub: 'Escanear carteirinha de sócios', screen: 'AdminScanner', roles: ['super_admin', 'moderacao', 'comercial', 'conteudo', 'financeiro'] },
   { key: 'financeiro', emoji: '💰', title: 'Financeiro', sub: 'Vendas, pedidos, receita', screen: 'AdminFinanceiro', roles: ['super_admin', 'financeiro'] },
   { key: 'usuarios', emoji: '👥', title: 'Usuários', sub: 'Membros, bloqueios, roles', screen: 'AdminUsuarios', roles: ['super_admin'] },

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, Image, StyleSheet, ScrollView, TouchableOpacity,
+  View, Text, Alert, Image, StyleSheet, ScrollView, TouchableOpacity,
   Dimensions, Share,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSocioStore } from '../../store/socioStore';
 import { useAuthStore } from '../../store/authStore';
+import { supabase } from '../../services/supabase';
 import { PLANS, MOCK_PREMIUM_CONTENT } from '../../types/socio';
 import { Colors, Spacing, Radius } from '../../theme';
 
@@ -17,12 +18,47 @@ export default function SocioScreen({ navigation }: any) {
   const { membership, benefits, history, loadData, getActiveBenefits, getAvailableContent, getPlanConfig, getDaysUntilExpiry, getMemberSince } = useSocioStore();
   const { user } = useAuthStore();
 
+  useEffect(() => {
+    if (user?.id) {
+      useAuthStore.getState().checkMembership(user.id);
+      // Buscar data real de vencimento
+      supabase
+        .from('memberships')
+        .select('expires_at')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data?.expires_at) {
+            const expiry = new Date(data.expires_at);
+            const now = new Date();
+            const days = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+            setExpiryDate(expiry.toLocaleDateString('pt-BR'));
+            setDaysUntilExpiry(days);
+            // Alerta se faltar 5 dias ou menos
+            if (days <= 5 && days > 0) {
+              Alert.alert(
+                '⚠️ Assinatura expirando!',
+                `Sua assinatura expira em ${days} dia${days !== 1 ? 's' : ''}. Efetue o pagamento para continuar usufruindo dos benefícios!`,
+                [
+                  { text: 'Agora não' },
+                  { text: 'Renovar agora', onPress: () => navigation.navigate('Plans') },
+                ]
+              );
+            }
+          }
+        });
+    }
+  }, [user?.id]);
+
   useEffect(() => { if (user) loadData(user.id); }, [user]);
 
   const planConfig = getPlanConfig();
   const activeBenefits = getActiveBenefits();
   const availableContent = getAvailableContent();
   const daysLeft = getDaysUntilExpiry();
+  const [expiryDate, setExpiryDate] = React.useState<string | null>(null);
+  const [daysUntilExpiry, setDaysUntilExpiry] = React.useState<number | null>(null);
   const memberSince = getMemberSince();
 
   return (
@@ -54,16 +90,25 @@ export default function SocioScreen({ navigation }: any) {
             <Text style={styles.memberNum}>{membership.memberNumber}</Text>
           </View>
 
+          {/* Vencimento */}
+          {expiryDate && user?.isPremium && (
+            <View style={[styles.expiryBadge, { backgroundColor: daysUntilExpiry !== null && daysUntilExpiry <= 5 ? 'rgba(255,90,90,0.15)' : 'rgba(0,255,133,0.1)', borderColor: daysUntilExpiry !== null && daysUntilExpiry <= 5 ? 'rgba(255,90,90,0.4)' : 'rgba(0,255,133,0.3)' }]}>
+              <Text style={[styles.expiryText, { color: daysUntilExpiry !== null && daysUntilExpiry <= 5 ? '#FF5A5A' : Colors.primaryBright }]}>
+                {daysUntilExpiry !== null && daysUntilExpiry <= 5 ? '⚠️' : '📅'} Vence em {expiryDate} · {daysUntilExpiry}d restantes
+              </Text>
+            </View>
+          )}
+
           {/* Stats */}
           <View style={styles.statsRow}>
             {[
               { icon: '📅', val: memberSince, label: 'Membro desde' },
-              { icon: '⏳', val: `${daysLeft}d`, label: 'Dias restantes' },
+              { icon: '⏳', val: daysUntilExpiry !== null ? `${daysUntilExpiry}d` : `${daysLeft}d`, label: 'Dias restantes' },
               { icon: '🏅', val: activeBenefits.length, label: 'Benefícios' },
             ].map((s, i) => (
-              <View key={i} style={styles.statChip}>
+              <View key={i} style={[styles.statChip, i === 1 && daysUntilExpiry !== null && daysUntilExpiry <= 5 && { borderColor: 'rgba(255,90,90,0.4)', backgroundColor: 'rgba(255,90,90,0.1)' }]}>
                 <Text style={styles.statIcon}>{s.icon}</Text>
-                <Text style={[styles.statVal, { color: planConfig.color }]}>{s.val}</Text>
+                <Text style={[styles.statVal, { color: i === 1 && daysUntilExpiry !== null && daysUntilExpiry <= 5 ? '#FF5A5A' : planConfig.color }]}>{s.val}</Text>
                 <Text style={styles.statLabel}>{s.label}</Text>
               </View>
             ))}
@@ -221,6 +266,8 @@ const styles = StyleSheet.create({
   cardBtnText: { fontSize: 10, fontWeight: '700', letterSpacing: 1 },
   statusRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: Spacing.base },
   statusBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 4 },
+  expiryBadge: { borderWidth: 1, borderRadius: Radius.md, paddingHorizontal: 12, paddingVertical: 7, marginBottom: 12, alignSelf: 'flex-start' },
+  expiryText: { fontSize: 12, fontWeight: '600' },
   statusDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: Colors.primary },
   statusText: { fontSize: 10, color: Colors.primary, fontWeight: '700', letterSpacing: 1.5 },
   memberNum: { fontSize: 13, color: Colors.textSecondary, fontWeight: '500' },

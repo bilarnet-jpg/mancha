@@ -24,6 +24,7 @@ interface AuthStore {
   resetPassword: (email: string) => Promise<void>;
   clearError: () => void;
   initAuth: () => () => void;
+  checkMembership: (userId: string) => Promise<boolean>;
 }
 
 const parseError = (message: string): string => {
@@ -87,6 +88,34 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
 
   clearError: () => set({ error: null }),
+
+  checkMembership: async (userId: string) => {
+    try {
+      const { supabase } = await import('../services/supabase');
+      const now = new Date().toISOString();
+      const { data } = await supabase
+        .from('memberships')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('is_active', true)
+        .gt('expires_at', now)
+        .maybeSingle();
+      const isPremium = !!data;
+      const currentUser = useAuthStore.getState().user;
+      if (currentUser && currentUser.isPremium !== isPremium) {
+        useAuthStore.setState({ user: { ...currentUser, isPremium } });
+      }
+      // Atualizar socioStore com o plano correto
+      if (isPremium) {
+        const { useSocioStore } = await import('./socioStore');
+        useSocioStore.getState().upgradePlan('mancha-verde-eu-sou' as any);
+      }
+      return isPremium;
+    } catch (e) {
+      console.log('checkMembership error:', e);
+      return false;
+    }
+  },
 
   initAuth: () => {
     supabase.auth.getSession().then(({ data: { session } }) => {

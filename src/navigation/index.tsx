@@ -38,6 +38,7 @@ import AdminModeracao from '../screens/admin/AdminModeracao';
 import AdminUsuarios from '../screens/admin/AdminUsuarios';
 import AdminAlaShow from '../screens/admin/AdminAlaShow';
 import AdminComunicados from '../screens/admin/AdminComunicados';
+import AdminMemberships from '../screens/admin/AdminMemberships';
 import AdminScanner from '../screens/admin/AdminScanner';
 import { Colors, Radius } from '../theme';
 
@@ -98,6 +99,7 @@ function HomeNavigator() {
       <HomeStack.Screen name="AdminAlaShow" component={AdminAlaShow} />
       <HomeStack.Screen name="AdminComunicados" component={AdminComunicados} />
       <HomeStack.Screen name="AdminScanner" component={AdminScanner} />
+      <HomeStack.Screen name="AdminMemberships" component={AdminMemberships} />
     </HomeStack.Navigator>
   );
 }
