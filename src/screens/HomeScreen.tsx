@@ -245,7 +245,7 @@ export default function HomeScreen({ navigation }: any) {
 
         {/* PREMIUM */}
         {!user?.isPremium && (
-          <TouchableOpacity activeOpacity={0.9} style={{ marginTop: 28 }} onPress={() => navigation.navigate('SocioMain')}>
+          <TouchableOpacity activeOpacity={0.9} style={{ marginTop: 28 }} onPress={() => navigation.navigate('SocioTab')}>
             <LinearGradient colors={Colors.gradientGold as any} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.premiumBanner}>
               <View>
                 <Text style={styles.premiumLabel}>EXCLUSIVO</Text>

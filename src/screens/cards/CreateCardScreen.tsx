@@ -208,7 +208,7 @@ export default function CreateCardScreen({ route, navigation }: any) {
       <PremiumGate
         visible={showPremiumGate}
         onClose={() => setShowPremiumGate(false)}
-        onSubscribe={() => { setShowPremiumGate(false); navigation.navigate('SocioMain'); }}
+        onSubscribe={() => { setShowPremiumGate(false); navigation.navigate('SocioTab'); }}
         feature="Enviar Cartões da Mancha"
         emoji="💌"
       />

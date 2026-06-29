@@ -25,7 +25,7 @@ const MENU_ITEMS = [
   { emoji: '💌', label: 'Cartões da Mancha', screen: 'CardsMain' },
   { emoji: '💃', label: 'Contrate a Ala Show', screen: 'AlaShow' },
   { emoji: '🛍️', label: 'Loja', screen: 'LojaTab' },
-  { emoji: '👑', label: 'Sócio Mancha', screen: 'SocioMain' },
+  { emoji: '👑', label: 'Sócio Mancha', screen: 'SocioTab' },
   { emoji: '📅', label: 'Agenda', screen: 'AgendaTab' },
   { emoji: '📸', label: 'Comunidade', screen: 'ManchaTab' },
 ];

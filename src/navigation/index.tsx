@@ -28,6 +28,7 @@ import CreateCardScreen from '../screens/cards/CreateCardScreen';
 import { CertificatesScreen, TributesScreen, MyCardsScreen } from '../screens/cards/CertificatesAndTributesScreens';
 import SocioScreen from '../screens/socio/SocioScreen';
 import { MemberCardScreen, PlansScreen, PremiumContentScreen, MemberHistoryScreen } from '../screens/socio/MemberCardAndPlansScreens';
+import PixPaymentSocioScreen from '../screens/socio/PixPaymentSocioScreen';
 import AvenidaScreen from '../screens/avenida/AvenidaScreen';
 import SambaVideoScreen from '../screens/avenida/SambaVideoScreen';
 import AlaShowScreen from '../screens/alashow/AlaShowScreen';
@@ -150,6 +151,7 @@ function SocioNavigator() {
       <SocioStack.Screen name="Plans" component={PlansScreen} />
       <SocioStack.Screen name="PremiumContent" component={PremiumContentScreen} />
       <SocioStack.Screen name="MemberHistory" component={MemberHistoryScreen} />
+      <SocioStack.Screen name="PixPaymentSocio" component={PixPaymentSocioScreen} />
     </SocioStack.Navigator>
   );
 }

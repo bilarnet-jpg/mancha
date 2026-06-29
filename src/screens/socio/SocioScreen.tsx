@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity,
+  View, Text, Image, StyleSheet, ScrollView, TouchableOpacity,
   Dimensions, Share,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -159,19 +159,19 @@ export default function SocioScreen({ navigation }: any) {
         {membership.plan !== 'diamante' && (
           <View style={styles.section}>
             <TouchableOpacity onPress={() => navigation.navigate('Plans')} activeOpacity={0.9}>
-              <LinearGradient colors={['#0d0d2a', '#05050a']} style={styles.upgradeCard}>
-                <View style={styles.upgradeAccent} />
-                <View style={styles.upgradeGlow} />
+              <LinearGradient colors={['#0A2E14', '#134227']} style={styles.upgradeCard}>
+                <View style={[styles.upgradeAccent, { backgroundColor: Colors.primaryBright }]} />
+                <View style={[styles.upgradeGlow, { backgroundColor: 'rgba(0,255,133,0.08)' }]} />
                 <View style={{ flex: 1 }}>
-                  <View style={styles.upgradeBadge}>
-                    <Text style={styles.upgradeBadgeText}>💎 UPGRADE DISPONÍVEL</Text>
+                  <View style={[styles.upgradeBadge, { backgroundColor: 'rgba(0,255,133,0.15)', borderColor: 'rgba(0,255,133,0.3)' }]}>
+                    <Text style={[styles.upgradeBadgeText, { color: Colors.primaryBright }]}>💚 SEJA MEMBRO</Text>
                   </View>
-                  <Text style={styles.upgradeTitle}>Desbloqueie o{'\n'}Mancha Diamante</Text>
-                  <Text style={styles.upgradeSub}>20% na loja · Camarote VIP · Meet & Greet</Text>
+                  <Text style={styles.upgradeTitle}>{'Torne-se membro e\ndiga Mancha Verde\nEu Sou'}</Text>
+                  <Text style={styles.upgradeSub}>Acesso total · Reels · Cartões · Minha História</Text>
                 </View>
                 <View style={styles.upgradeRight}>
-                  <Text style={{ fontSize: 52 }}>💎</Text>
-                  <Text style={styles.upgradePrice}>R$ 79,90/mês</Text>
+                  <Image source={require('../../../assets/images/novo-logo.png')} style={{ width: 60, height: 60 }} resizeMode="contain" />
+                  <Text style={[styles.upgradePrice, { color: Colors.primaryBright }]}>R$ 10/mês</Text>
                 </View>
               </LinearGradient>
             </TouchableOpacity>
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
   statusText: { fontSize: 10, color: Colors.primary, fontWeight: '700', letterSpacing: 1.5 },
   memberNum: { fontSize: 13, color: Colors.textSecondary, fontWeight: '500' },
   statsRow: { flexDirection: 'row', gap: 8 },
-  statChip: { flex: 1, backgroundColor: 'rgba(0,0,0,0.3)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', borderRadius: Radius.md, padding: Spacing.sm, alignItems: 'center', gap: 2 },
+  statChip: { flex: 1, backgroundColor: 'rgba(0,255,133,0.08)', borderWidth: 1, borderColor: 'rgba(0,255,133,0.15)', borderRadius: Radius.md, padding: Spacing.sm, alignItems: 'center', gap: 2 },
   statIcon: { fontSize: 14 },
   statVal: { fontSize: 13, fontWeight: '700' },
   statLabel: { fontSize: 9, color: Colors.textMuted, letterSpacing: 0.3, textAlign: 'center' },

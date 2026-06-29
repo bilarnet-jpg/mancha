@@ -76,7 +76,7 @@ export const PLANS: MembershipPlanConfig[] = [
     price: 0,
     period: 'mensal',
     color: '#A0A0A0',
-    gradient: ['#1a1a1a', '#0a0a0a'],
+    gradient: ['#0A2E14', '#134227'],
     benefits: [
       'Acesso ao app completo',
       'Galeria da comunidade',

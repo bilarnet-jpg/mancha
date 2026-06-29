@@ -286,12 +286,15 @@ export function PlansScreen({ navigation }: any) {
             )}
 
             <TouchableOpacity
-              onPress={() => navigation.navigate('SocioMain')}
+              onPress={() => {
+                if (isPremium) return;
+                navigation.navigate('PixPaymentSocio', { billingCycle, amount: billingCycle === 'monthly' ? monthlyPrice : yearlyPrice });
+              }}
               style={{ borderRadius: Radius.lg, overflow: 'hidden', marginTop: 20 }}
             >
-              <LinearGradient colors={Colors.gradientPrimary as any} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={planStyles.subscribeBtn}>
+              <LinearGradient colors={isPremium ? ['#134227', '#0A1F14'] : Colors.gradientPrimary as any} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={planStyles.subscribeBtn}>
                 <Text style={planStyles.subscribeBtnText}>
-                  {isPremium ? '✓ Plano Ativo' : `Assinar por R$${billingCycle === 'monthly' ? monthlyPrice + '/mês' : yearlyPrice + '/ano'}`}
+                  {isPremium ? '✓ Plano Ativo' : `💚 Assinar por R$${billingCycle === 'monthly' ? monthlyPrice + '/mês' : yearlyPrice + '/ano'}`}
                 </Text>
               </LinearGradient>
             </TouchableOpacity>

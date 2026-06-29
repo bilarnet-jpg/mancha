@@ -231,7 +231,7 @@ export default function MinhaHistoriaScreen({ navigation }: any) {
       <PremiumGate
         visible={showPremiumGate}
         onClose={() => setShowPremiumGate(false)}
-        onSubscribe={() => { setShowPremiumGate(false); navigation.navigate('SocioMain'); }}
+        onSubscribe={() => { setShowPremiumGate(false); navigation.navigate('SocioTab'); }}
         feature="Minha História na Mancha"
         emoji="🎭"
       />
