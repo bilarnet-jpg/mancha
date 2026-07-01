@@ -132,19 +132,25 @@ export const useSocialStore = create<SocialStore>((set, get) => ({
 
   uploadAvatar: async (userId, uri) => {
     try {
-      const response = await fetch(uri);
-      const blob = await response.blob();
-      const fileExt = uri.split('.').pop() ?? 'jpg';
+      const fileExt = uri.split('.').pop()?.toLowerCase() ?? 'jpg';
       const filePath = `avatars/${userId}.${fileExt}`;
-      
+      const contentType = `image/${fileExt === 'jpg' ? 'jpeg' : fileExt}`;
+
+      // Converter URI para ArrayBuffer (compatível com React Native)
+      const response = await fetch(uri);
+      const arrayBuffer = await response.arrayBuffer();
+
       const { error } = await supabase.storage
         .from('avatars')
-        .upload(filePath, blob, { upsert: true, contentType: `image/${fileExt}` });
-      
-      if (error) throw error;
-      
+        .upload(filePath, arrayBuffer, { upsert: true, contentType });
+
+      if (error) {
+        console.log('uploadAvatar Supabase error:', JSON.stringify(error));
+        throw error;
+      }
+
       const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
-      return data.publicUrl;
+      return `${data.publicUrl}?t=${Date.now()}`; // cache busting
     } catch (e) {
       console.log('uploadAvatar error:', e);
       return null;

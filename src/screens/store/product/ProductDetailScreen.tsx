@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity,
+  View, Text, Linking, StyleSheet, ScrollView, TouchableOpacity,
   Dimensions, Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -189,10 +189,10 @@ export default function ProductDetailScreen({ route, navigation }: any) {
       <View style={[styles.buyBar, { paddingBottom: insets.bottom + 12 }]}>
         <View style={styles.buyInfo}>
           <Text style={styles.buyInfoPrice}>R$ {product.price.toFixed(2)}</Text>
-          <Text style={styles.buyInfoPix}>via PIX</Text>
+          <Text style={styles.buyInfoPix}>Loja Oficial</Text>
         </View>
         <TouchableOpacity
-          onPress={handleAddToCart}
+          onPress={() => Linking.openURL('https://manchaverde.lojavirtuolpro.com')}
           disabled={product.stock === 0}
           style={{ flex: 1, borderRadius: Radius.lg, overflow: 'hidden' }}
           activeOpacity={0.85}
@@ -203,7 +203,7 @@ export default function ProductDetailScreen({ route, navigation }: any) {
             style={styles.buyBtn}
           >
             <Text style={[styles.buyBtnText, { color: product.stock === 0 ? Colors.textMuted : Colors.textInverse }]}>
-              {product.stock === 0 ? '❌ Esgotado' : '🛒 Adicionar ao Carrinho'}
+              {product.stock === 0 ? '❌ Esgotado' : '🛍️ Comprar na Loja Oficial'}
             </Text>
           </LinearGradient>
         </TouchableOpacity>

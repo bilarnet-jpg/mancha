@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity,
+  View, Text, Linking, StyleSheet, ScrollView, TouchableOpacity,
   Dimensions, TextInput,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -224,6 +224,9 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', paddingHorizontal: Spacing.xl, paddingBottom: Spacing.base, paddingTop: Spacing.sm },
   headerTitle: { fontSize: 28, color: Colors.textPrimary, fontWeight: '700' },
   headerSub: { fontSize: 13, color: Colors.textMuted, marginTop: 2 },
+  siteBanner: { marginHorizontal: Spacing.xl, marginBottom: 16, flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.primaryMuted, borderWidth: 1, borderColor: 'rgba(0,255,133,0.3)', borderRadius: Radius.lg, padding: 14, gap: 12 },
+  siteBannerTitle: { fontSize: 14, color: Colors.primaryBright, fontWeight: '700', marginBottom: 2 },
+  siteBannerSub: { fontSize: 11, color: Colors.textSecondary },
   cartBtn: { position: 'relative', padding: 8 },
   cartBadge: { position: 'absolute', top: 2, right: 2, backgroundColor: Colors.red, borderRadius: 10, minWidth: 18, height: 18, alignItems: 'center', justifyContent: 'center' },
   cartBadgeText: { fontSize: 10, color: '#fff', fontWeight: '700' },

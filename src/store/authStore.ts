@@ -55,6 +55,15 @@ export const useAuthStore = create<AuthStore>((set) => ({
       },
       isAuthenticated: true, isLoading: false,
     });
+    // Criar/atualizar perfil no Supabase
+    try {
+      const { supabase: sb } = await import('../services/supabase');
+      await sb.from('user_profiles').upsert({
+        id: data.user.id,
+        display_name: data.user.user_metadata?.display_name ?? email.split('@')[0],
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'id', ignoreDuplicates: true });
+    } catch (e) { console.log('profile upsert error:', e); }
   },
 
   register: async (email, password, name) => {

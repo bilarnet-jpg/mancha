@@ -39,6 +39,7 @@ import AdminUsuarios from '../screens/admin/AdminUsuarios';
 import AdminAlaShow from '../screens/admin/AdminAlaShow';
 import AdminComunicados from '../screens/admin/AdminComunicados';
 import AdminMemberships from '../screens/admin/AdminMemberships';
+import StoreWebViewScreen from '../screens/store/StoreWebViewScreen';
 import ProfileScreen from '../screens/social/ProfileScreen';
 import EditProfileScreen from '../screens/social/EditProfileScreen';
 import AdminScanner from '../screens/admin/AdminScanner';
@@ -228,7 +229,7 @@ function MainNavigator() {
       />
       <Tab.Screen name="AgendaTab" component={AgendaNavigator} />
       <Tab.Screen name="ManchaTab" component={CommunityNavigator} />
-      <Tab.Screen name="LojaTab" component={StoreNavigator} />
+      <Tab.Screen name="LojaTab" component={StoreWebViewScreen} />
       <Tab.Screen name="SocioTab" component={SocioNavigator} />
     </Tab.Navigator>
   );
