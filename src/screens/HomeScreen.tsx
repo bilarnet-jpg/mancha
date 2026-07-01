@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import HamburgerMenu from '../components/HamburgerMenu';
+import SplashAnnouncementModal from '../components/SplashAnnouncementModal';
 import { useFonts, DancingScript_700Bold } from '@expo-google-fonts/dancing-script';
 import {
   View, Text, StyleSheet, ScrollView,
@@ -43,6 +44,7 @@ export default function HomeScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
   const { user, logout } = useAuthStore();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
   const [fontsLoaded] = useFonts({ DancingScript_700Bold });
 
   return (
@@ -261,6 +263,9 @@ export default function HomeScreen({ navigation }: any) {
 
       </ScrollView>
         <HamburgerMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} navigation={navigation} />
+        {showSplash && (
+          <SplashAnnouncementModal onDismiss={() => setShowSplash(false)} />
+        )}
     </View>
   );
 }

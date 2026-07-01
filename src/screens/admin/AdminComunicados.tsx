@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Spacing, Radius } from '../../theme';
 import GlowBackground from '../../components/GlowBackground';
 import GlassCard from '../../components/GlassCard';
+import { supabase } from '../../services/supabase';
 
 interface Comunicado {
   id: string; title: string; message: string; emoji: string;
@@ -24,24 +25,64 @@ export default function AdminComunicados({ navigation }: any) {
   const insets = useSafeAreaInsets();
   const [comunicados, setComunicados] = useState<Comunicado[]>(MOCK_COMUNICADOS);
   const [showForm, setShowForm] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
   const [emoji, setEmoji] = useState('📣');
   const [accentColor, setAccentColor] = useState('#00FF85');
   const [duration, setDuration] = useState('5');
 
-  const handleCreate = () => {
-    if (!title.trim() || !message.trim()) { Alert.alert('Atenção', 'Preencha título e mensagem.'); return; }
-    const novo: Comunicado = { id: `c-${Date.now()}`, title: title.trim(), message: message.trim(), emoji, accent_color: accentColor, duration_seconds: parseInt(duration) || 5, is_active: true, starts_at: new Date().toISOString(), createdAt: new Date().toISOString() };
-    setComunicados(prev => [novo, ...prev]);
-    setShowForm(false); setTitle(''); setMessage('');
-    Alert.alert('✅ Comunicado criado!', 'O splash será exibido para os usuários ao fazer login.');
+  useEffect(() => {
+    loadFromSupabase();
+  }, []);
+
+  const loadFromSupabase = async () => {
+    setLoadingData(true);
+    const { data } = await supabase
+      .from('splash_announcements')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (data) setComunicados(data.map(d => ({
+      id: d.id,
+      title: d.title,
+      message: d.message,
+      emoji: d.emoji ?? '📣',
+      accent_color: d.accent_color ?? '#00FF85',
+      duration_seconds: d.duration_seconds ?? 5,
+      is_active: d.is_active,
+      starts_at: d.starts_at,
+      ends_at: d.ends_at,
+      createdAt: d.created_at,
+    })));
+    setLoadingData(false);
   };
 
-  const handleToggleActive = (id: string) => setComunicados(prev => prev.map(c => c.id === id ? { ...c, is_active: !c.is_active } : c));
+  const handleCreate = async () => {
+    if (!title.trim() || !message.trim()) { Alert.alert('Atenção', 'Preencha título e mensagem.'); return; }
+    const { data, error } = await supabase.from('splash_announcements').insert({
+      title: title.trim(),
+      message: message.trim(),
+      emoji,
+      accent_color: accentColor,
+      duration_seconds: parseInt(duration) || 5,
+      is_active: true,
+      starts_at: new Date().toISOString(),
+    }).select().single();
+    if (error) { Alert.alert('Erro', error.message); return; }
+    if (data) setComunicados(prev => [{ id: data.id, title: data.title, message: data.message, emoji: data.emoji, accent_color: data.accent_color, duration_seconds: data.duration_seconds, is_active: data.is_active, starts_at: data.starts_at, createdAt: data.created_at }, ...prev]);
+    setShowForm(false); setTitle(''); setMessage('');
+    Alert.alert('✅ Comunicado criado!', 'O splash será exibido para os usuários ao abrir o app!');
+  };
+
+  const handleToggleActive = async (id: string) => {
+    const com = comunicados.find(c => c.id === id);
+    if (!com) return;
+    await supabase.from('splash_announcements').update({ is_active: !com.is_active }).eq('id', id);
+    setComunicados(prev => prev.map(c => c.id === id ? { ...c, is_active: !c.is_active } : c));
+  };
   const handleDelete = (id: string) => Alert.alert('Remover', 'Tem certeza?', [
     { text: 'Cancelar' },
-    { text: 'Remover', style: 'destructive', onPress: () => setComunicados(prev => prev.filter(c => c.id !== id)) },
+    { text: 'Remover', style: 'destructive', onPress: async () => { await supabase.from('splash_announcements').delete().eq('id', id); setComunicados(prev => prev.filter(c => c.id !== id)); } },
   ]);
 
   const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
