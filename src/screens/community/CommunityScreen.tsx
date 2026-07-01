@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCommunityStore } from '../../store/communityStore';
 import { useAuthStore } from '../../store/authStore';
+import { useSocialStore } from '../../store/socialStore';
 import { CATEGORY_CONFIG, CommunityPost } from '../../types/community';
 import { Colors, Spacing, Radius } from '../../theme';
 import PremiumGate from '../../components/PremiumGate';
@@ -18,6 +19,7 @@ const { width: W } = Dimensions.get('window');
 const FILTERS = [
   { key: 'recent', label: 'Recentes' },
   { key: 'popular', label: 'Em alta' },
+  { key: 'friends', label: '👥 Amigos' },
   { key: 'most_viewed', label: 'Mais vistos' },
 ];
 
@@ -41,12 +43,22 @@ export default function CommunityScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
   const { posts, reels, activeFilter, searchQuery, loadPosts, setFilter, setSearch, toggleLike, getFiltered } = useCommunityStore();
   const { user } = useAuthStore();
+  const { friends, loadFriendships } = useSocialStore();
+  const [activeTab, setActiveTab] = useState<'recent' | 'popular' | 'friends'>('recent');
   const [showSearch, setShowSearch] = useState(false);
   const [showPremiumGate, setShowPremiumGate] = useState(false);
 
+  useEffect(() => {
+    if (user?.id) loadFriendships(user.id);
+  }, [user?.id]);
+
   useEffect(() => { loadPosts(); }, []);
 
-  const filtered = getFiltered();
+  const allPosts = getFiltered();
+  const friendIds = friends.map(f => f.user_id === user?.id ? f.friend_id : f.user_id);
+  const filtered = activeTab === 'friends'
+    ? allPosts.filter(p => friendIds.includes(p.userId) || p.userId === user?.id)
+    : allPosts;
 
   const handleShare = async (post: CommunityPost) => {
     await Share.share({
