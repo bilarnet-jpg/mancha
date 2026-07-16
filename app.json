@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "mancha-app",
-    "slug": "mancha-app",
+    "name": "Mancha Carnaval",
+    "slug": "mancha-carnaval",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0A1F14"
     },
     "ios": {
       "supportsTablet": true
@@ -18,17 +18,39 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#0A1F14"
       },
+      "package": "com.feelinkstudio.manchacarnaval",
+      "versionCode": 1,
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.VIBRATE",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-font",
-      "expo-barcode-scanner"
-    ]
+      "expo-barcode-scanner",
+      "expo-image-picker",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "O app precisa da câmera para escanear QR Codes de sócios."
+        }
+      ]
+    ],
+    "description": "O app oficial da Mancha Verde Paulistana - Escola de Samba",
+    "extra": {
+      "eas": {
+        "projectId": "679122ce-0832-4868-860f-95559c42405f"
+      }
+    }
   }
 }

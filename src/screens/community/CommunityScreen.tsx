@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   Dimensions, TextInput, Share,
@@ -41,7 +42,7 @@ const formatCount = (n: number) => {
 
 export default function CommunityScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
-  const { posts, reels, activeFilter, searchQuery, loadPosts, setFilter, setSearch, toggleLike, getFiltered } = useCommunityStore();
+  const { posts, reels, searchQuery, activeCategory, loadPosts, setCategory, setSearch, toggleLike, getFiltered } = useCommunityStore();
   const { user } = useAuthStore();
   const { friends, loadFriendships } = useSocialStore();
   const [activeTab, setActiveTab] = useState<'recent' | 'popular' | 'friends'>('recent');
@@ -149,10 +150,10 @@ export default function CommunityScreen({ navigation }: any) {
             {FILTERS.map(f => (
               <TouchableOpacity
                 key={f.key}
-                onPress={() => setFilter(f.key)}
-                style={[styles.filterChip, activeFilter === f.key && styles.filterChipActive]}
+                onPress={() => setCategory(f.key)}
+                style={[styles.filterChip, activeCategory === f.key && styles.filterChipActive]}
               >
-                <Text style={[styles.filterLabel, activeFilter === f.key && styles.filterLabelActive]}>{f.label}</Text>
+                <Text style={[styles.filterLabel, activeCategory === f.key && styles.filterLabelActive]}>{f.label}</Text>
               </TouchableOpacity>
             ))}
           </View>

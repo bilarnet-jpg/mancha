@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { CommunityPost, Reel, Comment, MOCK_POSTS, MOCK_REELS, MOCK_COMMENTS, MOCK_RANKING, CommunityProfile } from '../types/community';
+import { supabase } from '../services/supabase';
+import { CommunityPost, Reel, Comment, MOCK_REELS, MOCK_COMMENTS, MOCK_RANKING, CommunityProfile } from '../types/community';
 
 interface CommunityStore {
   posts: CommunityPost[];
@@ -7,136 +8,204 @@ interface CommunityStore {
   reels: Reel[];
   comments: Comment[];
   ranking: CommunityProfile[];
-  activeCategory: string;
-  activeFilter: string;
-  searchQuery: string;
   isLoading: boolean;
   pendingPosts: CommunityPost[];
+  activeTab: string;
+  searchQuery: string;
+  activeCategory: string;
 
-  loadPosts: () => void;
-  setCategory: (cat: string) => void;
-  setFilter: (filter: string) => void;
-  setSearch: (q: string) => void;
-  toggleLike: (postId: string, userId: string) => void;
-  toggleReelLike: (reelId: string, userId: string) => void;
-  submitPost: (post: Omit<CommunityPost, 'id' | 'likes' | 'views' | 'commentsCount' | 'status' | 'createdAt' | 'isFeatured' | 'isOfficial'>) => void;
+  loadPosts: () => Promise<void>;
+  submitPost: (post: any) => Promise<void>;
   getFiltered: () => CommunityPost[];
   getByCategory: (cat: string) => CommunityPost[];
-
-  // Comentários
+  setActiveTab: (tab: string) => void;
+  setSearch: (q: string) => void;
+  setCategory: (cat: string) => void;
+  toggleLike: (postId: string, userId: string) => Promise<void>;
+  toggleReelLike: (reelId: string, userId: string) => void;
   getCommentsFor: (postId: string) => Comment[];
-  addComment: (postId: string, userId: string, userName: string, text: string) => void;
+  addComment: (postId: string, userId: string, userName: string, text: string) => Promise<void>;
   toggleCommentLike: (commentId: string, userId: string) => void;
 }
 
 export const useCommunityStore = create<CommunityStore>((set, get) => ({
   posts: [],
   featuredPosts: [],
-  reels: [],
-  comments: [],
-  ranking: [],
-  activeCategory: 'all',
-  activeFilter: 'recent',
-  searchQuery: '',
+  reels: MOCK_REELS,
+  comments: MOCK_COMMENTS,
+  ranking: MOCK_RANKING,
   isLoading: false,
   pendingPosts: [],
+  activeTab: 'recent',
+  searchQuery: '',
+  activeCategory: 'todos',
 
-  loadPosts: () => {
-    const approved = MOCK_POSTS.filter(p => p.status === 'approved');
-    set({
-      posts: approved,
-      featuredPosts: approved.filter(p => p.isFeatured),
-      reels: MOCK_REELS,
-      comments: MOCK_COMMENTS,
-      ranking: MOCK_RANKING,
-    });
+  loadPosts: async () => {
+    set({ isLoading: true });
+    try {
+      // Carregar posts mock como base
+      const { MOCK_POSTS } = await import('../types/community');
+      const mockApproved = MOCK_POSTS.filter(p => p.status === 'approved');
+
+      // Carregar posts reais do Supabase
+      const { data } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('is_approved', true)
+        .order('created_at', { ascending: false });
+
+      const realPosts: CommunityPost[] = (data ?? []).map(p => ({
+        id: p.id,
+        userId: p.user_id,
+        userName: p.user_name,
+        userAvatar: p.user_avatar,
+        title: p.title,
+        description: p.description ?? '',
+        category: p.category,
+        mediaUrl: p.media_url ?? '',
+        mediaType: p.media_type ?? 'photo',
+        likes: [],
+        likesCount: p.likes_count ?? 0,
+        commentsCount: p.comments_count ?? 0,
+        views: 0,
+        status: 'approved' as const,
+        createdAt: p.created_at,
+        isFeatured: false,
+        isOfficial: false,
+      }));
+
+      // Combinar posts reais + mock
+      const allPosts = [...realPosts, ...mockApproved];
+      set({
+        posts: allPosts,
+        featuredPosts: allPosts.slice(0, 3),
+        isLoading: false,
+      });
+    } catch (e) {
+      console.log('loadPosts error:', e);
+      const { MOCK_POSTS } = await import('../types/community');
+      const approved = MOCK_POSTS.filter(p => p.status === 'approved');
+      set({ posts: approved, featuredPosts: approved.filter(p => p.isFeatured), isLoading: false });
+    }
   },
 
-  setCategory: (cat) => set({ activeCategory: cat }),
-  setFilter: (filter) => set({ activeFilter: filter }),
-  setSearch: (q) => set({ searchQuery: q }),
+  submitPost: async (post) => {
+    try {
+      // Admin não precisa de aprovação
+      const { useAuthStore } = await import('./authStore');
+      const isAdmin = useAuthStore.getState().user?.isAdmin ?? false;
 
-  toggleLike: (postId, userId) => {
-    set(state => ({
-      posts: state.posts.map(p => {
-        if (p.id !== postId) return p;
-        const liked = p.likes.includes(userId);
-        return { ...p, likes: liked ? p.likes.filter(u => u !== userId) : [...p.likes, userId] };
-      }),
-    }));
-  },
+      const { data } = await supabase
+        .from('posts')
+        .insert({
+          user_id: post.userId,
+          user_name: post.userName,
+          user_avatar: post.userAvatar,
+          title: post.title,
+          description: post.description,
+          category: post.category,
+          media_url: post.mediaUrl,
+          media_type: post.mediaType,
+          is_approved: isAdmin, // Admin aprova automaticamente
+        })
+        .select()
+        .single();
 
-  toggleReelLike: (reelId, userId) => {
-    set(state => ({
-      reels: state.reels.map(r => {
-        if (r.id !== reelId) return r;
-        const liked = r.likes.includes(userId);
-        return { ...r, likes: liked ? r.likes.filter(u => u !== userId) : [...r.likes, userId] };
-      }),
-    }));
-  },
-
-  submitPost: (postData) => {
-    const newPost: CommunityPost = {
-      ...postData,
-      id: `post-${Date.now()}`,
-      likes: [],
-      views: 0,
-      commentsCount: 0,
-      status: 'pending',
-      isFeatured: false,
-      isOfficial: false,
-      createdAt: new Date().toISOString(),
-    };
-    set(state => ({ pendingPosts: [newPost, ...state.pendingPosts] }));
+      if (data) {
+        const newPost: CommunityPost = {
+          id: data.id, userId: data.user_id, userName: data.user_name,
+          title: data.title, description: data.description ?? '',
+          category: data.category, mediaUrl: data.media_url ?? '',
+          mediaType: data.media_type, likes: [], likesCount: 0,
+          commentsCount: 0, views: 0, status: 'pending',
+          createdAt: data.created_at, isFeatured: false, isOfficial: false,
+        };
+        set(s => ({ pendingPosts: [newPost, ...s.pendingPosts] }));
+      }
+    } catch (e) {
+      console.log('submitPost error:', e);
+    }
   },
 
   getFiltered: () => {
-    const { posts, activeCategory, activeFilter, searchQuery } = get();
-    let result = [...posts];
-    if (activeCategory !== 'all') result = result.filter(p => p.category === activeCategory);
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(p => p.title.toLowerCase().includes(q) || p.description.toLowerCase().includes(q) || p.userName.toLowerCase().includes(q));
-    }
-    if (activeFilter === 'popular') result.sort((a, b) => b.likes.length - a.likes.length);
-    else if (activeFilter === 'most_viewed') result.sort((a, b) => b.views - a.views);
-    else result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    return result;
+    const { posts, searchQuery, activeCategory, activeTab } = get();
+    let filtered = posts;
+    if (searchQuery) filtered = filtered.filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.userName.toLowerCase().includes(searchQuery.toLowerCase()));
+    if (activeCategory !== 'todos') filtered = filtered.filter(p => p.category === activeCategory);
+    if (activeTab === 'popular') filtered = [...filtered].sort((a, b) => (b.likesCount ?? 0) - (a.likesCount ?? 0));
+    return filtered;
   },
 
   getByCategory: (cat) => get().posts.filter(p => p.category === cat),
+  setActiveTab: (tab) => set({ activeTab: tab }),
+  setSearch: (q) => set({ searchQuery: q }),
+  setCategory: (cat) => set({ activeCategory: cat }),
 
-  getCommentsFor: (postId) => {
-    return get().comments
-      .filter(c => c.postId === postId)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  toggleLike: async (postId, userId) => {
+    const { posts } = get();
+    const post = posts.find(p => p.id === postId);
+    if (!post) return;
+
+    const isLiked = post.likes.includes(userId);
+
+    // Atualizar UI otimisticamente
+    set(s => ({
+      posts: s.posts.map(p => p.id === postId ? {
+        ...p,
+        likes: isLiked ? p.likes.filter(u => u !== userId) : [...p.likes, userId],
+        likesCount: (p.likesCount ?? 0) + (isLiked ? -1 : 1),
+      } : p)
+    }));
+
+    // Atualizar Supabase
+    if (isLiked) {
+      await supabase.from('post_likes').delete().eq('post_id', postId).eq('user_id', userId);
+      await supabase.from('posts').update({ likes_count: (post.likesCount ?? 1) - 1 }).eq('id', postId);
+    } else {
+      await supabase.from('post_likes').insert({ post_id: postId, user_id: userId });
+      await supabase.from('posts').update({ likes_count: (post.likesCount ?? 0) + 1 }).eq('id', postId);
+    }
   },
 
-  addComment: (postId, userId, userName, text) => {
-    const newComment: Comment = {
-      id: `comment-${Date.now()}`,
-      postId,
-      userId,
-      userName,
-      text,
-      createdAt: new Date().toISOString(),
-      likes: [],
-    };
-    set(state => ({
-      comments: [newComment, ...state.comments],
-      posts: state.posts.map(p => p.id === postId ? { ...p, commentsCount: p.commentsCount + 1 } : p),
-      reels: state.reels.map(r => r.id === postId ? { ...r, commentsCount: r.commentsCount + 1 } : r),
+  toggleReelLike: (reelId, userId) => {
+    set(s => ({
+      reels: s.reels.map(r => r.id === reelId ? {
+        ...r,
+        likes: r.likes.includes(userId) ? r.likes.filter(u => u !== userId) : [...r.likes, userId],
+      } : r)
     }));
   },
 
+  getCommentsFor: (postId) => get().comments.filter(c => c.postId === postId),
+
+  addComment: async (postId, userId, userName, text) => {
+    try {
+      await supabase.from('post_comments').insert({
+        post_id: postId,
+        user_id: userId,
+        user_name: userName,
+        content: text,
+      });
+      await supabase.from('posts').update({ comments_count: supabase.rpc('increment', { x: 1 }) }).eq('id', postId);
+    } catch (e) {
+      console.log('addComment error:', e);
+    }
+    // Adicionar localmente também
+    const newComment: Comment = {
+      id: `c-${Date.now()}`,
+      postId, userId, userName,
+      text, likes: [],
+      createdAt: new Date().toISOString(),
+    };
+    set(s => ({ comments: [...s.comments, newComment] }));
+  },
+
   toggleCommentLike: (commentId, userId) => {
-    set(state => ({
-      comments: state.comments.map(c => {
-        if (c.id !== commentId) return c;
-        const liked = c.likes.includes(userId);
-        return { ...c, likes: liked ? c.likes.filter(u => u !== userId) : [...c.likes, userId] };
-      }),
+    set(s => ({
+      comments: s.comments.map(c => c.id === commentId ? {
+        ...c,
+        likes: c.likes.includes(userId) ? c.likes.filter(u => u !== userId) : [...c.likes, userId],
+      } : c)
     }));
   },
 }));

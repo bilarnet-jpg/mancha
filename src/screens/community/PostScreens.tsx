@@ -7,6 +7,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCommunityStore } from '../../store/communityStore';
 import { useAuthStore } from '../../store/authStore';
+import * as ImagePicker from 'expo-image-picker';
+import { Image } from 'react-native';
+import { supabase } from '../../services/supabase';
 import { CATEGORY_CONFIG, MOCK_POSTS, PostCategory } from '../../types/community';
 import { Colors, Spacing, Radius } from '../../theme';
 import GlassCard from '../../components/GlassCard';
@@ -168,25 +171,61 @@ export function SubmitPostScreen({ navigation }: any) {
   const [year, setYear] = useState('');
   const [mediaType, setMediaType] = useState<'photo' | 'video'>('photo');
   const [submitted, setSubmitted] = useState(false);
+  const [mediaUri, setMediaUri] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const CATEGORIES_LIST: PostCategory[] = ['carnaval', 'ensaio', 'show', 'evento', 'bastidores', 'premiacao', 'viagem', 'comemoracao'];
 
-  const handleSubmit = () => {
+  const handlePickMedia = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') { Alert.alert('Permissão necessária'); return; }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true, quality: 0.8,
+    });
+    if (!result.canceled && result.assets[0]) {
+      setMediaUri(result.assets[0].uri);
+      setMediaType(result.assets[0].type === 'video' ? 'video' : 'photo');
+    }
+  };
+
+  const uploadMedia = async (): Promise<string | null> => {
+    if (!mediaUri || !user) return null;
+    try {
+      const fileExt = mediaUri.split('.').pop()?.toLowerCase() ?? 'jpg';
+      const filePath = `posts/${user.id}/${Date.now()}.${fileExt}`;
+      const contentType = mediaType === 'video' ? 'video/mp4' : `image/${fileExt}`;
+      const response = await fetch(mediaUri);
+      const arrayBuffer = await response.arrayBuffer();
+      const { error } = await supabase.storage.from('posts').upload(filePath, arrayBuffer, { upsert: true, contentType });
+      if (error) throw error;
+      const { data } = supabase.storage.from('posts').getPublicUrl(filePath);
+      return data.publicUrl;
+    } catch (e) {
+      console.log('uploadMedia error:', e);
+      return null;
+    }
+  };
+
+  const handleSubmit = async () => {
     if (!title.trim() || !description.trim()) {
       Alert.alert('Atenção', 'Preencha o título e a descrição.');
       return;
     }
     if (!user) { navigation.navigate('Login'); return; }
-    submitPost({
+    setUploading(true);
+    const mediaUrl = await uploadMedia();
+    await submitPost({
       userId: user.id,
       userName: user.displayName,
+      userAvatar: null,
       title: title.trim(),
       description: description.trim(),
       mediaType,
-      mediaURL: '',
+      mediaUrl: mediaUrl ?? '',
       category,
-      relatedYear: year ? parseInt(year) : undefined,
     });
+    setUploading(false);
     setSubmitted(true);
   };
 
@@ -446,6 +485,13 @@ const styles = StyleSheet.create({
   categoryOptionLabel: { fontSize: 12, color: Colors.textSecondary, fontWeight: '500' },
   categoryOptionLabelActive: { color: Colors.primaryBright },
   moderationText: { flex: 1, fontSize: 12, color: Colors.textSecondary, lineHeight: 18 },
+  mediaPickerBtn: { borderWidth: 1.5, borderColor: Colors.glassBorder, borderRadius: Radius.lg, borderStyle: 'dashed', marginBottom: Spacing.base, overflow: 'hidden' },
+  mediaPickerEmpty: { alignItems: 'center', padding: 30 },
+  mediaPickerText: { fontSize: 14, color: Colors.textSecondary, fontWeight: '500', marginBottom: 4 },
+  mediaPickerSub: { fontSize: 12, color: Colors.textMuted },
+  mediaPreview: { position: 'relative' },
+  mediaPreviewImg: { width: '100%', height: 200 },
+  removeMediaBtn: { position: 'absolute', top: 8, right: 8, backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: Radius.md, paddingHorizontal: 10, paddingVertical: 5 },
   successTitle: { fontSize: 24, color: Colors.textPrimary, fontWeight: '700', marginBottom: 10, textAlign: 'center' },
   successSub: { fontSize: 14, color: Colors.textSecondary, textAlign: 'center', lineHeight: 22, marginBottom: Spacing.xl },
   pendingTitle: { fontSize: 14, color: Colors.textPrimary, fontWeight: '600' },

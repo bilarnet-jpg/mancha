@@ -1,23 +1,56 @@
-import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MOCK_ADMIN_POSTS, AdminPost } from '../../types/admin';
+import { AdminPost } from '../../types/admin';
+import { supabase } from '../../services/supabase';
+import React, { useState, useEffect } from 'react';
 import { Colors, Spacing, Radius } from '../../theme';
 import GlowBackground from '../../components/GlowBackground';
 import GlassCard from '../../components/GlassCard';
 
 export default function AdminModeracao({ navigation }: any) {
   const insets = useSafeAreaInsets();
-  const [posts, setPosts] = useState<AdminPost[]>(MOCK_ADMIN_POSTS);
+  const [posts, setPosts] = useState<AdminPost[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'pending' | 'approved' | 'rejected'>('pending');
+  useEffect(() => { loadPosts(); }, []);
+
+  const loadPosts = async () => {
+    setLoading(true);
+    const { data } = await supabase
+      .from('posts')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (data) {
+      setPosts(data.map(p => ({
+        id: p.id,
+        userId: p.user_id,
+        userName: p.user_name,
+        title: p.title,
+        description: p.description ?? '',
+        category: p.category,
+        mediaType: p.media_type ?? 'photo',
+        status: p.is_approved ? 'approved' : 'pending',
+        createdAt: p.created_at,
+        reportCount: 0,
+      })));
+    }
+    setLoading(false);
+  };
+
   const filtered = posts.filter(p => p.status === activeTab);
   const pendingCount = posts.filter(p => p.status === 'pending').length;
 
-  const handleApprove = (id: string) => setPosts(prev => prev.map(p => p.id === id ? { ...p, status: 'approved' } : p));
+  const handleApprove = async (id: string) => {
+    await supabase.from('posts').update({ is_approved: true }).eq('id', id);
+    setPosts(prev => prev.map(p => p.id === id ? { ...p, status: 'approved' } : p));
+  };
   const handleReject = (id: string) => Alert.alert('Reprovar post', 'Tem certeza?', [
     { text: 'Cancelar' },
-    { text: 'Reprovar', style: 'destructive', onPress: () => setPosts(prev => prev.map(p => p.id === id ? { ...p, status: 'rejected' } : p)) },
+    { text: 'Reprovar', style: 'destructive', onPress: async () => {
+      await supabase.from('posts').update({ is_approved: false }).eq('id', id);
+      setPosts(prev => prev.map(p => p.id === id ? { ...p, status: 'rejected' } : p));
+    }},
   ]);
 
   const CATEGORY_CONFIG: any = {
@@ -60,7 +93,11 @@ export default function AdminModeracao({ navigation }: any) {
         </View>
 
         <View style={{ paddingHorizontal: Spacing.xl, gap: 12 }}>
-          {filtered.length === 0 ? (
+          {loading ? (
+            <View style={{ alignItems: 'center', paddingVertical: 40 }}>
+              <Text style={{ color: Colors.textMuted }}>Carregando...</Text>
+            </View>
+          ) : filtered.length === 0 ? (
             <View style={styles.empty}>
               <Text style={{ fontSize: 48 }}>{activeTab === 'pending' ? '✅' : activeTab === 'approved' ? '📸' : '🚫'}</Text>
               <Text style={styles.emptyTitle}>{activeTab === 'pending' ? 'Nenhum post pendente!' : 'Nenhum post aqui'}</Text>
