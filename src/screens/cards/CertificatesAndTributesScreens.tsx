@@ -30,7 +30,7 @@ export function CertificatesScreen({ navigation }: any) {
       recipientName: recipientName.trim(),
       type: selectedType,
       eventName: eventName.trim() || undefined,
-      issuerName: 'Mancha Verde Paulistana',
+      issuerName: 'Mancha Verde Carnaval',
     });
     setShowForm(false);
     setRecipientName('');
@@ -42,7 +42,7 @@ export function CertificatesScreen({ navigation }: any) {
     const cfg = CERTIFICATE_CONFIG[cert.type];
     await Share.share({
       title: cfg.title,
-      message: `🏅 ${cfg.title}\n\nConcedido a: ${cert.recipientName}\nPor: ${cert.issuerName}\nData: ${new Date(cert.issuedAt).toLocaleDateString('pt-BR')}\n\nCódigo de validação: ${cert.validationCode}\n\nMancha Verde Paulistana 🐍💚`,
+      message: `🏅 ${cfg.title}\n\nConcedido a: ${cert.recipientName}\nPor: ${cert.issuerName}\nData: ${new Date(cert.issuedAt).toLocaleDateString('pt-BR')}\n\nCódigo de validação: ${cert.validationCode}\n\nMancha Verde Carnaval 🐍💚`,
     });
   };
 

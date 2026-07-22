@@ -162,8 +162,8 @@ export function ForgotPasswordScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   scroll: { paddingHorizontal: Spacing.xl, paddingBottom: 60, flexGrow: 1 },
   logoArea: { alignItems: 'center', marginBottom: Spacing.xxl },
-  logoRing: { width: 110, height: 110, borderRadius: 55, borderWidth: 1.5, borderColor: Colors.goldBorder, backgroundColor: 'rgba(13,61,26,0.2)', alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
-  logo: { width: 80, height: 80 },
+  logoRing: { width: 130, height: 130, alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
+  logo: { width: 130, height: 130 },
   appName: { fontSize: 20, color: Colors.textPrimary, letterSpacing: 3, textAlign: 'center', fontWeight: '700' },
   appSub: { fontSize: 11, color: Colors.textMuted, letterSpacing: 2, marginTop: 4 },
   title: { fontSize: 26, color: Colors.textPrimary, marginBottom: 6, fontWeight: '700' },

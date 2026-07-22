@@ -76,8 +76,8 @@ export default function CommunityScreen({ navigation }: any) {
         {/* HEADER */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.headerTitle}>Comunidade</Text>
-            <Text style={styles.headerSub}>Mancha Verde Paulistana</Text>
+            <Text style={styles.headerTitle}>Rede Social MV</Text>
+            <Text style={styles.headerSub}>Mancha Verde Carnaval</Text>
           </View>
           <View style={styles.headerActions}>
             <TouchableOpacity onPress={() => setShowSearch(!showSearch)} style={styles.iconBtn}>

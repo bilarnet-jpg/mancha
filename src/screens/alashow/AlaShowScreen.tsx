@@ -73,7 +73,7 @@ const generateEmailHTML = (nome: string, evento: string, data: string) => `
     <div class="divider"></div>
     <div class="body">
       <p class="greeting">Olá, ${nome}! 🎭</p>
-      <p class="text">Muito obrigado pelo seu interesse em contratar a <strong>Ala Show da Mancha Verde Paulistana</strong>! Recebemos sua solicitação e estamos muito animados com a possibilidade de levar a magia do nosso carnaval para o seu evento.</p>
+      <p class="text">Muito obrigado pelo seu interesse em contratar a <strong>Ala Show da Mancha Verde Carnaval</strong>! Recebemos sua solicitação e estamos muito animados com a possibilidade de levar a magia do nosso carnaval para o seu evento.</p>
 
       <div class="highlight">
         <p><strong>Evento:</strong> ${evento}</p>
@@ -102,10 +102,10 @@ const generateEmailHTML = (nome: string, evento: string, data: string) => `
       </div>
 
       <p class="text">Qualquer dúvida, estamos à disposição. Até breve!</p>
-      <p class="text">Com muito axé e carnaval,<br><strong>Equipe Mancha Verde Paulistana 🐍💚</strong></p>
+      <p class="text">Com muito axé e carnaval,<br><strong>Equipe Mancha Verde Carnaval 🐍💚</strong></p>
     </div>
     <div class="footer">
-      <p><strong>Mancha Verde Paulistana</strong></p>
+      <p><strong>Mancha Verde Carnaval</strong></p>
       <p>Escola de Samba · São Paulo · Brasil</p>
       <p style="margin-top: 12px; font-size: 10px;">Você recebeu este email porque solicitou informações sobre a Ala Show através do app Mancha Carnaval.</p>
     </div>

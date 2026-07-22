@@ -28,7 +28,8 @@ const MENU_ITEMS = [
   { emoji: '🛍️', label: 'Loja', screen: 'LojaTab' },
   { emoji: '👑', label: 'Sócio Mancha', screen: 'SocioTab' },
   { emoji: '📅', label: 'Agenda', screen: 'AgendaTab' },
-  { emoji: '📸', label: 'Comunidade', screen: 'ManchaTab' },
+  { emoji: '📸', label: 'Rede Social MV', screen: 'ManchaTab' },
+  { emoji: '🎉', label: 'Ala da Comunidade', screen: 'ComunidadeInfo' },
 ];
 
 export default function HamburgerMenu({ isOpen, onClose, navigation }: HamburgerMenuProps) {

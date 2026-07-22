@@ -154,6 +154,21 @@ export default function HomeScreen({ navigation }: any) {
           </View>
         </TouchableOpacity>
 
+        {/* ALA DA COMUNIDADE */}
+        <TouchableOpacity onPress={() => navigation.navigate('ComunidadeInfo')} activeOpacity={0.9} style={{ marginBottom: 18 }}>
+          <LinearGradient colors={['#0A2E14', '#134227']} style={styles.comunidadeCard}>
+            <View style={styles.comunidadeAccent} />
+            <View style={{ flex: 1 }}>
+              <View style={styles.comunidadeBadge}>
+                <Text style={styles.comunidadeBadgeText}>💚 PARTICIPE</Text>
+              </View>
+              <Text style={styles.comunidadeTitle}>{'Ala da\nComunidade'}</Text>
+              <Text style={styles.comunidadeSub}>Faça parte da nossa torcida</Text>
+            </View>
+            <Text style={{ fontSize: 44 }}>🎉</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
         {/* ACESSO RÁPIDO */}
         <Text style={styles.sectionTitle}>Acesso rápido</Text>
         <View style={styles.quickGrid}>
@@ -310,6 +325,12 @@ const styles = StyleSheet.create({
   adminBtnText: { fontSize: 13, color: Colors.gold, fontWeight: '700' },
   cartoesAccent: { position: 'absolute', top: 0, left: 0, right: 0, height: 2, backgroundColor: '#C77DD8', borderTopLeftRadius: 28, borderTopRightRadius: 28 },
   alaShowAccent: { position: 'absolute', top: 0, left: 0, right: 0, height: 2, backgroundColor: '#FF4081', borderTopLeftRadius: 28, borderTopRightRadius: 28 },
+  comunidadeCard: { borderRadius: Radius.xl, padding: 20, flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1, borderColor: 'rgba(0,255,133,0.2)', position: 'relative', overflow: 'hidden' },
+  comunidadeAccent: { position: 'absolute', top: 0, left: 0, right: 0, height: 2, backgroundColor: Colors.primaryBright },
+  comunidadeBadge: { backgroundColor: Colors.primaryMuted, borderWidth: 1, borderColor: 'rgba(0,255,133,0.3)', borderRadius: 4, paddingHorizontal: 8, paddingVertical: 3, alignSelf: 'flex-start', marginBottom: 8 },
+  comunidadeBadgeText: { fontSize: 10, color: Colors.primaryBright, fontWeight: '700', letterSpacing: 1 },
+  comunidadeTitle: { fontSize: 20, color: Colors.textPrimary, fontWeight: '800', lineHeight: 26, marginBottom: 4 },
+  comunidadeSub: { fontSize: 12, color: Colors.textSecondary },
   alaShowBadge: { backgroundColor: 'rgba(255,64,129,0.15)', borderWidth: 1, borderColor: 'rgba(255,64,129,0.4)', borderRadius: 4, paddingHorizontal: 8, paddingVertical: 3, alignSelf: 'flex-start', marginBottom: 8 },
   alaShowBadgeText: { fontSize: 10, color: '#FF4081', fontWeight: '700', letterSpacing: 1.5 },
   alaShowTitle: { fontSize: 19, color: Colors.textPrimary, fontWeight: '700', lineHeight: 24, marginBottom: 4 },
