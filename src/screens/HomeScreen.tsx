@@ -4,7 +4,7 @@ import SplashAnnouncementModal from '../components/SplashAnnouncementModal';
 import DailySplashModal from '../components/DailySplashModal';
 import { useFonts, DancingScript_700Bold } from '@expo-google-fonts/dancing-script';
 import {
-  View, Text, StyleSheet, ScrollView,
+  View, Text, StyleSheet, ScrollView, Linking,
   TouchableOpacity, Dimensions, Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -251,6 +251,23 @@ export default function HomeScreen({ navigation }: any) {
           </TouchableOpacity>
         )}
 
+        {/* SIGA-NOS */}
+        <Text style={styles.sectionTitle}>Siga-nos</Text>
+        <View style={styles.sigaNosGrid}>
+          {[
+            { emoji: '🌐', label: 'Site Oficial', url: 'https://manchaverde.com.br' },
+            { emoji: '📘', label: 'Facebook', url: 'https://facebook.com/gres.mancha.verde?fref=ts' },
+            { emoji: '🐦', label: 'Twitter', url: 'https://twitter.com/MANCHACARNAVAL' },
+            { emoji: '📸', label: 'Instagram', url: 'https://instagram.com/MANCHACARNAVAL' },
+            { emoji: '▶️', label: 'YouTube', url: 'https://www.youtube.com/@ManchaCarnavalOficial' },
+          ].map((item, i) => (
+            <TouchableOpacity key={i} onPress={() => Linking.openURL(item.url)} style={styles.sigaNosCard} activeOpacity={0.8}>
+              <Text style={{ fontSize: 24, marginBottom: 6 }}>{item.emoji}</Text>
+              <Text style={styles.sigaNosLabel}>{item.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
         {/* SELO SECRETARIA DA CULTURA SP */}
         <View style={styles.culturaBanner}>
           <Image source={require('../../assets/images/banner-secretaria-sp.png')} style={styles.culturaBannerImg} resizeMode="contain" />
@@ -274,6 +291,9 @@ const styles = StyleSheet.create({
   greeting: { fontSize: 13, color: Colors.textTertiary },
   headerAvatar: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
   headerAvatarText: { fontSize: 15, color: Colors.textInverse, fontWeight: '800' },
+  sigaNosGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20, marginTop: 4 },
+  sigaNosCard: { width: '18%', minWidth: 62, aspectRatio: 1, backgroundColor: Colors.glassLight, borderWidth: 1, borderColor: Colors.glassBorder, borderRadius: Radius.lg, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 },
+  sigaNosLabel: { fontSize: 9, color: Colors.textSecondary, textAlign: 'center', fontWeight: '600' },
   culturaBanner: { backgroundColor: '#0A2E14', borderRadius: Radius.lg, paddingVertical: 18, paddingHorizontal: 20, alignItems: 'center', justifyContent: 'center', marginTop: 8 },
   culturaBannerImg: { width: '100%', height: 50 },
   hamburgerBtn: { width: 38, height: 38, borderRadius: 12, backgroundColor: Colors.glassLight, borderWidth: 1, borderColor: Colors.glassBorder, alignItems: 'center', justifyContent: 'center' },

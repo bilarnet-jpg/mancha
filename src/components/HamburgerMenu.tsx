@@ -19,19 +19,19 @@ interface HamburgerMenuProps {
 }
 
 const MENU_ITEMS = [
-  { emoji: '👤', label: 'Meu Perfil', screen: 'Profile' },
   { emoji: '🏠', label: 'Início', screen: null },
+  { emoji: '👤', label: 'Meu Perfil', screen: 'Profile' },
   { emoji: '🎭', label: 'Minha História', screen: 'MinhaHistoria' },
-  { emoji: '🎵', label: 'Mancha na Avenida', screen: 'Avenida' },
-  { emoji: '💌', label: 'Cartões da Mancha', screen: 'CardsMain' },
-  { emoji: '💃', label: 'Contrate a Ala Show', screen: 'AlaShow' },
-  { emoji: '🛍️', label: 'Loja', screen: 'LojaTab' },
-  { emoji: '👑', label: 'Sócio Mancha', screen: 'SocioTab' },
-  { emoji: '📅', label: 'Agenda', screen: 'AgendaTab' },
-  { emoji: '📸', label: 'Rede Social MV', screen: 'ManchaTab' },
-  { emoji: '🎉', label: 'Ala da Comunidade', screen: 'ComunidadeInfo' },
-  { emoji: '👑', label: 'Nosso Presidente', screen: 'Presidente' },
   { emoji: '🏫', label: 'Nossa Escola', screen: 'NossaEscola' },
+  { emoji: '👑', label: 'Nosso Presidente', screen: 'Presidente' },
+  { emoji: '🎵', label: 'Mancha na Avenida', screen: 'Avenida' },
+  { emoji: '💃', label: 'Contrate a Ala Show', screen: 'AlaShow' },
+  { emoji: '🎉', label: 'Ala da Comunidade', screen: 'ComunidadeInfo' },
+  { emoji: '📅', label: 'Agenda', screen: 'AgendaTab' },
+  { emoji: '🛍️', label: 'Loja', screen: 'LojaTab' },
+  { emoji: '💌', label: 'Cartões da Mancha', screen: 'CardsMain' },
+  { emoji: '📸', label: 'Rede Social MV', screen: 'ManchaTab' },
+  { emoji: '👑', label: 'Sócio Mancha', screen: 'SocioTab' },
 ];
 
 export default function HamburgerMenu({ isOpen, onClose, navigation }: HamburgerMenuProps) {
