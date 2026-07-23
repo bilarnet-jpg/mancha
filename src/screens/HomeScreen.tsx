@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import HamburgerMenu from '../components/HamburgerMenu';
 import SplashAnnouncementModal from '../components/SplashAnnouncementModal';
+import DailySplashModal from '../components/DailySplashModal';
 import { useFonts, DancingScript_700Bold } from '@expo-google-fonts/dancing-script';
 import {
   View, Text, StyleSheet, ScrollView,
@@ -45,6 +46,7 @@ export default function HomeScreen({ navigation }: any) {
   const { user, logout } = useAuthStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
+  const [showDailySplash, setShowDailySplash] = useState(true);
   const [fontsLoaded] = useFonts({ DancingScript_700Bold });
 
   return (
@@ -55,9 +57,16 @@ export default function HomeScreen({ navigation }: any) {
         {/* HEADER */}
         <View style={styles.greetingRow}>
           <Text style={styles.greeting}>{getGreeting()}, <Text style={styles.greetingName}>{user?.displayName?.split(' ')[0] ?? 'Torcedor'}</Text></Text>
-          <TouchableOpacity onPress={() => setMenuOpen(true)} style={styles.hamburgerBtn}>
-            <Text style={styles.hamburgerIcon}>☰</Text>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <TouchableOpacity onPress={() => navigation.navigate('Profile')} activeOpacity={0.85}>
+              <LinearGradient colors={user?.isPremium ? Colors.gradientGold as any : Colors.gradientPrimary as any} style={styles.headerAvatar}>
+                <Text style={styles.headerAvatarText}>{user?.displayName?.charAt(0)?.toUpperCase() ?? 'M'}</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setMenuOpen(true)} style={styles.hamburgerBtn}>
+              <Text style={styles.hamburgerIcon}>☰</Text>
+            </TouchableOpacity>
+          </View>
         </View>
         <View style={styles.titleRow}>
           <Image source={require('../../assets/images/novo-logo.png')} style={styles.titleLogo} resizeMode="contain" />
@@ -66,41 +75,7 @@ export default function HomeScreen({ navigation }: any) {
           </Text>
         </View>
 
-        {/* HERO STATS */}
-        <GlassCard style={{ marginBottom: 18, overflow: 'hidden' }}>
-          <View style={styles.heroAccentBar} />
-          <View style={styles.heroTop}>
-            <View style={styles.heroAvatarWrap}>
-              <LinearGradient colors={user?.isPremium ? Colors.gradientGold as any : Colors.gradientPrimary as any} style={styles.heroAvatar}>
-                <Text style={styles.heroAvatarText}>{user?.displayName?.charAt(0)?.toUpperCase() ?? 'M'}</Text>
-              </LinearGradient>
-              {user?.isPremium && <View style={styles.premiumCrown}><Text style={{ fontSize: 10 }}>👑</Text></View>}
-            </View>
-            <View style={{ flex: 1, marginLeft: 14 }}>
-              <Text style={styles.heroName}>{user?.displayName ?? 'Torcedor'}</Text>
-              <View style={styles.planoBadge}>
-                <Text style={[styles.planoBadgeText, { color: user?.isPremium ? Colors.gold : Colors.primaryBright }]}>
-                  {user?.isPremium ? '🥇 Plano Ouro' : '🎟️ Plano Free'}
-                </Text>
-              </View>
-            </View>
-            <TouchableOpacity onPress={logout} style={styles.logoutBtn}>
-              <Text style={{ fontSize: 13, color: Colors.textTertiary }}>Sair</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.statsRow}>
-            {[
-              { val: user?.xp ?? 0, label: 'XP', color: Colors.primaryBright },
-              { val: 0, label: 'Desfiles', color: '#FF4081' },
-              { val: 0, label: 'Conquistas', color: '#818CF8' },
-            ].map((s, i) => (
-              <View key={i} style={styles.statPill}>
-                <Text style={[styles.statNum, { color: s.color }]}>{s.val}</Text>
-                <Text style={styles.statLabel}>{s.label}</Text>
-              </View>
-            ))}
-          </View>
-        </GlassCard>
+
 
         {/* MINHA HISTÓRIA */}
         <TouchableOpacity onPress={() => navigation.navigate('MinhaHistoria')} activeOpacity={0.9} style={{ marginBottom: 14 }}>
@@ -131,7 +106,6 @@ export default function HomeScreen({ navigation }: any) {
                 <Text style={styles.cartoesTitle}>Cartões da{'\n'}Mancha</Text>
                 <Text style={styles.cartoesSub}>Compartilhe emoção, alegria e axé</Text>
               </View>
-              <Text style={{ fontSize: 44 }}>💌</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -149,24 +123,25 @@ export default function HomeScreen({ navigation }: any) {
                 <Text style={styles.alaShowTitle}>{'Ala Show na\nsua Festa'}</Text>
                 <Text style={styles.alaShowSub}>Leve o carnaval para o seu evento</Text>
               </View>
-              <Text style={{ fontSize: 44 }}>🎭</Text>
             </View>
           </View>
         </TouchableOpacity>
 
         {/* ALA DA COMUNIDADE */}
         <TouchableOpacity onPress={() => navigation.navigate('ComunidadeInfo')} activeOpacity={0.9} style={{ marginBottom: 18 }}>
-          <LinearGradient colors={['#0A2E14', '#134227']} style={styles.comunidadeCard}>
-            <View style={styles.comunidadeAccent} />
-            <View style={{ flex: 1 }}>
-              <View style={styles.comunidadeBadge}>
-                <Text style={styles.comunidadeBadgeText}>💚 PARTICIPE</Text>
+          <View style={styles.imgCard}>
+            <Image source={require('../../assets/images/logo-ala-comunidade.png')} style={[styles.imgCardBg, { backgroundColor: '#0A2E14' }]} resizeMode="contain" />
+            <View style={styles.imgCardOverlay} />
+            <View style={[styles.imgCardContent, { flexDirection: 'row', alignItems: 'center' }]}>
+              <View style={{ flex: 1 }}>
+                <View style={styles.comunidadeBadge}>
+                  <Text style={styles.comunidadeBadgeText}>💚 PARTICIPE</Text>
+                </View>
+                <Text style={styles.comunidadeTitle}>{'Ala da\nComunidade'}</Text>
+                <Text style={styles.comunidadeSub}>Faça parte da nossa torcida</Text>
               </View>
-              <Text style={styles.comunidadeTitle}>{'Ala da\nComunidade'}</Text>
-              <Text style={styles.comunidadeSub}>Faça parte da nossa torcida</Text>
             </View>
-            <Text style={{ fontSize: 44 }}>🎉</Text>
-          </LinearGradient>
+          </View>
         </TouchableOpacity>
 
         {/* ACESSO RÁPIDO */}
@@ -278,7 +253,10 @@ export default function HomeScreen({ navigation }: any) {
 
       </ScrollView>
         <HamburgerMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} navigation={navigation} />
-        {showSplash && (
+        {showDailySplash && (
+          <DailySplashModal onDismiss={() => setShowDailySplash(false)} />
+        )}
+        {!showDailySplash && showSplash && (
           <SplashAnnouncementModal onDismiss={() => setShowSplash(false)} />
         )}
     </View>
@@ -289,6 +267,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
   greetingRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
   greeting: { fontSize: 13, color: Colors.textTertiary },
+  headerAvatar: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
+  headerAvatarText: { fontSize: 15, color: Colors.textInverse, fontWeight: '800' },
   hamburgerBtn: { width: 38, height: 38, borderRadius: 12, backgroundColor: Colors.glassLight, borderWidth: 1, borderColor: Colors.glassBorder, alignItems: 'center', justifyContent: 'center' },
   hamburgerIcon: { fontSize: 18, color: Colors.textPrimary },
   greetingName: { color: Colors.primaryBright, fontWeight: '600' },
