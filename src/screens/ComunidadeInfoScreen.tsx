@@ -7,11 +7,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Spacing, Radius } from '../theme';
 import GlowBackground from '../components/GlowBackground';
 import GlassCard from '../components/GlassCard';
+import { useFonts, DancingScript_700Bold } from '@expo-google-fonts/dancing-script';
 
 const WHATSAPP_NUMBER = '5511999999999'; // TROCAR pelo WhatsApp real da Mancha Verde
 
 export default function ComunidadeInfoScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
+  const [fontsLoaded] = useFonts({ DancingScript_700Bold });
 
   const handleParticipar = () => {
     const msg = encodeURIComponent('Olá! Quero saber como participar da Ala da Comunidade da Mancha Verde! 💚');
@@ -51,11 +53,15 @@ export default function ComunidadeInfoScreen({ navigation }: any) {
 
           {/* INTRO */}
           <GlassCard style={{ alignItems: 'center', marginBottom: 24 }}>
-            <Text style={styles.introTitle}>Faça parte da Mancha Verde!</Text>
+            <Text style={[styles.introTitle, fontsLoaded && { fontFamily: 'DancingScript_700Bold' }]}>
+              {'Ala da Comunidade\nEssa é a nossa diferença'}
+            </Text>
             <Text style={styles.introText}>
-              A Ala da Comunidade é o coração da Mancha Verde Carnaval — o espaço aberto para
-              todo torcedor que quer viver o carnaval de verdade, desfilar com orgulho e fazer
-              parte da maior torcida organizada do Palmeiras.
+              A Ala da Comunidade é o pulmão da Escola.{'\n\n'}
+              É formada por componentes que vivem a rotina da quadra, participam dos ensaios e constroem o espetáculo com dedicação e amor.{'\n\n'}
+              Aqui não é apenas desfilar.{'\n'}
+              É compromisso e união.{'\n\n'}
+              Ser Comunidade é ser Mancha de verdade.
             </Text>
           </GlassCard>
 
@@ -114,7 +120,7 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 20, color: Colors.textPrimary, fontWeight: '800' },
   logoWrap: { alignItems: 'center', marginBottom: 24 },
   logo: { width: 220, height: 220 },
-  introTitle: { fontSize: 20, color: Colors.textPrimary, fontWeight: '800', marginBottom: 12, textAlign: 'center' },
+  introTitle: { fontSize: 30, color: Colors.primaryBright, fontWeight: '800', marginBottom: 16, textAlign: 'center', lineHeight: 36 },
   introText: { fontSize: 14, color: Colors.textSecondary, lineHeight: 22, textAlign: 'center' },
   sectionTitle: { fontSize: 16, color: Colors.textPrimary, fontWeight: '700', marginBottom: 12 },
   beneficioRow: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 14 },

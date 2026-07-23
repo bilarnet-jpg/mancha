@@ -39,7 +39,9 @@ import AdminUsuarios from '../screens/admin/AdminUsuarios';
 import AdminAlaShow from '../screens/admin/AdminAlaShow';
 import AdminComunicados from '../screens/admin/AdminComunicados';
 import AdminMemberships from '../screens/admin/AdminMemberships';
+import AdminHomenagensPresidente from '../screens/admin/AdminHomenagensPresidente';
 import ComunidadeInfoScreen from '../screens/ComunidadeInfoScreen';
+import PresidenteScreen from '../screens/PresidenteScreen';
 import StoreWebViewScreen from '../screens/store/StoreWebViewScreen';
 import ProfileScreen from '../screens/social/ProfileScreen';
 import EditProfileScreen from '../screens/social/EditProfileScreen';
@@ -104,7 +106,9 @@ function HomeNavigator() {
       <HomeStack.Screen name="AdminComunicados" component={AdminComunicados} />
       <HomeStack.Screen name="AdminScanner" component={AdminScanner} />
       <HomeStack.Screen name="AdminMemberships" component={AdminMemberships} />
+      <HomeStack.Screen name="AdminHomenagensPresidente" component={AdminHomenagensPresidente} />
       <HomeStack.Screen name="ComunidadeInfo" component={ComunidadeInfoScreen} />
+      <HomeStack.Screen name="Presidente" component={PresidenteScreen} />
       <HomeStack.Screen name="Profile" component={ProfileScreen} />
       <HomeStack.Screen name="EditProfile" component={EditProfileScreen} />
     </HomeStack.Navigator>
