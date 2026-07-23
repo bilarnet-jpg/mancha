@@ -31,6 +31,7 @@ const MENU_ITEMS = [
   { emoji: '📸', label: 'Rede Social MV', screen: 'ManchaTab' },
   { emoji: '🎉', label: 'Ala da Comunidade', screen: 'ComunidadeInfo' },
   { emoji: '👑', label: 'Nosso Presidente', screen: 'Presidente' },
+  { emoji: '🏫', label: 'Nossa Escola', screen: 'NossaEscola' },
 ];
 
 export default function HamburgerMenu({ isOpen, onClose, navigation }: HamburgerMenuProps) {

@@ -251,6 +251,11 @@ export default function HomeScreen({ navigation }: any) {
           </TouchableOpacity>
         )}
 
+        {/* SELO SECRETARIA DA CULTURA SP */}
+        <View style={styles.culturaBanner}>
+          <Image source={require('../../assets/images/banner-secretaria-sp.png')} style={styles.culturaBannerImg} resizeMode="contain" />
+        </View>
+
       </ScrollView>
         <HamburgerMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} navigation={navigation} />
         {showDailySplash && (
@@ -269,6 +274,8 @@ const styles = StyleSheet.create({
   greeting: { fontSize: 13, color: Colors.textTertiary },
   headerAvatar: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
   headerAvatarText: { fontSize: 15, color: Colors.textInverse, fontWeight: '800' },
+  culturaBanner: { backgroundColor: '#0A2E14', borderRadius: Radius.lg, paddingVertical: 18, paddingHorizontal: 20, alignItems: 'center', justifyContent: 'center', marginTop: 8 },
+  culturaBannerImg: { width: '100%', height: 50 },
   hamburgerBtn: { width: 38, height: 38, borderRadius: 12, backgroundColor: Colors.glassLight, borderWidth: 1, borderColor: Colors.glassBorder, alignItems: 'center', justifyContent: 'center' },
   hamburgerIcon: { fontSize: 18, color: Colors.textPrimary },
   greetingName: { color: Colors.primaryBright, fontWeight: '600' },

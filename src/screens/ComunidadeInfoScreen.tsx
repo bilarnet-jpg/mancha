@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Linking,
 } from 'react-native';
@@ -8,15 +8,39 @@ import { Colors, Spacing, Radius } from '../theme';
 import GlowBackground from '../components/GlowBackground';
 import GlassCard from '../components/GlassCard';
 import { useFonts, DancingScript_700Bold } from '@expo-google-fonts/dancing-script';
+import { useAuthStore } from '../store/authStore';
+import { useSocialStore } from '../store/socialStore';
 
-const WHATSAPP_NUMBER = '5511999999999'; // TROCAR pelo WhatsApp real da Mancha Verde
+const WHATSAPP_NUMBER = '5511952651000';
 
 export default function ComunidadeInfoScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
   const [fontsLoaded] = useFonts({ DancingScript_700Bold });
+  const { user } = useAuthStore();
+  const { getProfile } = useSocialStore();
+  const [expandedBeneficios, setExpandedBeneficios] = useState(false);
+  const [expandedDeveres, setExpandedDeveres] = useState(false);
 
-  const handleParticipar = () => {
-    const msg = encodeURIComponent('Olá! Quero saber como participar da Ala da Comunidade da Mancha Verde! 💚');
+  const handleParticipar = async () => {
+    let cidade = '';
+    try {
+      if (user?.id) {
+        const profile = await getProfile(user.id);
+        cidade = profile?.city ?? '';
+      }
+    } catch (e) {}
+
+    const linhas = [
+      'Olá! Quero participar da Ala da Comunidade da Mancha Verde! 💚',
+      '',
+      `Nome completo: ${user?.displayName ?? '—'}`,
+      `Email: ${user?.email ?? '—'}`,
+      cidade ? `Cidade: ${cidade}` : null,
+      '',
+      'Já li os Benefícios e Deveres da Ala e estou de acordo.',
+    ].filter(Boolean);
+
+    const msg = encodeURIComponent(linhas.join('\n'));
     Linking.openURL(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`);
   };
 
@@ -26,6 +50,25 @@ export default function ComunidadeInfoScreen({ navigation }: any) {
     { emoji: '🥁', title: 'Ensaios exclusivos', desc: 'Acesso aos ensaios técnicos da escola' },
     { emoji: '💚', title: 'Sinta-se em casa', desc: 'Acolhimento e tradição da torcida mais querida' },
   ];
+
+  const BENEFICIOS_TEXTO = `Ao fazer parte da Ala da Comunidade você terá:
+
+- Carteirinha exclusiva da Ala;
+- Acesso gratuito aos ensaios (domingos e quintas-feiras);
+- Camiseta exclusiva da ala;
+- Fantasia gratuita para o desfile de 2027.
+
+*mediante cumprimento da frequência exigida.`;
+
+  const DEVERES_TEXTO = `Para garantir sua fantasia e permanecer na Ala, é necessário:
+
+- Participar da reunião de Integração;
+- Comparecer em 80% dos ensaios da Comunidade;
+- Registrar presença em cada ensaio na Sala da Ala da Comunidade;
+- Participar efetivamente dos ensaios (cantando, dançando e respeitando as orientações);
+- Retirar a fantasia na data marcada e mantê-la em bom estado até o desfile;
+- Fazer a devolução da fantasia após o desfile na quadra da Escola;
+- Participar do grupo oficial da Escola no WhatsApp: (11) 95265-1000`;
 
   return (
     <View style={styles.container}>
@@ -83,6 +126,31 @@ export default function ComunidadeInfoScreen({ navigation }: any) {
             ))}
           </View>
 
+          {/* BENEFÍCIOS E DEVERES */}
+          <TouchableOpacity onPress={() => setExpandedBeneficios(!expandedBeneficios)} activeOpacity={0.85}>
+            <GlassCard style={{ marginBottom: 12 }}>
+              <View style={styles.expandableHeader}>
+                <Text style={styles.expandableTitle}>🎁 Benefícios</Text>
+                <Text style={styles.expandableArrow}>{expandedBeneficios ? '︿' : '﹀'}</Text>
+              </View>
+              {expandedBeneficios && (
+                <Text style={styles.expandableText}>{BENEFICIOS_TEXTO}</Text>
+              )}
+            </GlassCard>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => setExpandedDeveres(!expandedDeveres)} activeOpacity={0.85}>
+            <GlassCard style={{ marginBottom: 24 }}>
+              <View style={styles.expandableHeader}>
+                <Text style={styles.expandableTitle}>📌 Deveres</Text>
+                <Text style={styles.expandableArrow}>{expandedDeveres ? '︿' : '﹀'}</Text>
+              </View>
+              {expandedDeveres && (
+                <Text style={styles.expandableText}>{DEVERES_TEXTO}</Text>
+              )}
+            </GlassCard>
+          </TouchableOpacity>
+
           {/* COMO PARTICIPAR */}
           <GlassCard style={{ marginBottom: 24 }}>
             <Text style={styles.comoTitle}>📋 Como participar</Text>
@@ -127,6 +195,10 @@ const styles = StyleSheet.create({
   beneficioIcon: { width: 48, height: 48, borderRadius: Radius.md, backgroundColor: Colors.primaryMuted, alignItems: 'center', justifyContent: 'center' },
   beneficioTitle: { fontSize: 14, color: Colors.textPrimary, fontWeight: '700', marginBottom: 2 },
   beneficioDesc: { fontSize: 12, color: Colors.textMuted, lineHeight: 18 },
+  expandableHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  expandableTitle: { fontSize: 16, color: Colors.textPrimary, fontWeight: '700' },
+  expandableArrow: { fontSize: 16, color: Colors.primaryBright },
+  expandableText: { fontSize: 13, color: Colors.textSecondary, lineHeight: 22, marginTop: 14 },
   comoTitle: { fontSize: 16, color: Colors.textPrimary, fontWeight: '700', marginBottom: 16 },
   stepRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
   stepNum: { width: 26, height: 26, borderRadius: 13, backgroundColor: Colors.primaryMuted, borderWidth: 1, borderColor: 'rgba(0,255,133,0.3)', alignItems: 'center', justifyContent: 'center' },
