@@ -49,7 +49,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         id: data.user.id,
         email: data.user.email!,
         displayName: data.user.user_metadata?.display_name ?? 'Torcedor',
-        isPremium: data.user.email === 'francobilar@gmail.com' || data.user.email?.includes('admin'),
+        isPremium: true, // TEMP: app 100% free durante revisão da Apple/Google
         isAdmin: data.user.email === 'francobilar@gmail.com' || data.user.email?.includes('admin'),
         coins: 50, level: 1, xp: 0,
       },
@@ -78,7 +78,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         id: data.user!.id,
         email,
         displayName: name,
-        isPremium: false, isAdmin: false, coins: 50, level: 1, xp: 0,
+        isPremium: true, isAdmin: false, coins: 50, level: 1, xp: 0,
         memberNumber: `MV-${Math.floor(10000 + Math.random() * 90000)}`,
       },
       isAuthenticated: true, isLoading: false,
@@ -109,7 +109,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         .eq('is_active', true)
         .gt('expires_at', now)
         .maybeSingle();
-      const isPremium = !!data;
+      const isPremium = true; // TEMP: app 100% free durante revisão da Apple/Google
       const currentUser = useAuthStore.getState().user;
       if (currentUser && currentUser.isPremium !== isPremium) {
         useAuthStore.setState({ user: { ...currentUser, isPremium } });
@@ -134,7 +134,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
             id: session.user.id,
             email: session.user.email!,
             displayName: session.user.user_metadata?.display_name ?? 'Torcedor',
-            isPremium: false, isAdmin: false, coins: 50, level: 1, xp: 0,
+            isPremium: true, isAdmin: false, coins: 50, level: 1, xp: 0,
           },
           isAuthenticated: true, isLoading: false,
         });
@@ -150,7 +150,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
             id: session.user.id,
             email: session.user.email!,
             displayName: session.user.user_metadata?.display_name ?? 'Torcedor',
-            isPremium: false, isAdmin: false, coins: 50, level: 1, xp: 0,
+            isPremium: true, isAdmin: false, coins: 50, level: 1, xp: 0,
           },
           isAuthenticated: true, isLoading: false,
         });

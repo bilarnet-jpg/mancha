@@ -43,6 +43,7 @@ import AdminHomenagensPresidente from '../screens/admin/AdminHomenagensPresident
 import ComunidadeInfoScreen from '../screens/ComunidadeInfoScreen';
 import PresidenteScreen from '../screens/PresidenteScreen';
 import NossaEscolaScreen from '../screens/NossaEscolaScreen';
+import InstagramFeedScreen from '../screens/InstagramFeedScreen';
 import SetorPlaceholderScreen from '../screens/SetorPlaceholderScreen';
 import StoreWebViewScreen from '../screens/store/StoreWebViewScreen';
 import ProfileScreen from '../screens/social/ProfileScreen';
@@ -112,6 +113,7 @@ function HomeNavigator() {
       <HomeStack.Screen name="ComunidadeInfo" component={ComunidadeInfoScreen} />
       <HomeStack.Screen name="Presidente" component={PresidenteScreen} />
       <HomeStack.Screen name="NossaEscola" component={NossaEscolaScreen} />
+      <HomeStack.Screen name="InstagramFeed" component={InstagramFeedScreen} />
       <HomeStack.Screen name="SetorPlaceholder" component={SetorPlaceholderScreen} />
       <HomeStack.Screen name="Profile" component={ProfileScreen} />
       <HomeStack.Screen name="EditProfile" component={EditProfileScreen} />

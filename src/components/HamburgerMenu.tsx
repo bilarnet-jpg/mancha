@@ -31,6 +31,7 @@ const MENU_ITEMS = [
   { emoji: '🛍️', label: 'Loja', screen: 'LojaTab' },
   { emoji: '💌', label: 'Cartões da Mancha', screen: 'CardsMain' },
   { emoji: '📸', label: 'Rede Social MV', screen: 'ManchaTab' },
+  { emoji: '📸', label: 'Instagram Oficial', screen: 'InstagramFeed' },
   { emoji: '👑', label: 'Sócio Mancha', screen: 'SocioTab' },
 ];
 

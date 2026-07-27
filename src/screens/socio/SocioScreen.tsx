@@ -14,19 +14,17 @@ import GlassCard from '../../components/GlassCard';
 
 const { width: W } = Dimensions.get('window');
 
-const BENEFICIOS_COMPARATIVO = [
-  { label: 'Acesso ao app', free: true, premium: true },
-  { label: 'Ver feed e Reels', free: true, premium: true },
-  { label: 'Agenda de eventos', free: true, premium: true },
-  { label: 'Curtir e comentar Reels', free: false, premium: true },
-  { label: 'Enviar Cartões da Mancha', free: false, premium: true },
-  { label: 'Minha História completa', free: false, premium: true },
-  { label: '15% desconto na Loja', free: false, premium: true },
-  { label: 'Pré-venda de ingressos', free: false, premium: true },
-  { label: 'Pré-venda de fantasias', free: false, premium: true },
-  { label: 'Bastidores exclusivos', free: false, premium: true },
-  { label: 'Carteirinha digital oficial', free: false, premium: true },
-  { label: 'QR Code de identificação', free: false, premium: true },
+const BENEFICIOS_LISTA = [
+  { emoji: '📱', label: 'Acesso completo ao app' },
+  { emoji: '🎬', label: 'Curtir e comentar nos Reels' },
+  { emoji: '💌', label: 'Enviar Cartões da Mancha' },
+  { emoji: '🎭', label: 'Minha História completa' },
+  { emoji: '🛍️', label: '15% de desconto na Loja' },
+  { emoji: '🎟️', label: 'Pré-venda de ingressos' },
+  { emoji: '🎭', label: 'Pré-venda de fantasias' },
+  { emoji: '🎬', label: 'Bastidores exclusivos' },
+  { emoji: '🪪', label: 'Carteirinha digital oficial' },
+  { emoji: '📷', label: 'QR Code de identificação' },
 ];
 
 export default function SocioScreen({ navigation }: any) {
@@ -48,20 +46,7 @@ export default function SocioScreen({ navigation }: any) {
         .maybeSingle()
         .then(({ data }) => {
           if (data?.expires_at) {
-            const expiry = new Date(data.expires_at);
-            const days = Math.ceil((expiry.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-            setExpiryDate(expiry.toLocaleDateString('pt-BR'));
-            setDaysUntilExpiry(days);
-            if (days <= 5 && days > 0) {
-              Alert.alert(
-                '⚠️ Assinatura expirando!',
-                `Sua assinatura expira em ${days} dia${days !== 1 ? 's' : ''}. Renove para continuar com todos os benefícios!`,
-                [
-                  { text: 'Agora não' },
-                  { text: 'Renovar', onPress: () => navigation.navigate('Plans') },
-                ]
-              );
-            }
+            setExpiryDate(expiry => null);
           }
         });
     }
@@ -102,83 +87,27 @@ export default function SocioScreen({ navigation }: any) {
                 </View>
                 <Text style={styles.memberNum}>{membership.memberNumber}</Text>
               </View>
-              {expiryDate && (
-                <View style={[styles.expiryRow, { backgroundColor: daysUntilExpiry !== null && daysUntilExpiry <= 5 ? 'rgba(255,90,90,0.1)' : 'rgba(0,255,133,0.08)', borderColor: daysUntilExpiry !== null && daysUntilExpiry <= 5 ? 'rgba(255,90,90,0.3)' : 'rgba(0,255,133,0.2)' }]}>
-                  <Text style={[styles.expiryText, { color: daysUntilExpiry !== null && daysUntilExpiry <= 5 ? '#FF5A5A' : Colors.primaryBright }]}>
-                    {daysUntilExpiry !== null && daysUntilExpiry <= 5 ? '⚠️' : '📅'} Vence em {expiryDate} · {daysUntilExpiry}d restantes
-                  </Text>
-                  <TouchableOpacity onPress={() => navigation.navigate('Plans')}>
-                    <Text style={styles.renewBtn}>Renovar →</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
+              <View style={[styles.expiryRow, { backgroundColor: 'rgba(0,255,133,0.08)', borderColor: 'rgba(0,255,133,0.2)' }]}>
+                <Text style={[styles.expiryText, { color: Colors.primaryBright }]}>
+                  💚 Acesso completo e gratuito
+                </Text>
+              </View>
             </GlassCard>
           </View>
-        ) : (
-          <View style={{ paddingHorizontal: Spacing.xl, marginBottom: 20 }}>
-            <TouchableOpacity onPress={() => navigation.navigate('Plans')} activeOpacity={0.9}>
-              <LinearGradient colors={['#0A2E14', '#134227']} style={styles.upgradeCard}>
-                <View style={styles.upgradeAccent} />
-                <View style={{ flex: 1 }}>
-                  <View style={styles.upgradeBadge}>
-                    <Text style={styles.upgradeBadgeText}>💚 SEJA MEMBRO</Text>
-                  </View>
-                  <Text style={styles.upgradeTitle}>{'Torne-se membro\nMancha Verde eu sou'}</Text>
-                  <Text style={styles.upgradeSub}>Acesso total · Reels · Cartões · e muito mais</Text>
-                </View>
-                <View style={{ alignItems: 'center' }}>
-                  <Image source={require('../../../assets/images/novo-logo.png')} style={{ width: 56, height: 56 }} resizeMode="contain" />
-                  <Text style={styles.upgradePrice}>R$ 10/mês</Text>
-                </View>
-              </LinearGradient>
-            </TouchableOpacity>
-          </View>
-        )}
+        ) : null}
 
-        {/* COMPARATIVO DE BENEFÍCIOS */}
+        {/* BENEFÍCIOS */}
         <View style={{ paddingHorizontal: Spacing.xl, marginBottom: 20 }}>
-          <Text style={styles.sectionTitle}>Comparativo de Benefícios</Text>
-          <GlassCard noPadding intensity={22}>
-            {/* Header */}
-            <View style={styles.tableHeader}>
-              <Text style={[styles.tableHeaderCol, { flex: 2 }]}>Benefício</Text>
-              <Text style={styles.tableHeaderCol}>Free</Text>
-              <Text style={[styles.tableHeaderCol, { color: Colors.primaryBright }]}>💚 Membro</Text>
-            </View>
-            {BENEFICIOS_COMPARATIVO.map((b, i) => (
-              <View key={i} style={[styles.tableRow, i % 2 === 0 && styles.tableRowAlt]}>
-                <Text style={[styles.tableLabel, { flex: 2 }]}>{b.label}</Text>
-                <Text style={[styles.tableCheck, { color: b.free ? Colors.primaryBright : '#FF5A5A' }]}>
-                  {b.free ? '✓' : '✕'}
-                </Text>
-                <Text style={[styles.tableCheck, { color: b.premium ? Colors.primaryBright : '#FF5A5A' }]}>
-                  {b.premium ? '✓' : '✕'}
-                </Text>
+          <Text style={styles.introTitle}>Agora que você tem acesso ao nosso app,{'\n'}veja as inúmeras vantagens:</Text>
+          <GlassCard noPadding intensity={22} style={{ marginTop: 14 }}>
+            {BENEFICIOS_LISTA.map((b, i) => (
+              <View key={i} style={[styles.beneficioRow, i % 2 === 0 && styles.tableRowAlt]}>
+                <Text style={{ fontSize: 18, width: 30 }}>{b.emoji}</Text>
+                <Text style={styles.beneficioLabel}>{b.label}</Text>
+                <Text style={{ color: Colors.primaryBright, fontSize: 16 }}>✓</Text>
               </View>
             ))}
           </GlassCard>
-        </View>
-
-        {/* BOTÃO ASSINAR / GERENCIAR */}
-        <View style={{ paddingHorizontal: Spacing.xl }}>
-          {isPremium ? (
-            <View style={{ gap: 10 }}>
-              <TouchableOpacity onPress={() => navigation.navigate('Plans')} style={{ borderRadius: Radius.lg, overflow: 'hidden' }}>
-                <LinearGradient colors={Colors.gradientPrimary as any} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.actionBtn}>
-                  <Text style={styles.actionBtnText}>🔄 Renovar / Trocar plano</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => navigation.navigate('MemberHistory')} style={styles.outlineBtn}>
-                <Text style={styles.outlineBtnText}>📋 Histórico de pagamentos</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <TouchableOpacity onPress={() => navigation.navigate('Plans')} style={{ borderRadius: Radius.lg, overflow: 'hidden' }}>
-              <LinearGradient colors={Colors.gradientPrimary as any} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.actionBtn}>
-                <Text style={styles.actionBtnText}>💚 Assinar por R$10/mês</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-          )}
         </View>
 
       </ScrollView>
@@ -213,6 +142,9 @@ const styles = StyleSheet.create({
   upgradeSub: { fontSize: 12, color: Colors.textSecondary },
   upgradePrice: { fontSize: 13, color: Colors.primaryBright, fontWeight: '700', marginTop: 6 },
   sectionTitle: { fontSize: 16, color: Colors.textPrimary, fontWeight: '700', marginBottom: 12 },
+  introTitle: { fontSize: 17, color: Colors.textPrimary, fontWeight: '700', lineHeight: 24 },
+  beneficioRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingVertical: 12 },
+  beneficioLabel: { flex: 1, fontSize: 14, color: Colors.textPrimary },
   tableHeader: { flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: Colors.glassBorder, backgroundColor: 'rgba(0,255,133,0.05)' },
   tableHeaderCol: { flex: 1, fontSize: 11, color: Colors.textMuted, fontWeight: '700', textAlign: 'center', letterSpacing: 0.5 },
   tableRow: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 10, alignItems: 'center' },
