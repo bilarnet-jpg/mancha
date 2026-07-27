@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.feelinkstudio.manchacarnaval",
-      "buildNumber": "1",
+      "buildNumber": "2",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -42,7 +42,12 @@
     },
     "plugins": [
       "expo-font",
-      "expo-image-picker",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O Mancha Carnaval acessa sua galeria de fotos para que você possa escolher e enviar uma imagem como foto de perfil ou anexar fotos aos seus posts na Comunidade e Cartões da Mancha."
+        }
+      ],
       [
         "expo-camera",
         {
