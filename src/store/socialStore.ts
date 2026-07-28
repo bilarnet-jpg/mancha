@@ -125,9 +125,13 @@ export const useSocialStore = create<SocialStore>((set, get) => ({
   },
 
   updateProfile: async (userId, profileData) => {
-    await supabase
+    const { error } = await supabase
       .from('user_profiles')
       .upsert({ id: userId, ...profileData, updated_at: new Date().toISOString() });
+    if (error) {
+      console.log('updateProfile error:', JSON.stringify(error));
+      throw error;
+    }
   },
 
   uploadAvatar: async (userId, uri) => {

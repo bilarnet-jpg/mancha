@@ -51,14 +51,19 @@ export default function EditProfileScreen({ navigation }: any) {
     if (!displayName.trim()) { Alert.alert('Atenção', 'O nome não pode estar vazio.'); return; }
     if (!user?.id) return;
     setSaving(true);
-    await updateProfile(user.id, {
-      display_name: displayName.trim(),
-      bio: bio.trim(),
-      city: city.trim(),
-      alas: selectedAlas,
-    });
-    setSaving(false);
-    Alert.alert('✅ Perfil atualizado!', '', [{ text: 'OK', onPress: () => navigation.goBack() }]);
+    try {
+      await updateProfile(user.id, {
+        display_name: displayName.trim(),
+        bio: bio.trim(),
+        city: city.trim(),
+        alas: selectedAlas,
+      });
+      setSaving(false);
+      Alert.alert('✅ Perfil atualizado!', '', [{ text: 'OK', onPress: () => navigation.goBack() }]);
+    } catch (e: any) {
+      setSaving(false);
+      Alert.alert('❌ Erro ao salvar', e?.message ?? 'Não foi possível salvar o perfil. Tente novamente.');
+    }
   };
 
   return (
