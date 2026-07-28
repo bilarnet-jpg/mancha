@@ -23,6 +23,7 @@ export function LoginScreen({ navigation }: any) {
   const { login, isLoading, error, clearError } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   useEffect(() => { clearError(); }, []);
 
   return (
@@ -46,7 +47,12 @@ export function LoginScreen({ navigation }: any) {
           <TextInput value={email} onChangeText={setEmail} placeholder="seu@email.com" placeholderTextColor={Colors.textMuted} style={styles.input} keyboardType="email-address" autoCapitalize="none" />
 
           <Text style={styles.label}>Senha</Text>
-          <TextInput value={password} onChangeText={setPassword} placeholder="Digite sua senha" placeholderTextColor={Colors.textMuted} style={styles.input} secureTextEntry />
+          <View style={{ position: 'relative', justifyContent: 'center' }}>
+            <TextInput value={password} onChangeText={setPassword} placeholder="Digite sua senha" placeholderTextColor={Colors.textMuted} style={[styles.input, { paddingRight: 48 }]} secureTextEntry={!showPassword} />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: 14 }}>
+              <Text style={{ fontSize: 16 }}>{showPassword ? '🙈' : '👁️'}</Text>
+            </TouchableOpacity>
+          </View>
 
           <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')} style={{ alignSelf: 'flex-end', marginBottom: Spacing.base }}>
             <Text style={{ color: Colors.primary, fontSize: 13 }}>Esqueci minha senha</Text>
@@ -73,6 +79,7 @@ export function RegisterScreen({ navigation }: any) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPasswordRegister, setShowPasswordRegister] = useState(false);
   useEffect(() => { clearError(); }, []);
 
   return (
@@ -109,7 +116,12 @@ export function RegisterScreen({ navigation }: any) {
           <TextInput value={email} onChangeText={setEmail} placeholder="seu@email.com" placeholderTextColor={Colors.textMuted} style={styles.input} keyboardType="email-address" autoCapitalize="none" />
 
           <Text style={styles.label}>Senha</Text>
-          <TextInput value={password} onChangeText={setPassword} placeholder="Mínimo 6 caracteres" placeholderTextColor={Colors.textMuted} style={styles.input} secureTextEntry />
+          <View style={{ position: 'relative', justifyContent: 'center' }}>
+            <TextInput value={password} onChangeText={setPassword} placeholder="Mínimo 6 caracteres" placeholderTextColor={Colors.textMuted} style={[styles.input, { paddingRight: 48 }]} secureTextEntry={!showPasswordRegister} />
+            <TouchableOpacity onPress={() => setShowPasswordRegister(!showPasswordRegister)} style={{ position: 'absolute', right: 14 }}>
+              <Text style={{ fontSize: 16 }}>{showPasswordRegister ? '🙈' : '👁️'}</Text>
+            </TouchableOpacity>
+          </View>
 
           <View style={{ marginTop: Spacing.sm }}>
             <Btn title="Criar minha conta" loading={isLoading} onPress={() => register(email, password, name)} />
