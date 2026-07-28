@@ -19,7 +19,7 @@ interface AuthStore {
   isAuthenticated: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string) => Promise<void>;
+  register: (email: string, password: string, name: string) => Promise<{ needsEmailConfirmation: boolean } | void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   clearError: () => void;
@@ -31,6 +31,7 @@ const parseError = (message: string): string => {
   if (message.includes('Invalid login')) return 'E-mail ou senha inválidos.';
   if (message.includes('already registered')) return 'E-mail já cadastrado.';
   if (message.includes('Password should be')) return 'Senha fraca (mínimo 6 caracteres).';
+  if (message.includes('Email not confirmed')) return 'Confirme seu email antes de entrar. Verifique sua caixa de entrada.';
   return 'Erro inesperado. Tente novamente.';
 };
 
@@ -73,6 +74,13 @@ export const useAuthStore = create<AuthStore>((set) => ({
       options: { data: { display_name: name } },
     });
     if (error) { set({ error: parseError(error.message), isLoading: false }); return; }
+
+    // Se o Supabase exige confirmação de email, a sessão vem null
+    if (!data.session) {
+      set({ isLoading: false });
+      return { needsEmailConfirmation: true };
+    }
+
     set({
       user: {
         id: data.user!.id,
@@ -83,6 +91,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       },
       isAuthenticated: true, isLoading: false,
     });
+    return { needsEmailConfirmation: false };
   },
 
   logout: async () => {

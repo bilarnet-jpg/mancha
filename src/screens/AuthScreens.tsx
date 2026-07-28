@@ -80,7 +80,33 @@ export function RegisterScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPasswordRegister, setShowPasswordRegister] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
   useEffect(() => { clearError(); }, []);
+
+  const handleRegister = async () => {
+    const result = await register(email, password, name);
+    if (result && result.needsEmailConfirmation) {
+      setEmailSent(true);
+    }
+  };
+
+  if (emailSent) {
+    return (
+      <LinearGradient colors={['#050505', '#0a1a0a', '#050505']} style={{ flex: 1 }}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 }}>
+          <Image source={require('../../assets/images/novo-logo.png')} style={{ width: 100, height: 100, marginBottom: 20 }} resizeMode="contain" />
+          <Text style={{ fontSize: 22, color: '#fff', fontWeight: '800', textAlign: 'center', marginBottom: 12 }}>Verifique seu email!</Text>
+          <Text style={{ fontSize: 14, color: Colors.textSecondary, textAlign: 'center', lineHeight: 22, marginBottom: 30 }}>
+            Enviamos um link de confirmação para {'\n'}<Text style={{ color: Colors.primary, fontWeight: '700' }}>{email}</Text>.{'\n\n'}
+            Clique no link para ativar sua conta e depois volte para fazer login.
+          </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')} style={{ paddingVertical: 14, paddingHorizontal: 28, borderRadius: 50, borderWidth: 1, borderColor: Colors.primary }}>
+            <Text style={{ color: Colors.primary, fontWeight: '700' }}>Ir para o Login</Text>
+          </TouchableOpacity>
+        </View>
+      </LinearGradient>
+    );
+  }
 
   return (
     <LinearGradient colors={['#050505', '#0a1a0a', '#050505']} style={{ flex: 1 }}>
@@ -99,14 +125,6 @@ export function RegisterScreen({ navigation }: any) {
           <Text style={styles.title}>Criar conta</Text>
           <Text style={styles.sub}>Junte-se à Mancha Carnaval</Text>
 
-          <View style={styles.bonusBox}>
-            <Text style={{ fontSize: 22 }}>🎁</Text>
-            <View>
-              <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 13, color: Colors.gold }}>Bônus de boas-vindas</Text>
-              <Text style={{ fontSize: 12, color: Colors.textSecondary, marginTop: 2 }}>Ganhe 50 moedas ao criar sua conta</Text>
-            </View>
-          </View>
-
           {error && <View style={styles.errorBox}><Text style={styles.errorText}>{error}</Text></View>}
 
           <Text style={styles.label}>Nome completo</Text>
@@ -124,7 +142,7 @@ export function RegisterScreen({ navigation }: any) {
           </View>
 
           <View style={{ marginTop: Spacing.sm }}>
-            <Btn title="Criar minha conta" loading={isLoading} onPress={() => register(email, password, name)} />
+            <Btn title="Criar minha conta" loading={isLoading} onPress={handleRegister} />
           </View>
 
           <TouchableOpacity onPress={() => navigation.navigate('Login')} style={{ alignItems: 'center', marginTop: Spacing.xl }}>

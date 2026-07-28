@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
   ticketFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   lowStock: { fontSize: 11, color: Colors.red },
   selectedLabel: { fontSize: 11, color: Colors.primary, fontWeight: '600' },
-  buyBar: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: Colors.bgCard, borderTopWidth: 1, borderTopColor: Colors.border, paddingTop: Spacing.base, paddingHorizontal: Spacing.xl, gap: 10 },
+  buyBar: { position: 'absolute', bottom: 80, left: 0, right: 0, backgroundColor: Colors.bgCard, borderTopWidth: 1, borderTopColor: Colors.border, paddingTop: Spacing.base, paddingHorizontal: Spacing.xl, gap: 10 },
   selectedSummary: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   selectedSummaryName: { fontSize: 13, color: Colors.textSecondary },
   selectedSummaryPrice: { fontSize: 16, color: Colors.primary, fontWeight: '700' },
