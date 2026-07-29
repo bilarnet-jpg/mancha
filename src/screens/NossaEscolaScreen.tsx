@@ -58,7 +58,7 @@ export default function NossaEscolaScreen({ navigation }: any) {
 
         {/* HERO */}
         <View style={styles.hero}>
-          <Image source={require('../../assets/images/card-historia.png')} style={styles.heroImage} resizeMode="cover" />
+          <Image source={require('../../assets/images/card-historia-splash.png')} style={styles.heroImage} resizeMode="cover" />
           <LinearGradient colors={['transparent', 'rgba(10,31,20,0.75)', Colors.bg]} style={styles.heroGradient} />
           <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backBtn, { top: insets.top + 12 }]}>
             <Text style={{ fontSize: 16, color: '#fff' }}>←</Text>

@@ -13,12 +13,12 @@ const STORAGE_KEY = 'mancha_daily_splash_last_shown';
 
 const SLIDES = [
   {
-    image: require('../../assets/images/card-historia.png'),
+    image: require('../../assets/images/card-historia-splash.png'),
     phrase: 'Verdadeiro orgulho\nde um povo',
     emoji: '💚',
   },
   {
-    image: require('../../assets/images/card-avenida.png'),
+    image: require('../../assets/images/card-avenida-splash.png'),
     phrase: 'Cada desfile,\numa história',
     emoji: '🥁',
   },
