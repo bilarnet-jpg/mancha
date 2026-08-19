@@ -24,6 +24,7 @@ interface AuthStore {
   resetPassword: (email: string) => Promise<void>;
   clearError: () => void;
   initAuth: () => () => void;
+  checkAdminStatus: (userId: string) => Promise<boolean>;
   checkMembership: (userId: string) => Promise<boolean>;
 }
 
@@ -51,11 +52,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
         email: data.user.email!,
         displayName: data.user.user_metadata?.display_name ?? 'Torcedor',
         isPremium: true, // TEMP: app 100% free durante revisão da Apple/Google
-        isAdmin: data.user.email === 'francobilar@gmail.com' || data.user.email?.includes('admin'),
+        isAdmin: false, // será atualizado por checkAdminStatus logo em seguida
         coins: 50, level: 1, xp: 0,
       },
       isAuthenticated: true, isLoading: false,
     });
+    useAuthStore.getState().checkAdminStatus(data.user.id);
     // Criar/atualizar perfil no Supabase
     try {
       const { supabase: sb } = await import('../services/supabase');
@@ -107,6 +109,26 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
   clearError: () => set({ error: null }),
 
+  checkAdminStatus: async (userId: string) => {
+    try {
+      const { supabase } = await import('../services/supabase');
+      const { data } = await supabase
+        .from('admin_users')
+        .select('role')
+        .eq('user_id', userId)
+        .maybeSingle();
+      const isAdmin = !!data;
+      const currentUser = useAuthStore.getState().user;
+      if (currentUser && currentUser.isAdmin !== isAdmin) {
+        useAuthStore.setState({ user: { ...currentUser, isAdmin } });
+      }
+      return isAdmin;
+    } catch (e) {
+      console.log('checkAdminStatus error:', e);
+      return false;
+    }
+  },
+
   checkMembership: async (userId: string) => {
     try {
       const { supabase } = await import('../services/supabase');
@@ -147,6 +169,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
           },
           isAuthenticated: true, isLoading: false,
         });
+        useAuthStore.getState().checkAdminStatus(session.user.id);
       } else {
         set({ isLoading: false });
       }
@@ -163,6 +186,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
           },
           isAuthenticated: true, isLoading: false,
         });
+        useAuthStore.getState().checkAdminStatus(session.user.id);
       } else if (event === 'SIGNED_OUT') {
         set({ user: null, isAuthenticated: false, isLoading: false });
       }
