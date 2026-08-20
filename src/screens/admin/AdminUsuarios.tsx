@@ -1,25 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MOCK_ADMIN_USERS, AdminUser, AdminRole } from '../../types/admin';
+import { AdminUser, AdminRole } from '../../types/admin';
+import { supabase } from '../../services/supabase';
 import { Colors, Spacing, Radius } from '../../theme';
 import GlowBackground from '../../components/GlowBackground';
 import GlassCard from '../../components/GlassCard';
 
-const ROLE_CONFIG: Record<AdminRole, { label: string; color: string; emoji: string }> = {
+const ROLE_CONFIG: Record<string, { label: string; color: string; emoji: string }> = {
   super_admin: { label: 'Super Admin', color: Colors.gold, emoji: '👑' },
   financeiro: { label: 'Financeiro', color: '#4FC3F7', emoji: '💰' },
   conteudo: { label: 'Conteúdo', color: Colors.primaryBright, emoji: '📸' },
   moderacao: { label: 'Moderação', color: '#FF9800', emoji: '🛡️' },
   comercial: { label: 'Comercial', color: '#FF4081', emoji: '💼' },
+  torcedor: { label: 'Torcedor', color: Colors.textMuted, emoji: '💚' },
 };
 
 export default function AdminUsuarios({ navigation }: any) {
   const insets = useSafeAreaInsets();
-  const [users, setUsers] = useState<AdminUser[]>(MOCK_ADMIN_USERS);
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
+
+  useEffect(() => { loadUsers(); }, []);
+
+  const loadUsers = async () => {
+    setLoadingUsers(true);
+    const { data, error } = await supabase.rpc('get_admin_user_list');
+    if (error) {
+      console.log('loadUsers error:', error);
+      setLoadingUsers(false);
+      return;
+    }
+    const mapped: AdminUser[] = (data ?? []).map((row: any) => ({
+      id: row.id,
+      displayName: row.display_name ?? 'Torcedor',
+      email: row.email,
+      role: 'torcedor' as AdminRole,
+      isBlocked: false,
+      createdAt: row.created_at,
+      lastLogin: row.last_sign_in_at,
+      xp: 0,
+      isPremium: true,
+    }));
+    setUsers(mapped);
+    setLoadingUsers(false);
+  };
 
   const filtered = users.filter(u =>
     u.displayName.toLowerCase().includes(search.toLowerCase()) ||

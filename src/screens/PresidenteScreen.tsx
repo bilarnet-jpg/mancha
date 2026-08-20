@@ -103,7 +103,7 @@ export default function PresidenteScreen({ navigation }: any) {
   return (
     <View style={styles.container}>
       <GlowBackground />
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 60 }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
 
         {/* HERO */}
         <View style={styles.hero}>

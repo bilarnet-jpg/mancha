@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import HamburgerMenu from '../components/HamburgerMenu';
 import SplashAnnouncementModal from '../components/SplashAnnouncementModal';
 import DailySplashModal from '../components/DailySplashModal';
@@ -10,6 +10,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../store/authStore';
+import { supabase } from '../services/supabase';
 import { Colors, Spacing, Radius } from '../theme';
 import GlowBackground from '../components/GlowBackground';
 import GlassCard from '../components/GlassCard';
@@ -24,15 +25,16 @@ const QUICK = [
   { id: '4', label: 'Galeria', color: '#FF4081', bg: 'rgba(255,64,129,0.15)', emoji: '📸' },
 ];
 
-const EVENTS = [
-  { id: '1', day: '15', month: 'JAN', title: 'Ensaio na Quadra', local: 'Rua Cantareira, 520', emoji: '🥁' },
-  { id: '2', day: '22', month: 'JAN', title: 'Show de Lançamento', local: 'Sambódromo do Anhembi', emoji: '🎤' },
-];
+const MONTHS_PT = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
 
-const NEWS = [
-  { id: '1', tag: 'CARNAVAL', title: 'Mancha Verde anuncia samba-enredo para 2026', time: 'Há 1 hora' },
-  { id: '2', tag: 'PALMEIRAS', title: 'Palmeiras goleia e torcida celebra no Allianz', time: 'Há 3 horas' },
-];
+const timeAgo = (dateStr: string) => {
+  const diffMs = Date.now() - new Date(dateStr).getTime();
+  const hours = Math.floor(diffMs / (1000 * 60 * 60));
+  if (hours < 1) return 'Agora há pouco';
+  if (hours < 24) return `Há ${hours}h`;
+  const days = Math.floor(hours / 24);
+  return `Há ${days}d`;
+};
 
 const getGreeting = () => {
   const h = new Date().getHours();
@@ -46,6 +48,31 @@ export default function HomeScreen({ navigation }: any) {
   const { user, logout } = useAuthStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
+  const [homeEvents, setHomeEvents] = useState<any[]>([]);
+  const [homeNews, setHomeNews] = useState<any[]>([]);
+
+  useEffect(() => {
+    loadHomeData();
+  }, []);
+
+  const loadHomeData = async () => {
+    const { data: eventsData } = await supabase
+      .from('mancha_events')
+      .select('id, title, date, location')
+      .eq('status', 'active')
+      .gte('date', new Date().toISOString().split('T')[0])
+      .order('date', { ascending: true })
+      .limit(2);
+    setHomeEvents(eventsData ?? []);
+
+    const { data: newsData } = await supabase
+      .from('splash_announcements')
+      .select('id, title, message, created_at')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(2);
+    setHomeNews(newsData ?? []);
+  };
   const [showDailySplash, setShowDailySplash] = useState(true);
   const [fontsLoaded] = useFonts({ DancingScript_700Bold });
 
@@ -206,50 +233,43 @@ export default function HomeScreen({ navigation }: any) {
             <Text style={styles.seeAll}>Ver agenda →</Text>
           </TouchableOpacity>
         </View>
-        {EVENTS.map(event => (
-          <GlassCard key={event.id} intensity={25} style={styles.eventCard} noPadding>
-            <View style={styles.eventInner}>
-              <View style={styles.eventDate}>
-                <Text style={styles.eventDay}>{event.day}</Text>
-                <Text style={styles.eventMonth}>{event.month}</Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.eventTitle}>{event.emoji} {event.title}</Text>
-                <Text style={styles.eventLocal}>{event.local}</Text>
-              </View>
-            </View>
-          </GlassCard>
-        ))}
+        {homeEvents.length === 0 ? (
+          <Text style={{ color: Colors.textMuted, fontSize: 13, marginBottom: 10 }}>Nenhum evento agendado no momento.</Text>
+        ) : homeEvents.map(event => {
+          const d = new Date(event.date + 'T00:00:00');
+          return (
+            <TouchableOpacity key={event.id} onPress={() => navigation.navigate('AgendaTab')} activeOpacity={0.85}>
+              <GlassCard intensity={25} style={styles.eventCard} noPadding>
+                <View style={styles.eventInner}>
+                  <View style={styles.eventDate}>
+                    <Text style={styles.eventDay}>{d.getDate()}</Text>
+                    <Text style={styles.eventMonth}>{MONTHS_PT[d.getMonth()]}</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.eventTitle}>🎉 {event.title}</Text>
+                    <Text style={styles.eventLocal}>{event.location}</Text>
+                  </View>
+                </View>
+              </GlassCard>
+            </TouchableOpacity>
+          );
+        })}
 
         {/* NOTÍCIAS */}
         <Text style={[styles.sectionTitle, { marginTop: 28 }]}>Últimas notícias</Text>
-        {NEWS.map(news => (
+        {homeNews.length === 0 ? (
+          <Text style={{ color: Colors.textMuted, fontSize: 13 }}>Nenhuma novidade no momento.</Text>
+        ) : homeNews.map(news => (
           <GlassCard key={news.id} intensity={25} style={styles.newsCard} noPadding>
             <View style={styles.newsInner}>
               <View style={styles.newsTag}>
-                <Text style={styles.newsTagText}>{news.tag}</Text>
+                <Text style={styles.newsTagText}>NOVIDADE</Text>
               </View>
               <Text style={styles.newsTitle}>{news.title}</Text>
-              <Text style={styles.newsTime}>{news.time}</Text>
+              <Text style={styles.newsTime}>{timeAgo(news.created_at)}</Text>
             </View>
           </GlassCard>
         ))}
-
-        {/* PREMIUM */}
-        {!user?.isPremium && (
-          <TouchableOpacity activeOpacity={0.9} style={{ marginTop: 28 }} onPress={() => navigation.navigate('SocioTab')}>
-            <LinearGradient colors={Colors.gradientGold as any} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.premiumBanner}>
-              <View>
-                <Text style={styles.premiumLabel}>EXCLUSIVO</Text>
-                <Text style={styles.premiumTitle}>Torne-se Premium 👑</Text>
-                <Text style={styles.premiumSub}>Conteúdo exclusivo + benefícios</Text>
-              </View>
-              <View style={styles.premiumCta}>
-                <Text style={styles.premiumCtaText}>Ver planos</Text>
-              </View>
-            </LinearGradient>
-          </TouchableOpacity>
-        )}
 
         {/* SIGA-NOS */}
         <Text style={styles.sectionTitle}>Siga-nos</Text>

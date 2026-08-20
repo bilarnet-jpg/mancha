@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../store/authStore';
+import { supabase } from '../../services/supabase';
 import {
-  MOCK_ADMIN_STATS, MOCK_ADMIN_ORDERS, MOCK_ADMIN_POSTS,
-  MOCK_ALA_SHOW_REQUESTS, AdminRole,
+  MOCK_ADMIN_POSTS, AdminRole,
 } from '../../types/admin';
 import { Colors, Spacing, Radius } from '../../theme';
 import GlowBackground from '../../components/GlowBackground';
@@ -28,7 +28,6 @@ const MODULES = [
   { key: 'eventos', emoji: '📅', title: 'Eventos', sub: 'Criar e gerenciar a Agenda', screen: 'AdminEventos', roles: ['super_admin', 'admin', 'conteudo'] },
   { key: 'memberships', emoji: '💚', title: 'Assinaturas', sub: 'Ativar planos e gerenciar pagamentos', screen: 'AdminMemberships', roles: ['super_admin', 'financeiro'] },
   { key: 'scanner', emoji: '📷', title: 'Scanner QR Code', sub: 'Escanear carteirinha de sócios', screen: 'AdminScanner', roles: ['super_admin', 'moderacao', 'comercial', 'conteudo', 'financeiro'] },
-  { key: 'financeiro', emoji: '💰', title: 'Financeiro', sub: 'Vendas, pedidos, receita', screen: 'AdminFinanceiro', roles: ['super_admin', 'financeiro'] },
   { key: 'usuarios', emoji: '👥', title: 'Usuários', sub: 'Membros, bloqueios, roles', screen: 'AdminUsuarios', roles: ['super_admin'] },
   { key: 'moderacao', emoji: '🛡️', title: 'Moderação', sub: 'Posts e reels pendentes', screen: 'AdminModeracao', roles: ['super_admin', 'moderacao', 'conteudo'] },
   { key: 'alashow', emoji: '💃', title: 'Ala Show', sub: 'Solicitações de orçamento', screen: 'AdminAlaShow', roles: ['super_admin', 'comercial'] },
@@ -38,13 +37,38 @@ const MODULES = [
 export default function AdminDashboard({ navigation }: any) {
   const insets = useSafeAreaInsets();
   const { user } = useAuthStore();
-  const stats = MOCK_ADMIN_STATS;
   const userRole: AdminRole = (user as any)?.role ?? 'super_admin';
   const roleCfg = ROLE_CONFIG[userRole];
 
-  const pendingOrders = MOCK_ADMIN_ORDERS.filter(o => o.status === 'pending').length;
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [activeEvents, setActiveEvents] = useState(0);
+  const [alaShowNovos, setAlaShowNovos] = useState(0);
+  const [recentSignups, setRecentSignups] = useState<any[]>([]);
+  const [loadingStats, setLoadingStats] = useState(true);
+
+  useEffect(() => { loadDashboardData(); }, []);
+
+  const loadDashboardData = async () => {
+    setLoadingStats(true);
+    try {
+      const { data: userList } = await supabase.rpc('get_admin_user_list');
+      setTotalUsers(userList?.length ?? 0);
+      setRecentSignups((userList ?? []).slice(0, 4));
+
+      const { count: eventsCount } = await supabase.from('mancha_events').select('*', { count: 'exact', head: true }).eq('status', 'active');
+      setActiveEvents(eventsCount ?? 0);
+
+      const { count: alaShowCount } = await supabase.from('ala_show_requests').select('*', { count: 'exact', head: true }).eq('status', 'novo');
+      setAlaShowNovos(alaShowCount ?? 0);
+    } catch (e) {
+      console.log('loadDashboardData error:', e);
+    }
+    setLoadingStats(false);
+  };
+
+  const pendingOrders = 0;
   const pendingPosts = MOCK_ADMIN_POSTS.filter(p => p.status === 'pending').length;
-  const newAlaShow = MOCK_ALA_SHOW_REQUESTS.filter(r => r.status === 'novo').length;
+  const newAlaShow = alaShowNovos;
   const visibleModules = MODULES.filter(m => m.roles.includes(userRole));
 
   const formatCurrency = (val: number) =>
@@ -100,10 +124,10 @@ export default function AdminDashboard({ navigation }: any) {
           <Text style={styles.sectionTitle}>Visão Geral</Text>
           <View style={styles.statsGrid}>
             {[
-              { val: stats.totalUsers.toLocaleString('pt-BR'), label: 'Membros', sub: `+${stats.newUsersToday} hoje`, color: Colors.primaryBright, emoji: '👥' },
-              { val: stats.socioAtivos.toLocaleString('pt-BR'), label: 'Sócios Ativos', sub: 'Planos pagos', color: Colors.gold, emoji: '👑' },
-              { val: formatCurrency(stats.totalRevenue), label: 'Receita Total', sub: `${formatCurrency(stats.revenueToday)} hoje`, color: '#4FC3F7', emoji: '💰' },
-              { val: stats.activeUsers.toLocaleString('pt-BR'), label: 'Usuários Ativos', sub: 'Últimas 24h', color: '#818CF8', emoji: '📱' },
+              { val: totalUsers.toLocaleString('pt-BR'), label: 'Membros', sub: 'Total cadastrado', color: Colors.primaryBright, emoji: '👥' },
+              { val: activeEvents.toLocaleString('pt-BR'), label: 'Eventos Ativos', sub: 'Na Agenda', color: Colors.gold, emoji: '📅' },
+              { val: alaShowNovos.toLocaleString('pt-BR'), label: 'Ala Show', sub: 'Solicitações novas', color: '#FF4081', emoji: '💃' },
+              { val: pendingPosts.toLocaleString('pt-BR'), label: 'Moderação', sub: 'Posts pendentes', color: '#818CF8', emoji: '🛡️' },
             ].map((s, i) => (
               <GlassCard key={i} intensity={25} style={styles.statCard} noPadding>
                 <View style={styles.statCardInner}>
@@ -149,30 +173,24 @@ export default function AdminDashboard({ navigation }: any) {
         </View>
 
         <View style={{ paddingHorizontal: Spacing.xl }}>
-          <Text style={styles.sectionTitle}>Atividade Recente</Text>
+          <Text style={styles.sectionTitle}>Últimos Cadastros</Text>
           <View style={{ gap: 8 }}>
-            {MOCK_ADMIN_ORDERS.slice(0, 4).map(order => {
-              const STATUS: any = {
-                paid: { label: 'Pago', color: Colors.primaryBright },
-                pending: { label: 'Pendente', color: Colors.gold },
-                cancelled: { label: 'Cancelado', color: '#FF5A5A' },
-                refunded: { label: 'Reembolsado', color: '#818CF8' },
-              };
-              const TYPE: any = { loja: '🛍️', ingresso: '🎟️', socio: '👑' };
-              const s = STATUS[order.status];
+            {loadingStats ? (
+              <Text style={{ color: Colors.textMuted, textAlign: 'center', paddingVertical: 20 }}>Carregando...</Text>
+            ) : recentSignups.length === 0 ? (
+              <Text style={{ color: Colors.textMuted, textAlign: 'center', paddingVertical: 20 }}>Nenhum cadastro ainda</Text>
+            ) : recentSignups.map((signup: any) => {
+              const formattedDate = signup.created_at ? new Date(signup.created_at).toLocaleDateString('pt-BR') : '—';
               return (
-                <GlassCard key={order.id} intensity={20} noPadding>
+                <GlassCard key={signup.id} intensity={20} noPadding>
                   <View style={styles.activityRow}>
-                    <Text style={{ fontSize: 22 }}>{TYPE[order.type]}</Text>
+                    <Text style={{ fontSize: 22 }}>💚</Text>
                     <View style={{ flex: 1 }}>
-                      <Text style={styles.activityDesc}>{order.description}</Text>
-                      <Text style={styles.activityUser}>{order.userName}</Text>
+                      <Text style={styles.activityDesc}>{signup.display_name ?? 'Torcedor'}</Text>
+                      <Text style={styles.activityUser}>{signup.email}</Text>
                     </View>
                     <View style={{ alignItems: 'flex-end', gap: 4 }}>
-                      <Text style={styles.activityAmount}>R$ {order.amount.toFixed(2)}</Text>
-                      <View style={[styles.statusBadge, { backgroundColor: `${s.color}22` }]}>
-                        <Text style={[styles.statusText, { color: s.color }]}>{s.label}</Text>
-                      </View>
+                      <Text style={styles.activityAmount}>{formattedDate}</Text>
                     </View>
                   </View>
                 </GlassCard>
