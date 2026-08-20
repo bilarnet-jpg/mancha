@@ -1,10 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MOCK_ALA_SHOW_REQUESTS, AdminAlaShowRequest } from '../../types/admin';
+import { AdminAlaShowRequest } from '../../types/admin';
+import { supabase } from '../../services/supabase';
 import { Colors, Spacing, Radius } from '../../theme';
 import GlowBackground from '../../components/GlowBackground';
 import GlassCard from '../../components/GlassCard';
+
+const VALID_STATUSES = ['novo', 'em_contato', 'fechado', 'cancelado'];
+
+const mapRequest = (row: any): AdminAlaShowRequest => ({
+  id: row.id,
+  nome: row.nome,
+  email: row.email,
+  telefone: row.telefone,
+  empresa: row.empresa,
+  evento: row.tipo_evento,
+  data: row.data_evento,
+  convidados: row.convidados,
+  mensagem: row.mensagem,
+  status: VALID_STATUSES.includes(row.status) ? row.status : 'novo',
+});
 
 const STATUS_CONFIG: any = {
   novo: { label: 'Novo', color: Colors.primaryBright, emoji: '🆕' },
@@ -15,16 +31,27 @@ const STATUS_CONFIG: any = {
 
 export default function AdminAlaShow({ navigation }: any) {
   const insets = useSafeAreaInsets();
-  const [requests, setRequests] = useState<AdminAlaShowRequest[]>(MOCK_ALA_SHOW_REQUESTS);
+  const [requests, setRequests] = useState<AdminAlaShowRequest[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<AdminAlaShowRequest | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>('todos');
+
+  useEffect(() => { loadRequests(); }, []);
+
+  const loadRequests = async () => {
+    setLoading(true);
+    const { data, error } = await supabase.from('ala_show_requests').select('*').order('created_at', { ascending: false });
+    if (!error && data) setRequests(data.map(mapRequest));
+    setLoading(false);
+  };
 
   const filtered = requests.filter(r => activeFilter === 'todos' || r.status === activeFilter);
   const novos = requests.filter(r => r.status === 'novo').length;
 
-  const handleChangeStatus = (id: string, newStatus: AdminAlaShowRequest['status']) => {
+  const handleChangeStatus = async (id: string, newStatus: AdminAlaShowRequest['status']) => {
     setRequests(prev => prev.map(r => r.id === id ? { ...r, status: newStatus } : r));
     setSelected(prev => prev?.id === id ? { ...prev, status: newStatus } : prev);
+    await supabase.from('ala_show_requests').update({ status: newStatus }).eq('id', id);
   };
 
   return (
@@ -112,7 +139,14 @@ export default function AdminAlaShow({ navigation }: any) {
               ))}
             </ScrollView>
             <View style={{ gap: 10 }}>
-              {filtered.map(req => (
+              {loading ? (
+                <Text style={{ color: Colors.textMuted, textAlign: 'center', paddingTop: 20 }}>Carregando...</Text>
+              ) : filtered.length === 0 ? (
+                <View style={{ alignItems: 'center', paddingVertical: 50, gap: 10 }}>
+                  <Text style={{ fontSize: 36 }}>💃</Text>
+                  <Text style={{ fontSize: 14, color: Colors.textMuted }}>Nenhuma solicitação ainda</Text>
+                </View>
+              ) : filtered.map(req => (
                 <TouchableOpacity key={req.id} onPress={() => setSelected(req)} activeOpacity={0.85}>
                   <GlassCard intensity={22} noPadding>
                     <View style={styles.reqRow}>

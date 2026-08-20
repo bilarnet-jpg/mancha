@@ -135,14 +135,26 @@ export default function AlaShowScreen({ navigation }: any) {
     }
     setLoading(true);
 
-    // MOCK — quando integrar com Resend/SendGrid:
-    // 1. Chamar edge function do Supabase que dispara o email
-    // 2. Passar o HTML gerado por generateEmailHTML(nome, evento, data)
-    // 3. Salvar a solicitação na tabela `ala_show_requests` do Supabase
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      const { supabase } = await import('../../services/supabase');
+      const { error } = await supabase.from('ala_show_requests').insert({
+        nome: nome.trim(),
+        email: email.trim(),
+        telefone: telefone.trim(),
+        empresa: empresa.trim(),
+        tipo_evento: evento.trim(),
+        data_evento: data.trim(),
+        convidados: convidados.trim(),
+        mensagem: mensagem.trim(),
+      });
+      if (error) throw error;
 
-    setLoading(false);
-    setSubmitted(true);
+      setLoading(false);
+      setSubmitted(true);
+    } catch (e: any) {
+      setLoading(false);
+      Alert.alert('Erro ao enviar', e?.message ?? 'Não foi possível enviar sua solicitação. Tente novamente.');
+    }
   };
 
   if (submitted) {
@@ -151,7 +163,7 @@ export default function AlaShowScreen({ navigation }: any) {
         <GlowBackground />
         <Text style={{ fontSize: 72, marginBottom: Spacing.xl }}>💌</Text>
         <Text style={styles.successTitle}>Solicitação Enviada!</Text>
-        <Text style={styles.successSub}>Enviamos um email para <Text style={{ color: Colors.primaryBright, fontWeight: '700' }}>{email}</Text> com todos os detalhes da Ala Show. Retornaremos em até 2 dias úteis!</Text>
+        <Text style={styles.successSub}>Recebemos sua solicitação! Nossa equipe vai analisar e entrar em contato pelo email <Text style={{ color: Colors.primaryBright, fontWeight: '700' }}>{email}</Text> ou telefone informado. Retornaremos em até 2 dias úteis!</Text>
 
         <GlassCard style={{ width: '100%', flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: Spacing.xl }}>
           <Text style={{ fontSize: 28 }}>⏰</Text>
