@@ -100,6 +100,8 @@ export const useAvenidaStore = create<AvenidaStore>((set, get) => ({
             composers: o.composers,
             description: o.description,
             emoji: o.emoji,
+            lyrics: o.lyrics,
+            youtubeId: o.youtube_id,
             votes: [],
           })),
         };

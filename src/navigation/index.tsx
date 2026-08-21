@@ -41,6 +41,7 @@ import AdminComunicados from '../screens/admin/AdminComunicados';
 import AdminMemberships from '../screens/admin/AdminMemberships';
 import AdminHomenagensPresidente from '../screens/admin/AdminHomenagensPresidente';
 import AdminEventos from '../screens/admin/AdminEventos';
+import AdminSambas from '../screens/admin/AdminSambas';
 import ComunidadeInfoScreen from '../screens/ComunidadeInfoScreen';
 import PresidenteScreen from '../screens/PresidenteScreen';
 import NossaEscolaScreen from '../screens/NossaEscolaScreen';
@@ -112,6 +113,7 @@ function HomeNavigator() {
       <HomeStack.Screen name="AdminMemberships" component={AdminMemberships} />
       <HomeStack.Screen name="AdminHomenagensPresidente" component={AdminHomenagensPresidente} />
       <HomeStack.Screen name="AdminEventos" component={AdminEventos} />
+      <HomeStack.Screen name="AdminSambas" component={AdminSambas} />
       <HomeStack.Screen name="ComunidadeInfo" component={ComunidadeInfoScreen} />
       <HomeStack.Screen name="Presidente" component={PresidenteScreen} />
       <HomeStack.Screen name="NossaEscola" component={NossaEscolaScreen} />

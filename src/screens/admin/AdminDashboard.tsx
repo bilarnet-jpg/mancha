@@ -26,6 +26,7 @@ const ROLE_CONFIG: Record<AdminRole, { label: string; color: string; emoji: stri
 const MODULES = [
   { key: 'homenagens_presidente', emoji: '👑', title: 'Homenagens ao Presidente', sub: 'Moderar mensagens do mural', screen: 'AdminHomenagensPresidente', roles: ['super_admin', 'moderacao', 'conteudo'] },
   { key: 'eventos', emoji: '📅', title: 'Eventos', sub: 'Criar e gerenciar a Agenda', screen: 'AdminEventos', roles: ['super_admin', 'admin', 'conteudo'] },
+  { key: 'sambas', emoji: '🎵', title: 'Sambas-Enredo', sub: 'Editar samba atual e histórico', screen: 'AdminSambas', roles: ['super_admin', 'conteudo'] },
   { key: 'memberships', emoji: '💚', title: 'Assinaturas', sub: 'Ativar planos e gerenciar pagamentos', screen: 'AdminMemberships', roles: ['super_admin', 'financeiro'] },
   { key: 'scanner', emoji: '📷', title: 'Scanner QR Code', sub: 'Escanear carteirinha de sócios', screen: 'AdminScanner', roles: ['super_admin', 'moderacao', 'comercial', 'conteudo', 'financeiro'] },
   { key: 'usuarios', emoji: '👥', title: 'Usuários', sub: 'Membros, bloqueios, roles', screen: 'AdminUsuarios', roles: ['super_admin'] },

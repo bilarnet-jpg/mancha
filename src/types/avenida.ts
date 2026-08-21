@@ -22,6 +22,8 @@ export interface PollOption {
   composers: string;
   description: string;
   emoji: string;
+  lyrics?: string;
+  youtubeId?: string;
   votes: string[]; // userIds que votaram nesta opção
 }
 
