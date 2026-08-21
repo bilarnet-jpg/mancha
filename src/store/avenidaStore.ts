@@ -1,76 +1,162 @@
 import { create } from 'zustand';
-import { SambaAtual, SambaHistorico, SambaPoll, SAMBA_ATUAL, SAMBAS_HISTORICOS, SAMBA_POLL } from '../types/avenida';
+import { supabase } from '../services/supabase';
+import { SambaAtual, SambaHistorico, SambaPoll } from '../types/avenida';
 
 interface AvenidaStore {
-  sambaAtual: SambaAtual;
+  sambaAtual: SambaAtual | null;
   historico: SambaHistorico[];
-  poll: SambaPoll;
+  poll: SambaPoll | null;
+  votedOptionId: string | null;
+  totalVotes: number;
+  optionVoteCounts: Record<string, number>;
   isLoading: boolean;
 
-  loadData: () => void;
-  vote: (optionId: string, userId: string) => boolean; // retorna false se já votou
-  hasVoted: (userId: string) => boolean;
-  getVotedOption: (userId: string) => string | null;
+  loadData: (userId?: string) => Promise<void>;
+  vote: (optionId: string, userId: string) => Promise<boolean>;
+  hasVoted: () => boolean;
+  getVotedOption: () => string | null;
   getTotalVotes: () => number;
   getPercentage: (optionId: string) => number;
   getWinningOption: () => string | null;
 }
 
 export const useAvenidaStore = create<AvenidaStore>((set, get) => ({
-  sambaAtual: SAMBA_ATUAL,
+  sambaAtual: null,
   historico: [],
-  poll: SAMBA_POLL,
+  poll: null,
+  votedOptionId: null,
+  totalVotes: 0,
+  optionVoteCounts: {},
   isLoading: false,
 
-  loadData: () => {
-    set({ sambaAtual: SAMBA_ATUAL, historico: SAMBAS_HISTORICOS, poll: SAMBA_POLL });
+  loadData: async (userId?: string) => {
+    set({ isLoading: true });
+    try {
+      const { data: atualData } = await supabase
+        .from('samba_atual')
+        .select('*')
+        .eq('is_active', true)
+        .order('year', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      const sambaAtual: SambaAtual | null = atualData ? {
+        year: atualData.year,
+        title: atualData.title,
+        composers: atualData.composers,
+        lyrics: atualData.lyrics,
+        youtubeId: atualData.youtube_id,
+        releaseDate: atualData.release_date,
+      } : null;
+
+      const { data: historicoData } = await supabase
+        .from('sambas_historico')
+        .select('*')
+        .order('year', { ascending: false });
+
+      const historico: SambaHistorico[] = (historicoData ?? []).map((h: any) => ({
+        id: h.id,
+        year: h.year,
+        title: h.title,
+        composers: h.composers,
+        youtubeId: h.youtube_id,
+      }));
+
+      const { data: pollData } = await supabase
+        .from('samba_poll')
+        .select('*, samba_poll_options(*)')
+        .eq('is_open', true)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      let poll: SambaPoll | null = null;
+      let optionVoteCounts: Record<string, number> = {};
+      let totalVotes = 0;
+      let votedOptionId: string | null = null;
+
+      if (pollData) {
+        const { data: votesData } = await supabase
+          .from('samba_poll_votes')
+          .select('option_id, user_id')
+          .eq('poll_id', pollData.id);
+
+        (votesData ?? []).forEach((v: any) => {
+          optionVoteCounts[v.option_id] = (optionVoteCounts[v.option_id] ?? 0) + 1;
+          totalVotes += 1;
+          if (userId && v.user_id === userId) votedOptionId = v.option_id;
+        });
+
+        poll = {
+          id: pollData.id,
+          title: pollData.title,
+          subtitle: pollData.subtitle,
+          targetYear: pollData.target_year,
+          closesAt: pollData.closes_at,
+          isOpen: pollData.is_open,
+          options: (pollData.samba_poll_options ?? []).map((o: any) => ({
+            id: o.id,
+            title: o.title,
+            composers: o.composers,
+            description: o.description,
+            emoji: o.emoji,
+            votes: [],
+          })),
+        };
+      }
+
+      set({ sambaAtual, historico, poll, optionVoteCounts, totalVotes, votedOptionId, isLoading: false });
+    } catch (e) {
+      console.log('avenidaStore loadData error:', e);
+      set({ isLoading: false });
+    }
   },
 
-  vote: (optionId, userId) => {
+  vote: async (optionId, userId) => {
     const { poll, hasVoted } = get();
-    if (hasVoted(userId)) return false;
-    if (!poll.isOpen) return false;
+    if (!poll || hasVoted() || !poll.isOpen) return false;
+
+    const { error } = await supabase.from('samba_poll_votes').insert({
+      poll_id: poll.id,
+      option_id: optionId,
+      user_id: userId,
+    });
+
+    if (error) {
+      console.log('vote error:', error);
+      return false;
+    }
 
     set(state => ({
-      poll: {
-        ...state.poll,
-        options: state.poll.options.map(opt =>
-          opt.id === optionId ? { ...opt, votes: [...opt.votes, userId] } : opt
-        ),
-      },
+      votedOptionId: optionId,
+      totalVotes: state.totalVotes + 1,
+      optionVoteCounts: { ...state.optionVoteCounts, [optionId]: (state.optionVoteCounts[optionId] ?? 0) + 1 },
     }));
     return true;
   },
 
-  hasVoted: (userId) => {
-    const { poll } = get();
-    return poll.options.some(opt => opt.votes.includes(userId));
+  hasVoted: () => {
+    return !!get().votedOptionId;
   },
 
-  getVotedOption: (userId) => {
-    const { poll } = get();
-    const found = poll.options.find(opt => opt.votes.includes(userId));
-    return found?.id ?? null;
+  getVotedOption: () => {
+    return get().votedOptionId;
   },
 
   getTotalVotes: () => {
-    const { poll } = get();
-    return poll.options.reduce((sum, opt) => sum + opt.votes.length, 0);
+    return get().totalVotes;
   },
 
   getPercentage: (optionId) => {
-    const { poll, getTotalVotes } = get();
-    const total = getTotalVotes();
-    if (total === 0) return 0;
-    const option = poll.options.find(o => o.id === optionId);
-    if (!option) return 0;
-    return Math.round((option.votes.length / total) * 100);
+    const { totalVotes, optionVoteCounts } = get();
+    if (totalVotes === 0) return 0;
+    return Math.round(((optionVoteCounts[optionId] ?? 0) / totalVotes) * 100);
   },
 
   getWinningOption: () => {
-    const { poll } = get();
-    if (poll.options.length === 0) return null;
-    const winner = [...poll.options].sort((a, b) => b.votes.length - a.votes.length)[0];
-    return winner.id;
+    const { poll, optionVoteCounts } = get();
+    if (!poll || poll.options.length === 0) return null;
+    const sorted = [...poll.options].sort((a, b) => (optionVoteCounts[b.id] ?? 0) - (optionVoteCounts[a.id] ?? 0));
+    return sorted[0]?.id ?? null;
   },
 }));

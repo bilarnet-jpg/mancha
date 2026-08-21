@@ -20,24 +20,24 @@ export default function AvenidaScreen({ navigation }: any) {
   const { user } = useAuthStore();
   const [justVoted, setJustVoted] = useState(false);
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => { loadData(user?.id); }, [user?.id]);
 
-  const userVoted = user ? hasVoted(user.id) : false;
-  const votedOptionId = user ? getVotedOption(user.id) : null;
+  const userVoted = hasVoted();
+  const votedOptionId = getVotedOption();
   const totalVotes = getTotalVotes();
   const winningId = getWinningOption();
 
-  const handleVote = (optionId: string) => {
+  const handleVote = async (optionId: string) => {
     if (!user) { navigation.navigate('Login'); return; }
     if (userVoted) return;
-    const success = vote(optionId, user.id);
+    const success = await vote(optionId, user.id);
     if (success) {
       setJustVoted(true);
       Alert.alert('🎉 Voto registrado!', 'Obrigado por participar da escolha do próximo samba-enredo da Mancha Verde!');
     }
   };
 
-  const daysUntilClose = Math.max(0, Math.ceil((new Date(poll.closesAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+  const daysUntilClose = poll ? Math.max(0, Math.ceil((new Date(poll.closesAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))) : 0;
 
   return (
     <View style={styles.container}>
@@ -56,6 +56,7 @@ export default function AvenidaScreen({ navigation }: any) {
         </View>
 
         {/* ENQUETE DE VOTAÇÃO — destaque no topo */}
+        {poll && (
         <View style={{ paddingHorizontal: Spacing.xl, marginBottom: 28 }}>
           <GlassCard style={{ position: 'relative' }}>
             <View style={styles.pollAccent} />
@@ -121,8 +122,10 @@ export default function AvenidaScreen({ navigation }: any) {
             </View>
           </GlassCard>
         </View>
+        )}
 
         {/* SAMBA ATUAL — destaque grande */}
+        {sambaAtual && (
         <View style={{ paddingHorizontal: Spacing.xl, marginBottom: 28 }}>
           <Text style={styles.sectionTitle}>🎵 Samba-Enredo Atual</Text>
           <View style={styles.currentSambaWrap}>
@@ -151,6 +154,7 @@ export default function AvenidaScreen({ navigation }: any) {
             </LinearGradient>
           </View>
         </View>
+        )}
 
         {/* HISTÓRICO — vídeos do YouTube */}
         <View style={{ paddingHorizontal: Spacing.xl }}>
