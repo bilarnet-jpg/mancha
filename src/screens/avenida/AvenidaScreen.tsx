@@ -107,6 +107,22 @@ export default function AvenidaScreen({ navigation }: any) {
                       {!showResults && (
                         <Text style={styles.pollOptionDesc}>{option.description}</Text>
                       )}
+                      {option.lyrics && (
+                        <View style={styles.pollLyricsBox}>
+                          <Text style={styles.pollLyricsLabel}>📝 Letra</Text>
+                          <Text style={styles.pollLyricsText}>{option.lyrics}</Text>
+                        </View>
+                      )}
+                      {option.youtubeId && (
+                        <View style={styles.pollVideoWrap}>
+                          <YoutubePlayer
+                            height={(W - Spacing.xl * 2 - 80) * 0.5625}
+                            width={W - Spacing.xl * 2 - 80}
+                            videoId={option.youtubeId}
+                            play={false}
+                          />
+                        </View>
+                      )}
                     </View>
                   </TouchableOpacity>
                 );
@@ -223,6 +239,10 @@ const styles = StyleSheet.create({
   pollOptionTitle: { fontSize: 14, color: Colors.textPrimary, fontWeight: '700', marginBottom: 2 },
   pollOptionComposers: { fontSize: 11, color: Colors.textTertiary },
   pollOptionDesc: { fontSize: 12, color: Colors.textSecondary, lineHeight: 18, marginTop: 8 },
+  pollLyricsBox: { backgroundColor: 'rgba(0,255,133,0.06)', borderRadius: Radius.md, padding: 12, marginTop: 10 },
+  pollLyricsLabel: { fontSize: 10, color: Colors.primaryBright, fontWeight: '700', marginBottom: 6 },
+  pollLyricsText: { fontSize: 12, color: Colors.textSecondary, lineHeight: 19, fontStyle: 'italic' },
+  pollVideoWrap: { marginTop: 12, borderRadius: Radius.md, overflow: 'hidden' },
   pollPercent: { fontSize: 16, color: Colors.textPrimary, fontWeight: '800' },
   pollFooter: { marginTop: 14, paddingTop: 12, borderTopWidth: 1, borderTopColor: Colors.glassBorder },
   pollFooterText: { fontSize: 11, color: Colors.textTertiary, textAlign: 'center' },

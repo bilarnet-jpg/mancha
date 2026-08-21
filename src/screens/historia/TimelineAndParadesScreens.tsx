@@ -111,12 +111,16 @@ export function ParadesScreen({ navigation }: any) {
     { key: 'outro', label: 'Outro', emoji: '🌟' },
   ];
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!year || !enredo || !ala) { Alert.alert('Atenção', 'Preencha ano, enredo e ala.'); return; }
     if (!user) return;
-    addParade({ userId: user.id, year: parseInt(year), enredo, ala, role, notes, photoURLs: [] });
-    setShowForm(false); setYear(''); setEnredo(''); setAla(''); setNotes('');
-    Alert.alert('🎭 Desfile Registrado!', `Seu desfile de ${year} foi adicionado à sua história!`);
+    try {
+      await addParade({ userId: user.id, year: parseInt(year), enredo, ala, role, notes, photoURLs: [] });
+      setShowForm(false); setYear(''); setEnredo(''); setAla(''); setNotes('');
+      Alert.alert('🎭 Desfile Registrado!', `Seu desfile de ${year} foi adicionado à sua história!`);
+    } catch (e) {
+      Alert.alert('Erro', 'Não foi possível salvar o desfile. Tente novamente.');
+    }
   };
 
   return (
@@ -181,7 +185,7 @@ export function ParadesScreen({ navigation }: any) {
                     <View style={styles.paradeRoleBadge}>
                       <Text style={styles.paradeRoleText}>{ROLES.find(r => r.key === parade.role)?.emoji} {ROLES.find(r => r.key === parade.role)?.label}</Text>
                     </View>
-                    <TouchableOpacity onPress={() => Alert.alert('Remover', 'Remover este desfile?', [{ text: 'Cancelar' }, { text: 'Remover', style: 'destructive', onPress: () => removeParade(parade.id) }])}>
+                    <TouchableOpacity onPress={() => Alert.alert('Remover', 'Remover este desfile?', [{ text: 'Cancelar' }, { text: 'Remover', style: 'destructive', onPress: async () => await removeParade(parade.id) }])}>
                       <Text style={{ color: Colors.textMuted, fontSize: 16 }}>🗑️</Text>
                     </TouchableOpacity>
                   </View>

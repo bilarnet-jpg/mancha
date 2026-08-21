@@ -186,18 +186,22 @@ export function FutureLetterScreen({ navigation }: any) {
   const [openYear, setOpenYear] = useState('2030');
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!title.trim() || !content.trim()) { Alert.alert('Atenção', 'Preencha o título e a mensagem.'); return; }
     const year = parseInt(openYear);
     if (isNaN(year) || year <= new Date().getFullYear()) { Alert.alert('Atenção', 'Escolha um ano futuro.'); return; }
-    addLetter({
-      userId: user?.id ?? '',
-      title: title.trim(),
-      content: content.trim(),
-      openAt: new Date(year, 0, 1),
-      theme: `Carnaval ${year}`,
-    });
-    setSubmitted(true);
+    try {
+      await addLetter({
+        userId: user?.id ?? '',
+        title: title.trim(),
+        content: content.trim(),
+        openAt: new Date(year, 0, 1),
+        theme: `Carnaval ${year}`,
+      });
+      setSubmitted(true);
+    } catch (e) {
+      Alert.alert('Erro', 'Não foi possível salvar a carta. Tente novamente.');
+    }
   };
 
   if (submitted) return (
