@@ -73,7 +73,7 @@ export default function ComunidadeInfoScreen({ navigation }: any) {
   return (
     <View style={styles.container}>
       <GlowBackground />
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + 12, paddingBottom: 60 }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + 12, paddingBottom: 120 }}>
 
         {/* HEADER */}
         <View style={styles.header}>

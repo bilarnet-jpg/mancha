@@ -4,6 +4,7 @@ import {
   TextInput, Share, Alert, KeyboardAvoidingView, Platform, Dimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCardsStore } from '../../store/cardsStore';
 import { useAuthStore } from '../../store/authStore';
@@ -84,7 +85,7 @@ export default function CreateCardScreen({ route, navigation }: any) {
           <Text style={styles.headerTitle}>Escolher Template</Text>
           <View style={{ width: 60 }} />
         </View>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: Spacing.xl, paddingBottom: 60 }}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: Spacing.xl, paddingBottom: 120 }}>
           <View style={styles.templatesGrid}>
             {MOCK_TEMPLATES.map(tpl => (
               <TouchableOpacity
@@ -117,13 +118,23 @@ export default function CreateCardScreen({ route, navigation }: any) {
         <Text style={styles.successSub}>Seu cartão para <Text style={{ color: Colors.primary, fontWeight: '700' }}>{recipientName}</Text> foi criado com sucesso!</Text>
 
         <View style={styles.successCard}>
-          <LinearGradient colors={template.gradient as any} style={styles.successCardGrad}>
-            <View style={[styles.templateAccent, { backgroundColor: template.accentColor }]} />
-            <Text style={{ fontSize: 40, marginBottom: 8 }}>{template.emoji}</Text>
-            <Text style={styles.successCardRecipient}>Para: {recipientName}</Text>
-            <Text style={styles.successCardMsg} numberOfLines={3}>{message}</Text>
-            <Text style={styles.successCardSender}>— {user?.displayName}</Text>
-          </LinearGradient>
+          {template.imageUrl ? (
+            <View style={styles.successCardGrad}>
+              <Image source={{ uri: template.imageUrl }} style={require('react-native').StyleSheet.absoluteFillObject} resizeMode="cover" />
+              <View style={{ ...require('react-native').StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.4)' }} />
+              <Text style={styles.successCardRecipient}>Para: {recipientName}</Text>
+              <Text style={styles.successCardMsg} numberOfLines={3}>{message}</Text>
+              <Text style={styles.successCardSender}>— {user?.displayName}</Text>
+            </View>
+          ) : (
+            <LinearGradient colors={template.gradient as any} style={styles.successCardGrad}>
+              <View style={[styles.templateAccent, { backgroundColor: template.accentColor }]} />
+              <Text style={{ fontSize: 40, marginBottom: 8 }}>{template.emoji}</Text>
+              <Text style={styles.successCardRecipient}>Para: {recipientName}</Text>
+              <Text style={styles.successCardMsg} numberOfLines={3}>{message}</Text>
+              <Text style={styles.successCardSender}>— {user?.displayName}</Text>
+            </LinearGradient>
+          )}
         </View>
 
         <View style={{ gap: 10, width: '100%' }}>
@@ -154,17 +165,30 @@ export default function CreateCardScreen({ route, navigation }: any) {
 
           {/* Preview do cartão */}
           <View style={styles.cardPreview}>
-            <LinearGradient colors={template.gradient as any} style={styles.cardPreviewGrad}>
-              <View style={[styles.templateAccent, { backgroundColor: template.accentColor }]} />
-              <View style={styles.cardPreviewGlow} />
-              <Text style={{ fontSize: 52, marginBottom: 10 }}>{template.emoji}</Text>
-              <View style={[styles.cardPreviewCatBadge, { backgroundColor: `${template.accentColor}22`, borderColor: `${template.accentColor}44` }]}>
-                <Text style={[styles.cardPreviewCatText, { color: template.accentColor }]}>{cat.emoji} {cat.label.toUpperCase()}</Text>
+            {template.imageUrl ? (
+              <View style={styles.cardPreviewGrad}>
+                <Image source={{ uri: template.imageUrl }} style={require('react-native').StyleSheet.absoluteFillObject} resizeMode="cover" />
+                <View style={{ ...require('react-native').StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.4)' }} />
+                <View style={[styles.cardPreviewCatBadge, { backgroundColor: 'rgba(0,255,133,0.2)', borderColor: 'rgba(0,255,133,0.4)' }]}>
+                  <Text style={[styles.cardPreviewCatText, { color: Colors.primaryBright }]}>{cat.emoji} {cat.label.toUpperCase()}</Text>
+                </View>
+                <Text style={styles.cardPreviewRecipient}>{recipientName || 'Nome do Destinatário'}</Text>
+                <Text style={styles.cardPreviewMessage} numberOfLines={4}>{message || 'Sua mensagem aparecerá aqui...'}</Text>
+                <Text style={styles.cardPreviewSender}>— {user?.displayName ?? 'Seu nome'}</Text>
               </View>
-              <Text style={styles.cardPreviewRecipient}>{recipientName || 'Nome do Destinatário'}</Text>
-              <Text style={styles.cardPreviewMessage} numberOfLines={4}>{message || 'Sua mensagem aparecerá aqui...'}</Text>
-              <Text style={styles.cardPreviewSender}>— {user?.displayName ?? 'Seu nome'}</Text>
-            </LinearGradient>
+            ) : (
+              <LinearGradient colors={template.gradient as any} style={styles.cardPreviewGrad}>
+                <View style={[styles.templateAccent, { backgroundColor: template.accentColor }]} />
+                <View style={styles.cardPreviewGlow} />
+                <Text style={{ fontSize: 52, marginBottom: 10 }}>{template.emoji}</Text>
+                <View style={[styles.cardPreviewCatBadge, { backgroundColor: `${template.accentColor}22`, borderColor: `${template.accentColor}44` }]}>
+                  <Text style={[styles.cardPreviewCatText, { color: template.accentColor }]}>{cat.emoji} {cat.label.toUpperCase()}</Text>
+                </View>
+                <Text style={styles.cardPreviewRecipient}>{recipientName || 'Nome do Destinatário'}</Text>
+                <Text style={styles.cardPreviewMessage} numberOfLines={4}>{message || 'Sua mensagem aparecerá aqui...'}</Text>
+                <Text style={styles.cardPreviewSender}>— {user?.displayName ?? 'Seu nome'}</Text>
+              </LinearGradient>
+            )}
           </View>
 
           <Text style={styles.sectionTitle}>✏️ Personalizar</Text>
@@ -228,7 +252,7 @@ const styles = StyleSheet.create({
   premiumText: { fontSize: 9, color: Colors.gold, fontWeight: '700' },
   templateCat: { fontSize: 9, fontWeight: '700', letterSpacing: 1.5 },
   templateName: { fontSize: 12, color: Colors.textPrimary, fontWeight: '600', textAlign: 'center', paddingHorizontal: 8 },
-  customizeScroll: { paddingHorizontal: Spacing.xl, paddingBottom: 60 },
+  customizeScroll: { paddingHorizontal: Spacing.xl, paddingBottom: 120 },
   cardPreview: { borderRadius: Radius.xl, overflow: 'hidden', borderWidth: 1, borderColor: Colors.border, marginBottom: Spacing.xl },
   cardPreviewGrad: { padding: Spacing.xl, alignItems: 'center', position: 'relative', minHeight: 220 },
   cardPreviewGlow: { position: 'absolute', top: -20, right: -20, width: 100, height: 100, borderRadius: 50, backgroundColor: 'rgba(255,255,255,0.05)' },

@@ -12,6 +12,7 @@ export interface CardTemplate {
   accentColor: string;
   isPremium: boolean;
   tags: string[];
+  imageUrl?: string;
 }
 
 export interface Card {

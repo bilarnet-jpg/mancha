@@ -104,43 +104,36 @@ export default function CardsScreen({ navigation }: any) {
           </View>
         )}
 
-        {/* TEMPLATES */}
+        {/* TEMAS */}
         <View style={{ marginBottom: Spacing.xl }}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>
-              {activeCategory === 'all' ? '✨ Templates' : `${CARD_CATEGORY_CONFIG[activeCategory as CardCategory]?.emoji ?? ''} ${CARD_CATEGORY_CONFIG[activeCategory as CardCategory]?.label ?? 'Templates'}`}
-            </Text>
-            <Text style={styles.countLabel}>{filtered.length} templates</Text>
+            <Text style={styles.sectionTitle}>✨ Escolha um tema</Text>
           </View>
           <View style={styles.templatesGrid}>
-            {filtered.map(template => (
-              <TouchableOpacity
-                key={template.id}
-                onPress={() => navigation.navigate('CreateCard', { templateId: template.id })}
-                style={styles.templateCard}
-                activeOpacity={0.85}
-              >
-                <LinearGradient colors={template.gradient as any} style={styles.templateGrad}>
-                  <View style={[styles.templateAccent, { backgroundColor: template.accentColor }]} />
-                  {template.isPremium && (
-                    <View style={styles.premiumBadge}>
-                      <Text style={styles.premiumBadgeText}>👑 PRO</Text>
+            {CATEGORIES.filter(c => c.key !== 'all' && c.key !== 'certificado').map(cat => {
+              const count = templates.filter(t => t.category === cat.key).length;
+              const catConfig = CARD_CATEGORY_CONFIG[cat.key as CardCategory];
+              return (
+                <TouchableOpacity
+                  key={cat.key}
+                  onPress={() => navigation.navigate('CardThemeModels', { category: cat.key })}
+                  style={styles.templateCard}
+                  activeOpacity={0.85}
+                >
+                  <LinearGradient colors={['#134227', '#0A1F14']} style={styles.templateGrad}>
+                    <View style={[styles.templateAccent, { backgroundColor: Colors.primaryBright }]} />
+                    <Text style={styles.templateEmoji}>{cat.emoji}</Text>
+                    <Text style={styles.templateName}>{cat.label}</Text>
+                  </LinearGradient>
+                  <View style={styles.templateInfo}>
+                    <Text style={styles.templateDesc}>{count} modelo{count !== 1 ? 's' : ''} disponíve{count !== 1 ? 'is' : 'l'}</Text>
+                    <View style={[styles.useBtn, { backgroundColor: 'rgba(0,255,133,0.13)', borderColor: 'rgba(0,255,133,0.3)' }]}>
+                      <Text style={[styles.useBtnText, { color: Colors.primaryBright }]}>Ver modelos →</Text>
                     </View>
-                  )}
-                  <Text style={styles.templateEmoji}>{template.emoji}</Text>
-                  <Text style={[styles.templateCat, { color: template.accentColor }]}>
-                    {CARD_CATEGORY_CONFIG[template.category]?.label?.toUpperCase()}
-                  </Text>
-                  <Text style={styles.templateName}>{template.name}</Text>
-                </LinearGradient>
-                <View style={styles.templateInfo}>
-                  <Text style={styles.templateDesc} numberOfLines={1}>{template.description}</Text>
-                  <View style={[styles.useBtn, { backgroundColor: `${template.accentColor}22`, borderColor: `${template.accentColor}44` }]}>
-                    <Text style={[styles.useBtnText, { color: template.accentColor }]}>Usar →</Text>
                   </View>
-                </View>
-              </TouchableOpacity>
-            ))}
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </View>
 

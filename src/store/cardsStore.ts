@@ -63,11 +63,33 @@ export const useCardsStore = create<CardsStore>((set, get) => ({
   activeCategory: 'all',
   isLoading: false,
 
-  loadTemplates: () => set({ templates: MOCK_TEMPLATES }),
+  loadTemplates: async () => {
+    set({ templates: MOCK_TEMPLATES });
+    try {
+      const { supabase } = await import('../services/supabase');
+      const { data } = await supabase.from('card_templates').select('*').eq('is_active', true).order('created_at', { ascending: false });
+      const realTemplates: CardTemplate[] = (data ?? []).map((row: any) => ({
+        id: row.id,
+        category: row.category,
+        name: row.name,
+        description: row.description,
+        emoji: '💌',
+        gradient: ['#134227', '#0A1F14'],
+        accentColor: '#00FF85',
+        isPremium: row.is_premium,
+        tags: [],
+        imageUrl: row.image_url,
+      }));
+      set(s => ({ templates: [...realTemplates, ...s.templates] }));
+    } catch (e) {
+      console.log('loadTemplates supabase error:', e);
+    }
+  },
   loadTributes: () => set({ tributes: MOCK_TRIBUTES }),
 
   selectTemplate: (id) => {
-    const tpl = MOCK_TEMPLATES.find(t => t.id === id) ?? null;
+    const { templates } = get();
+    const tpl = templates.find(t => t.id === id) ?? MOCK_TEMPLATES.find(t => t.id === id) ?? null;
     set({ selectedTemplate: tpl });
   },
 
@@ -83,6 +105,46 @@ export const useCardsStore = create<CardsStore>((set, get) => ({
       sentAt: data.scheduledAt ? undefined : new Date().toISOString(),
     };
     set(s => ({ myCards: [card, ...s.myCards] }));
+
+    // Salvar no Supabase e disparar email real
+    (async () => {
+      try {
+        const { supabase } = await import('../services/supabase');
+        const { templates } = get();
+        const tpl = templates.find(t => t.id === data.templateId);
+
+        await supabase.from('sent_cards').insert({
+          user_id: data.userId,
+          template_id: data.templateId,
+          template_name: tpl?.name ?? '',
+          template_image_url: tpl?.imageUrl ?? null,
+          category: data.category,
+          recipient_name: data.recipientName,
+          recipient_email: data.recipientEmail ?? null,
+          message: data.message,
+          sender_name: data.senderName,
+          is_public: data.isPublic,
+        });
+
+        if (data.recipientEmail) {
+          const { data: userData } = await supabase.auth.getUser();
+          await supabase.functions.invoke('send-card-email', {
+            body: {
+              recipientName: data.recipientName,
+              recipientEmail: data.recipientEmail,
+              senderName: data.senderName,
+              senderEmail: userData?.user?.email,
+              message: data.message,
+              templateName: tpl?.name ?? '',
+              templateImageUrl: tpl?.imageUrl ?? null,
+            },
+          });
+        }
+      } catch (e) {
+        console.log('createCard supabase/email error:', e);
+      }
+    })();
+
     return card;
   },
 
