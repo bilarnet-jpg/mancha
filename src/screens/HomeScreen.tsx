@@ -8,6 +8,7 @@ import {
   TouchableOpacity, Dimensions, Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../services/supabase';
@@ -275,14 +276,14 @@ export default function HomeScreen({ navigation }: any) {
         <Text style={styles.sectionTitle}>Siga-nos</Text>
         <View style={styles.sigaNosGrid}>
           {[
-            { emoji: '🌐', label: 'Site Oficial', url: 'https://manchaverde.com.br' },
-            { emoji: '📘', label: 'Facebook', url: 'https://facebook.com/gres.mancha.verde?fref=ts' },
-            { emoji: '🐦', label: 'Twitter', url: 'https://twitter.com/MANCHACARNAVAL' },
-            { emoji: '📸', label: 'Instagram', url: 'https://instagram.com/MANCHACARNAVAL' },
-            { emoji: '▶️', label: 'YouTube', url: 'https://www.youtube.com/@ManchaCarnavalOficial' },
+            { icon: 'globe', color: '#00FF85', label: 'Site Oficial', url: 'https://manchaverde.com.br' },
+            { icon: 'facebook', color: '#1877F2', label: 'Facebook', url: 'https://facebook.com/gres.mancha.verde?fref=ts' },
+            { icon: 'twitter', color: '#1DA1F2', label: 'Twitter', url: 'https://twitter.com/MANCHACARNAVAL' },
+            { icon: 'instagram', color: '#E1306C', label: 'Instagram', url: 'https://instagram.com/MANCHACARNAVAL' },
+            { icon: 'youtube', color: '#FF0000', label: 'YouTube', url: 'https://www.youtube.com/@ManchaCarnavalOficial' },
           ].map((item, i) => (
             <TouchableOpacity key={i} onPress={() => Linking.openURL(item.url)} style={styles.sigaNosCard} activeOpacity={0.8}>
-              <Text style={{ fontSize: 24, marginBottom: 6 }}>{item.emoji}</Text>
+              <FontAwesome5 name={item.icon} size={22} color={item.color} solid style={{ marginBottom: 6 }} />
               <Text style={styles.sigaNosLabel}>{item.label}</Text>
             </TouchableOpacity>
           ))}
